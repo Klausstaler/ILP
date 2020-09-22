@@ -1,13 +1,12 @@
 package uk.ac.ed.inf;
 
-/**
- * Hello world!
- *
- */
+import java.io.FileNotFoundException;
+
+
 public class App 
 {
-    public static void main( String[] args )
-    {
+    public static void main( String[] args ) throws FileNotFoundException {
         System.out.println( "Hello World!" );
+        GridReader.readGridValues("predictions.txt");
     }
 }
