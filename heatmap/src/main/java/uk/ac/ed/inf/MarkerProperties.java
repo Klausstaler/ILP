@@ -15,8 +15,12 @@ public enum MarkerProperties {
 
     private static final String ILLEGAL_AIR_POLLUTION = "Air pollution level has to be between 0 " +
             "and 256!";
-    MarkerProperties(String rgbString, String markerSymbol) { // dummy constructor needed to have
-        // objects as enum
+    private final String rgbString;
+    private final String markerSymbol;
+
+    MarkerProperties(String rgbString, String markerSymbol) {
+        this.rgbString = rgbString;
+        this.markerSymbol = markerSymbol;
     }
 
     public static MarkerProperties fromAirPollution(double pollution) {
@@ -47,5 +51,13 @@ public enum MarkerProperties {
         else {
             return MarkerProperties.DANGER5;
         }
+    }
+
+    public String getRgbString() {
+        return rgbString;
+    }
+
+    public String getMarkerSymbol() {
+        return markerSymbol;
     }
 }
