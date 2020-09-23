@@ -6,9 +6,6 @@ import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.Point;
 import com.mapbox.geojson.Polygon;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -19,17 +16,10 @@ public class GridVisualizer {
     private int[][] inputGrid;
     private List<Feature> features;
 
-    public GridVisualizer(int[][] grid) throws IOException {
+    public GridVisualizer(int[][] grid) {
         this.inputGrid = grid;
         this.rectangleSize = this.calcRectangleSize();
         this.features = this.calcRectangles();
-        String res = FeatureCollection.fromFeatures(this.features).toJson();
-        System.out.println(res);
-        File file = new File("heatmap.geojson");
-        file.createNewFile();
-        FileWriter writer = new FileWriter("heatmap.geojson");
-        writer.write(res);
-        writer.close();
     }
 
     private List<Feature> calcRectangles() {
@@ -43,13 +33,14 @@ public class GridVisualizer {
                 JsonObject properties = this.getPropertiesByPollution(pollution);
 
                 ArrayList<Point> points = this.computeRectangleCorners(currLong, currLat);
-                currLong += longSize;
 
                 Polygon polygon = Polygon.fromLngLats(Collections.singletonList(points));
                 features.add(Feature.fromGeometry(polygon, properties));
+
+                currLong += longSize;
             }
             currLong = MapBoundaries.NORTHWEST.getLongitude();
-            currLat = currLat - latSize;
+            currLat -= latSize;
         }
         return features;
     }
@@ -62,6 +53,7 @@ public class GridVisualizer {
         corners.add(Point.fromLngLat(initialLong + longSize, initalLat));
         corners.add(Point.fromLngLat(initialLong + longSize, initalLat - latSize));
         corners.add(Point.fromLngLat(initialLong, initalLat - latSize));
+        corners.add(Point.fromLngLat(initialLong, initalLat));
         return corners;
     }
 
@@ -82,5 +74,13 @@ public class GridVisualizer {
         longitudeSize = (ne.getLongitude() - sw.getLongitude()) / this.inputGrid[0].length;
         latitudeSize = (ne.getLatitude() - sw.getLatitude()) / this.inputGrid.length;
         return Point.fromLngLat(longitudeSize, latitudeSize);
+    }
+
+    public List<Feature> getFeatures() {
+        return features;
+    }
+
+    public FeatureCollection getFeatureCollection() {
+        return FeatureCollection.fromFeatures(this.features);
     }
 }
