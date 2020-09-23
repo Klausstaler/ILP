@@ -6,6 +6,9 @@ import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.Point;
 import com.mapbox.geojson.Polygon;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -16,41 +19,59 @@ public class GridVisualizer {
     private int[][] inputGrid;
     private List<Feature> features;
 
-    public GridVisualizer(int[][] grid) {
+    public GridVisualizer(int[][] grid) throws IOException {
         this.inputGrid = grid;
         this.rectangleSize = this.calcRectangleSize();
         this.features = this.calcRectangles();
-        System.out.println(FeatureCollection.fromFeatures(this.features));
+        String res = FeatureCollection.fromFeatures(this.features).toJson();
+        System.out.println(res);
+        File file = new File("heatmap.geojson");
+        file.createNewFile();
+        FileWriter writer = new FileWriter("heatmap.geojson");
+        writer.write(res);
+        writer.close();
     }
 
     private List<Feature> calcRectangles() {
-        double currLong= MapBoundaries.NORTHWEST.getLongitude();
+        double currLong = MapBoundaries.NORTHWEST.getLongitude();
         double currLat = MapBoundaries.NORTHWEST.getLatitude();
         double longSize = this.rectangleSize.longitude();
         double latSize = this.rectangleSize.latitude();
-        ArrayList<Feature> res = new ArrayList<>();
-        for (int[] row: this.inputGrid) {
-            for(int pollution: row) {
-                String color = MarkerProperties.fromAirPollution(pollution).getRgbString();
-                JsonObject properties = new JsonObject();
-                properties.addProperty("fill-opacity", 0.75);
-                properties.addProperty("fill", color);
-                properties.addProperty("rgb-string", color);
+        ArrayList<Feature> features = new ArrayList<>();
+        for (int[] row : this.inputGrid) {
+            for (int pollution : row) {
+                JsonObject properties = this.getPropertiesByPollution(pollution);
 
-                ArrayList<Point> points = new ArrayList<>();
-                points.add(Point.fromLngLat(currLong, currLat));
-                points.add(Point.fromLngLat(currLong+longSize, currLat));
-                points.add(Point.fromLngLat(currLong, currLat-latSize));
-                points.add(Point.fromLngLat(currLong+longSize, currLat-latSize));
+                ArrayList<Point> points = this.computeRectangleCorners(currLong, currLat);
                 currLong += longSize;
 
                 Polygon polygon = Polygon.fromLngLats(Collections.singletonList(points));
-                res.add(Feature.fromGeometry(polygon, properties));
+                features.add(Feature.fromGeometry(polygon, properties));
             }
             currLong = MapBoundaries.NORTHWEST.getLongitude();
             currLat = currLat - latSize;
         }
-        return res;
+        return features;
+    }
+
+    private ArrayList<Point> computeRectangleCorners(double initialLong, double initalLat) {
+        double longSize = this.rectangleSize.longitude();
+        double latSize = this.rectangleSize.latitude();
+        ArrayList<Point> corners = new ArrayList<>();
+        corners.add(Point.fromLngLat(initialLong, initalLat));
+        corners.add(Point.fromLngLat(initialLong + longSize, initalLat));
+        corners.add(Point.fromLngLat(initialLong + longSize, initalLat - latSize));
+        corners.add(Point.fromLngLat(initialLong, initalLat - latSize));
+        return corners;
+    }
+
+    private JsonObject getPropertiesByPollution(int pollution) {
+        String color = MarkerProperties.fromAirPollution(pollution).getRgbString();
+        JsonObject properties = new JsonObject();
+        properties.addProperty("fill-opacity", 0.75);
+        properties.addProperty("fill", color);
+        properties.addProperty("rgb-string", color);
+        return properties;
     }
 
     private Point calcRectangleSize() {

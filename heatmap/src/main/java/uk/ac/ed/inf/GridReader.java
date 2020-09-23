@@ -12,7 +12,6 @@ import java.util.Scanner;
 public class GridReader {
 
     /**
-     *
      * @param filePath Path where the text file is located
      * @return 2D array of ints where each value represents the air pollution of the tile at this
      * position.
