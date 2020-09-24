@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class GridVisualizer {
+public class GridVisualizer implements Visualizer {
 
     private Point rectangleSize;
     private int[][] inputGrid;
@@ -22,6 +22,11 @@ public class GridVisualizer {
         this.features = this.calcRectangles();
     }
 
+    /***
+     * Based on the inputGrid and the rectangle sizes, calculates the GeoJSON Polygons for
+     * visualization.
+     * @return List of GeoJSON features. (Polygons)
+     */
     private List<Feature> calcRectangles() {
         double currLong = MapBoundaries.NORTHWEST.getLongitude();
         double currLat = MapBoundaries.NORTHWEST.getLatitude();
@@ -45,6 +50,12 @@ public class GridVisualizer {
         return features;
     }
 
+    /***
+     * Computes the rectangle corners.
+     * @param initialLong Initial longitude of the upper left corner.
+     * @param initalLat Initial latitude of the upper left corner.
+     * @return Arraylist of all corners in the following ordering: (NW, NE, SE, SW, NW)
+     */
     private ArrayList<Point> computeRectangleCorners(double initialLong, double initalLat) {
         double longSize = this.rectangleSize.longitude();
         double latSize = this.rectangleSize.latitude();
@@ -57,6 +68,11 @@ public class GridVisualizer {
         return corners;
     }
 
+    /**
+     * Resolves the needed properties for visualization for a given pollution level
+     * @param pollution Pollution level
+     * @return GeoJSON Feature property specification.
+     */
     private JsonObject getPropertiesByPollution(int pollution) {
         String color = MarkerProperties.fromAirPollution(pollution).getRgbString();
         JsonObject properties = new JsonObject();
@@ -66,6 +82,11 @@ public class GridVisualizer {
         return properties;
     }
 
+    /**
+     * Calculates the size of a single heatmap rectangle inside the confinement area.
+     * @return GeoJSON Point with longitude and latitude information, represeting the length of
+     * the rectangle sides
+     */
     private Point calcRectangleSize() {
         double longitudeSize;
         double latitudeSize;
@@ -76,11 +97,7 @@ public class GridVisualizer {
         return Point.fromLngLat(longitudeSize, latitudeSize);
     }
 
-    public List<Feature> getFeatures() {
-        return features;
-    }
-
-    public FeatureCollection getFeatureCollection() {
+    public FeatureCollection getFeatures() {
         return FeatureCollection.fromFeatures(this.features);
     }
 }

@@ -8,13 +8,13 @@ import java.io.IOException;
 public class App {
     public static void main(String[] args) throws IOException {
 
-        int[][] grid = GridReader.readGridValues("predictions.txt");
-        GridVisualizer visualizer = new GridVisualizer(grid);
+        int[][] grid = GridReader.readGridValues(args[0]);
+        Visualizer visualizer = new GridVisualizer(grid);
 
         new File("heatmap.geojson").createNewFile();
         FileWriter writer = new FileWriter("heatmap.geojson");
 
-        String res = visualizer.getFeatureCollection().toJson();
+        String res = visualizer.getFeatures().toJson();
         writer.write(res);
         writer.close();
     }
