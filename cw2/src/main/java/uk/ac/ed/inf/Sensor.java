@@ -6,12 +6,18 @@ public class Sensor {
 
     private String location;
     private double battery;
-    private double reading;
+    private Double reading;
 
-    public Sensor(String location, double battery, int reading) {
+    public Sensor(String location, double battery, double reading) {
         this.location = location;
         this.battery = battery;
         this.reading = reading;
+    }
+
+    public Sensor(String location, double battery) {
+        this.location = location;
+        this.battery = battery;
+        System.out.println(this.reading);
     }
 
     public String getLocation() {
@@ -22,7 +28,7 @@ public class Sensor {
         return battery;
     }
 
-    public double getReading() {
+    public Double getReading() {
         return reading;
     }
 

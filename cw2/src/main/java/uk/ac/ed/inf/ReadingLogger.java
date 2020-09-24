@@ -46,7 +46,7 @@ public class ReadingLogger extends DroneLogger {
 
     private void updateMarkerProps(Sensor read_sensor) {
         Feature marker = this.markers.get(read_sensor.getLocation());
-        MarkerProperties markerProps =(read_sensor.getBattery() < 10) ?
+        MarkerProperties markerProps =(read_sensor.getBattery() < Restrictions.MIN_BATTERY.getValue()) ?
                 MarkerProperties.from("lowBattery") :
                 MarkerProperties.fromAirPollution(read_sensor.getReading());
 

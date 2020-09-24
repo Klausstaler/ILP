@@ -2,6 +2,8 @@ package uk.ac.ed.inf.backend;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import uk.ac.ed.inf.Restrictions;
 import uk.ac.ed.inf.Sensor;
 
 import java.io.IOException;
@@ -30,20 +32,22 @@ public class SensorService extends BackendService {
         for (JsonElement rawSensor : response) {
             System.out.println(rawSensor);
             Sensor sensor = this.JsonToSensor(rawSensor);
+            sensors.put(sensor.getLocation(), sensor);
         }
         System.out.println(sensors.values());
         return sensors;
     }
 
     private Sensor JsonToSensor(JsonElement rawSensor) {
-        /*if (rawSensor.getAsJsonObject().get("battery").getAsInt() < 10) {
-            rawSensor.getAsJsonObject().
+        JsonObject sensorProperties = rawSensor.getAsJsonObject();
+        if (sensorProperties.get("battery").getAsInt() < Restrictions.MIN_BATTERY.getValue()) {
+            sensorProperties.remove("reading");
         }
-        Sensor sensor = this.gson.fromJson(rawSensor, Sensor.class);
-        sensors.put(sensor.getLocation(), sensor);
+        return this.gson.fromJson(sensorProperties, Sensor.class);
+    }
 
-         */
-        return null;
+    public Sensor sensorByLocation(String location) {
+        return this.sensors.get(location);
     }
 
 

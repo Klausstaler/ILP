@@ -1,8 +1,6 @@
 package uk.ac.ed.inf.backend;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,7 +16,6 @@ public class BackendService {
     protected HttpURLConnection connection;
 
     public BackendService(String url, String port) throws IOException {
-        //http://localhost/maps/2020/02/02/
         this.setupNewUrl(String.format("%s:%s/",url, port));
         this.baseUrl = new URL(String.format("%s:%s/",url, port));
     }
