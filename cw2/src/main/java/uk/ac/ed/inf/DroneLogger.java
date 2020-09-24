@@ -10,8 +10,8 @@ public abstract class DroneLogger {
     private Point position;
     private FileWriter file;
 
-    public DroneLogger(Point initalPos, String loggingPath) throws IOException {
-        this.position = initalPos;
+    public DroneLogger(Point initialPos, String loggingPath) throws IOException {
+        this.position = initialPos;
         this.file = new FileWriter(loggingPath);
     }
 

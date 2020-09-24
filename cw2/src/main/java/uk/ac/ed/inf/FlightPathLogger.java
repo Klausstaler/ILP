@@ -8,8 +8,8 @@ public class FlightPathLogger extends DroneLogger {
 
     private int lineNbr = 1;
 
-    public FlightPathLogger(Point initalPos, String loggingPath) throws IOException {
-        super(initalPos, loggingPath);
+    public FlightPathLogger(Point initialPos, String loggingPath) throws IOException {
+        super(initialPos, loggingPath);
     }
 
     @Override

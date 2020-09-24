@@ -6,8 +6,8 @@ import java.io.IOException;
 
 public class ReadingLogger extends DroneLogger {
 
-    public ReadingLogger(Point initalPos, String loggingPath) throws IOException {
-        super(initalPos, loggingPath);
+    public ReadingLogger(Point initialPos, String loggingPath) throws IOException {
+        super(initialPos, loggingPath);
     }
 
     @Override
