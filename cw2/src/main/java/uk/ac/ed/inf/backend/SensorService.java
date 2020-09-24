@@ -1,15 +1,11 @@
 package uk.ac.ed.inf.backend;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonPrimitive;
 import uk.ac.ed.inf.Sensor;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.HashMap;
-import java.util.HashSet;
 
 public class SensorService extends BackendService {
 
