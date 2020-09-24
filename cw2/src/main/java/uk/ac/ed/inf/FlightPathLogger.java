@@ -3,7 +3,6 @@ package uk.ac.ed.inf;
 import com.mapbox.geojson.Point;
 
 import java.io.IOException;
-import java.util.Objects;
 
 public class FlightPathLogger extends DroneLogger {
 
@@ -40,6 +39,7 @@ public class FlightPathLogger extends DroneLogger {
     }
 
     private int calculateAngle(Point otherPos) {
+        // TODO: extract this method and put it in appropriate class
         double dy = otherPos.longitude() - this.position.longitude();
         double dx = otherPos.latitude() - this.position.latitude();
         int angle = (int) Math.round(Math.toDegrees(Math.atan2(dy, dx)));
