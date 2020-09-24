@@ -12,6 +12,7 @@ public class CombinedLogger extends DroneLogger {
     public CombinedLogger(Point initialPos, String date) throws IOException {
         this.flightPathLogger = new FlightPathLogger(initialPos, date);
         this.readingLogger = new ReadingLogger(initialPos, date);
+        System.out.println("Combined logger initialized...");
     }
 
     @Override

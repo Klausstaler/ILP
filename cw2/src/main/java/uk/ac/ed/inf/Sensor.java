@@ -1,5 +1,7 @@
 package uk.ac.ed.inf;
 
+import java.util.Objects;
+
 public class Sensor {
 
     private String location;
@@ -22,5 +24,18 @@ public class Sensor {
 
     public double getReading() {
         return reading;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Sensor sensor = (Sensor) o;
+        return getLocation().equals(sensor.getLocation());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getLocation());
     }
 }

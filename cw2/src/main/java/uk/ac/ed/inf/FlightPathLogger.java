@@ -10,6 +10,7 @@ public class FlightPathLogger extends DroneLogger {
 
     public FlightPathLogger(Point initialPos, String date) throws IOException {
         super(initialPos, "flightpath"+date+".txt");
+        System.out.println("Flightpath logger initialized...");
     }
 
     @Override

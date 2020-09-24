@@ -19,7 +19,7 @@ public class ReadingLogger extends DroneLogger {
     public ReadingLogger(Point initialPos, String date) throws IOException {
         super(initialPos, "readings"+date+".geojson");
         this.flightPath.add(initialPos);
-
+        System.out.println("Reading logger initialized...");
     }
 
     @Override
