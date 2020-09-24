@@ -46,6 +46,17 @@ public enum MarkerProperties {
         }
     }
 
+    public static MarkerProperties from(String markerType) {
+        switch(markerType) {
+            case "lowBattery":
+                return MarkerProperties.LOWBATTERY;
+            case "notVisited":
+                return MarkerProperties.NOTVISITED;
+            default:
+                throw new IllegalArgumentException("Specified marker type not existent.");
+        }
+    }
+
     public String getRgbString() {
         return rgbString;
     }
