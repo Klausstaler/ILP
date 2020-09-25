@@ -3,6 +3,7 @@ package uk.ac.ed.inf.backend;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mapbox.geojson.Point;
 import uk.ac.ed.inf.Restrictions;
 import uk.ac.ed.inf.Sensor;
 
@@ -30,20 +31,38 @@ public class SensorService extends BackendService {
         HashMap<String, Sensor> sensors = new HashMap<>();
         JsonArray response = this.gson.fromJson(this.readResponse(), JsonArray.class);
         for (JsonElement rawSensor : response) {
-            System.out.println(rawSensor);
             Sensor sensor = this.JsonToSensor(rawSensor);
             sensors.put(sensor.getLocation(), sensor);
         }
-        System.out.println(sensors.values());
         return sensors;
     }
 
-    private Sensor JsonToSensor(JsonElement rawSensor) {
+    private Sensor JsonToSensor(JsonElement rawSensor) throws IOException {
         JsonObject sensorProperties = rawSensor.getAsJsonObject();
         if (sensorProperties.get("battery").getAsInt() < Restrictions.MIN_BATTERY.getValue()) {
             sensorProperties.remove("reading");
         }
-        return this.gson.fromJson(sensorProperties, Sensor.class);
+        this.addCoordinates(sensorProperties);
+        Sensor sensor =  this.gson.fromJson(sensorProperties, Sensor.class);
+        System.out.println(sensor.toString());
+        return sensor;
+    }
+
+    private void addCoordinates(JsonObject sensorProperties) throws IOException {
+        String[] location = sensorProperties.get("location").getAsString().split("\\.");
+        String prevUrl = this.url.toString();
+
+        this.setupNewUrl(String.format(
+                "%s/words/%s/%s/%s/details.json", this.baseUrl, location[0], location[1],
+                location[2]));
+
+        JsonObject response = this.gson.fromJson(this.readResponse(), JsonObject.class);
+        JsonObject coords = response.get("coordinates").getAsJsonObject();
+        Point point = Point.fromLngLat(coords.get("lng").getAsDouble(),
+                coords.get("lat").getAsDouble());
+        sensorProperties.add("coordinates", this.gson.toJsonTree(point, Point.class));
+
+        this.setupNewUrl(prevUrl);
     }
 
     public Sensor sensorByLocation(String location) {

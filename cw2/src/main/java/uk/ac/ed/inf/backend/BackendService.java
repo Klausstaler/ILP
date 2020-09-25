@@ -51,7 +51,6 @@ public class BackendService {
             inputLine = reader.readLine();
         }
         reader.close();
-        System.out.println(content.toString());
         return content.toString();
     }
 }
