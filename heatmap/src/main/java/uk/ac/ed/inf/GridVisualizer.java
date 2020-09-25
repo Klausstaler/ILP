@@ -33,6 +33,7 @@ public class GridVisualizer implements Visualizer {
         double longSize = this.rectangleSize.longitude();
         double latSize = this.rectangleSize.latitude();
         ArrayList<Feature> features = new ArrayList<>();
+
         for (int[] row : this.inputGrid) {
             for (int pollution : row) {
                 JsonObject properties = this.getPropertiesByPollution(pollution);
@@ -60,11 +61,13 @@ public class GridVisualizer implements Visualizer {
         double longSize = this.rectangleSize.longitude();
         double latSize = this.rectangleSize.latitude();
         ArrayList<Point> corners = new ArrayList<>();
+
         corners.add(Point.fromLngLat(initialLong, initalLat));
         corners.add(Point.fromLngLat(initialLong + longSize, initalLat));
         corners.add(Point.fromLngLat(initialLong + longSize, initalLat - latSize));
         corners.add(Point.fromLngLat(initialLong, initalLat - latSize));
         corners.add(Point.fromLngLat(initialLong, initalLat));
+
         return corners;
     }
 
@@ -76,6 +79,7 @@ public class GridVisualizer implements Visualizer {
     private JsonObject getPropertiesByPollution(int pollution) {
         String color = MarkerProperties.fromAirPollution(pollution).getRgbString();
         JsonObject properties = new JsonObject();
+
         properties.addProperty("fill-opacity", 0.75);
         properties.addProperty("fill", color);
         properties.addProperty("rgb-string", color);
