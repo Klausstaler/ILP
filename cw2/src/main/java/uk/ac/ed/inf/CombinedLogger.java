@@ -15,7 +15,8 @@ public class CombinedLogger extends DroneLogger {
             IllegalAccessException, InvocationTargetException, InstantiationException {
 
         for (Class<?> loggerClass : loggerClasses) {
-            Object object = loggerClass.getConstructors()[0].newInstance(initialPos, date);
+            Object object = loggerClass.getConstructors()[0].newInstance(initialPos, date); //
+            // assuming each logger class only implements one Constructor
             this.loggers.add((DroneLogger) object);
         }
         System.out.println("Combined logger initialized...");
