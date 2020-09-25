@@ -1,0 +1,1 @@
+Put lib\ortools.lib from (https://github.com/google/or-tools/releases/tag/v6.7.2) into lib.
