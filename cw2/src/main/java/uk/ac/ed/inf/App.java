@@ -9,16 +9,19 @@ import uk.ac.ed.inf.backend.BackendService;
 import uk.ac.ed.inf.backend.SensorService;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 
 public class App 
 {
-    public static void main( String[] args ) throws IOException {
+    public static void main( String[] args ) throws IllegalAccessException,
+            InstantiationException, InvocationTargetException {
 
         Point pos = Point.fromLngLat(55.946233, -3.192473);
-        DroneLogger logger = new CombinedLogger(pos, "02-02-2021");
+        DroneLogger logger = new CombinedLogger(pos, "02-02-2021", ReadingLogger.class,
+                FlightPathLogger.class);
 
-        BackendService service = new SensorService(
-                "http://localhost", "80", "02", "02", "2021");
+        // BackendService service = new SensorService(
+        //        "http://localhost", "80", "02", "02", "2021");
 
 // the response:
     }
