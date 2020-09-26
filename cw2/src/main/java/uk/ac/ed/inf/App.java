@@ -14,13 +14,14 @@ public class App
     public static void main( String[] args ) throws IllegalAccessException,
             InstantiationException, InvocationTargetException {
 
-        Point pos = Point.fromLngLat(-3.192471, 55.946229);
-        Point pos2 = Point.fromLngLat(-3.1924670934677124,
-                55.94625365809505);
-        Point pos3 = Point.fromLngLat(-3.1924670934677124,
-                55.94625365809505);
-        DroneLogger logger = new CombinedLogger(pos, "02-02-2021", ReadingLogger.class,
-                FlightPathLogger.class);
+        Point pos = Point.fromLngLat(-3.1924650818109512,
+                55.94621667237433);
+        Point pos2 = Point.fromLngLat(-3.1923068314790726,
+                55.946166356717846);
+        Point pos3 = Point.fromLngLat(-3.192438930273056,
+                55.94623957724108);
+        //DroneLogger logger = new CombinedLogger(pos, "02-02-2021", ReadingLogger.class,
+        //        FlightPathLogger.class);
         Map map = Map.getInstance();
         System.out.println(map.inAllowedArea(pos));
         System.out.println(map.inAllowedArea(pos2));

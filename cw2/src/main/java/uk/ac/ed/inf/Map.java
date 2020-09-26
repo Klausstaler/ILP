@@ -1,21 +1,17 @@
 package uk.ac.ed.inf;
 
-import com.mapbox.geojson.Point;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LinearRing;
-import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.*;
 
-import java.nio.charset.CoderResult;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Map {
 
     private static Map instance = null;
 
+    private final GeometryFactory geometryFactory = new GeometryFactory();
     private Polygon playArea;
-    private GeometryFactory geometryFactory = new GeometryFactory();
 
 
     public static Map getInstance() {
@@ -31,14 +27,13 @@ public class Map {
                 new Coordinate(-3.184319, 55.942617),
                 new Coordinate(-3.192473, 55.942617),
                 new Coordinate(-3.192473, 55.946233)};
-
-        LinearRing[] holes = this.getObstacles();
         LinearRing shell = this.geometryFactory.createLinearRing(boundaries);
-
-        this.playArea = this.geometryFactory.createPolygon(shell, holes);
+        this.playArea = this.geometryFactory.createPolygon(shell);
+        this.getObstacles();
+        System.out.println(this.playArea);
     }
 
-    public boolean inAllowedArea(Point position) {
+    public boolean inAllowedArea(com.mapbox.geojson.Point position) {
         org.locationtech.jts.geom.Point point =
                 new GeometryFactory().createPoint(new Coordinate(position.longitude(),
                         position.latitude()));
@@ -46,11 +41,11 @@ public class Map {
         return this.inAllowedArea(point);
     }
 
-    public boolean inAllowedArea(org.locationtech.jts.geom.Point position) {
+    public boolean inAllowedArea(Point position) {
         return this.playArea.intersects(position);
     }
 
-    private LinearRing[] getObstacles() {
+    private void getObstacles() {
         List<LinearRing> obstacles = new ArrayList<>();
         Coordinate[] coordinates = {
                 new Coordinate(-3.1923430413007736, 55.94617949887322),
@@ -59,9 +54,28 @@ public class Map {
                 new Coordinate(-3.192264586687088, 55.94617912338314),
                 new Coordinate(-3.1923430413007736, 55.94617949887322)};
         obstacles.add(this.geometryFactory.createLinearRing(coordinates));
-        System.out.println(obstacles);
-        return obstacles.toArray(new LinearRing[0]);
+        obstacles.add(this.geometryFactory.createLinearRing(coordinates));
+
+        this.addObstacles(obstacles.toArray(new LinearRing[0]));
     }
 
+    public void addObstacles(Coordinate[]... obstacles) {
+
+        List<LinearRing> newObstacles = new ArrayList<>();
+        for (Coordinate[] obstacle: obstacles) {
+            newObstacles.add(this.geometryFactory.createLinearRing(obstacle));
+        }
+        this.addObstacles(newObstacles.toArray(new LinearRing[0]));
+    }
+
+    public void addObstacles(LinearRing... obstacles) {
+        Geometry boundaries = this.playArea.getBoundary();
+        LinearRing shell = (LinearRing) boundaries.getGeometryN(0);
+        List<LinearRing> holes = new ArrayList<>(Arrays.asList(obstacles));
+        for(int i = 1; i < boundaries.getNumGeometries(); i++) {
+            holes.add((LinearRing) boundaries.getGeometryN(i));
+        }
+        this.playArea = this.geometryFactory.createPolygon(shell, holes.toArray(new LinearRing[0]));
+    }
 
 }
