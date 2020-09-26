@@ -38,8 +38,49 @@ public class Map {
         boolean inAllowedArea = this.inMapBoundaries(position);
 
         for (Polygon obstacle : this.obstacles) {
-
+            inAllowedArea = inAllowedArea && this.outsidePolygon(obstacle, position);
         }
         return inAllowedArea;
     }
+
+    private boolean outsidePolygon(Polygon obstacle, Point position) {
+        if (this.outsideBoundingRectangle(obstacle, position)) {
+            return true;
+        }
+        List<Point> vertices = obstacle.coordinates().get(0);
+        int nVertices = vertices.size();
+        int i = 0;
+        int j = nVertices;
+        boolean inside = false;
+        for (i = 0, j = nVertices - 1; i < nVertices; j = i++) {
+            Point vert1 = vertices.get(i);
+            Point vert2 = vertices.get(j);
+        }
+    }
+
+    private boolean outsideBoundingRectangle(Polygon obstacle, Point position) {
+        List<Point> vertices = obstacle.coordinates().get(0);
+        double minLong = vertices.get(0).longitude();
+        double maxLong = vertices.get(0).longitude();
+        double minLat = vertices.get(0).latitude();
+        double maxLat = vertices.get(0).latitude();
+
+        for (int i = 1; i < vertices.size(); i++) {
+            Point vertex = vertices.get(1);
+            minLong = Math.min(minLong, vertex.longitude();
+            maxLong = Math.max(maxLong, vertex.longitude());
+            minLat = Math.min(minLat,vertex.latitude());
+            maxLat = Math.max(maxLat, vertex.latitude());
+        }
+
+        double pLong = position.longitude();
+        double pLat = position.latitude();
+
+        boolean outsideLong = pLong < minLong || pLong > maxLong;
+        boolean outsideLat = pLat < minLat || pLat > maxLat;
+
+        return outsideLat || outsideLong;
+    }
+
+
 }
