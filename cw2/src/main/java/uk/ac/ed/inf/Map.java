@@ -30,7 +30,6 @@ public class Map {
         LinearRing shell = this.geometryFactory.createLinearRing(boundaries);
         this.playArea = this.geometryFactory.createPolygon(shell);
         this.getObstacles();
-        System.out.println(this.playArea);
     }
 
     public boolean inAllowedArea(com.mapbox.geojson.Point position) {
@@ -72,9 +71,11 @@ public class Map {
         Geometry boundaries = this.playArea.getBoundary();
         LinearRing shell = (LinearRing) boundaries.getGeometryN(0);
         List<LinearRing> holes = new ArrayList<>(Arrays.asList(obstacles));
+
         for(int i = 1; i < boundaries.getNumGeometries(); i++) {
             holes.add((LinearRing) boundaries.getGeometryN(i));
         }
+
         this.playArea = this.geometryFactory.createPolygon(shell, holes.toArray(new LinearRing[0]));
     }
 

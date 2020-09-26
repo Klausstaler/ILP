@@ -3,3 +3,4 @@ Put lib\ortools.lib from (https://github.com/google/or-tools/releases/tag/v6.7.2
 [ ] - Make SensorService Singleton
 [ ] - Create Map class
 [ ] - Create ObstacleService
+[ ] - Make it possible to delete obstacle from map
