@@ -5,8 +5,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mapbox.geojson.Point;
-import uk.ac.ed.inf.backend.BackendService;
-import uk.ac.ed.inf.backend.SensorService;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
