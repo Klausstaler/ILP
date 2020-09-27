@@ -33,8 +33,7 @@ public class Map {
     }
 
     public boolean inAllowedArea(com.mapbox.geojson.Point position) {
-        org.locationtech.jts.geom.Point point =
-                new GeometryFactory().createPoint(new Coordinate(position.longitude(),
+        Point point = new GeometryFactory().createPoint(new Coordinate(position.longitude(),
                         position.latitude()));
 
         return this.inAllowedArea(point);
