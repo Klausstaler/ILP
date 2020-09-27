@@ -11,7 +11,7 @@ import java.util.List;
 
 public class ObstacleService extends  BackendService{
 
-    private List<LinearRing> obstacles = new ArrayList<>();
+    private List<LinearRing> obstacles;
 
     public ObstacleService(String url, String port) throws IOException {
         super(url, port);
@@ -27,6 +27,8 @@ public class ObstacleService extends  BackendService{
             LinearRing obstacle = this.toLinearRing(feature);
             obstacles.add(obstacle);
         }
+        //return obstacles.subList(3, 4);
+        //return obstacles.subList(0,3);
         return obstacles;
     }
 
@@ -38,8 +40,9 @@ public class ObstacleService extends  BackendService{
             Coordinate coordinate = new Coordinate(point.longitude(), point.latitude());
             coordinates.add(coordinate);
         }
-
-        return new GeometryFactory().createLinearRing(coordinates.toArray(new Coordinate[0]));
+        LinearRing ring =
+                new GeometryFactory().createLinearRing(coordinates.toArray(new Coordinate[0]));
+        return ring;
     }
 
     public List<LinearRing> getObstacles() {

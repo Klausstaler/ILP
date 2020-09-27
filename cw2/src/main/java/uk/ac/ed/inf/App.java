@@ -14,8 +14,8 @@ import java.lang.reflect.InvocationTargetException;
 
 public class App 
 {
-    public static void main( String[] args ) throws IllegalAccessException,
-            InstantiationException, InvocationTargetException, IOException {
+    private static final String URL =  "http://localhost";
+    public static void main( String[] args ) throws IOException {
 
         Point pos = Point.fromLngLat(-3.1924650818109512,
                 55.94621667237433);
@@ -25,13 +25,13 @@ public class App
                 55.94623957724108);
         //DroneLogger logger = new CombinedLogger(pos, "02-02-2021", ReadingLogger.class,
         //        FlightPathLogger.class);
-        Map map = Map.getInstance();
+        ObstacleService obstacleService = new ObstacleService(URL, "80");
+        Map map = new Map(obstacleService);
         System.out.println(map.inAllowedArea(pos));
         System.out.println(map.inAllowedArea(pos2));
         System.out.println(map.inAllowedArea(pos3));
         // BackendService service = new SensorService(
         //        "http://localhost", "80", "02", "02", "2021");
-        BackendService obstacleService = new ObstacleService("http://localhost", "80");
 
 // the response:
     }
