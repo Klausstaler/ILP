@@ -8,7 +8,7 @@ public class GraphOptimizer {
     public GraphOptimizer(long[][] distanceMatrix, int startLocation) {
         this.distanceMatrix = distanceMatrix;
         this.startLocation = startLocation;
-        Routing manager =
+        RoutingIn manager =
                 new RoutingIndexManager(data.distanceMatrix.length, data.vehicleNumber, data.depot);
         RoutingModel routing = new RoutingModel(manager);
     }
