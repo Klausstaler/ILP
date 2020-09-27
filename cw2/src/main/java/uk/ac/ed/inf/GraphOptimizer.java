@@ -3,11 +3,9 @@ package uk.ac.ed.inf;
 import com.google.ortools.constraintsolver.*;
 import com.google.protobuf.Duration;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.logging.Logger;
 
 public class GraphOptimizer {
     private final int numDrones = 1;
@@ -22,18 +20,13 @@ public class GraphOptimizer {
         this.setupRouting();
     }
 
-    public GraphOptimizer(long[][] distanceMatrix) {
-        this.distanceMatrix = distanceMatrix;
-        this.setupRouting();
-    }
-
     public GraphOptimizer(double[][] distanceMatrix) {
         long[][] distMatrix = new long[distanceMatrix.length][distanceMatrix[0].length];
         for(int i = 0; i < distanceMatrix.length; i++) {
             for(int j = 0; j < distanceMatrix[0].length; j++) {
-                BigInteger num = new BigInteger(String.valueOf(distanceMatrix[i][j]));
-                BigInteger val = (new BigInteger("10").pow(16)).multiply(num);
-                distMatrix[i][j] = val.longValueExact();
+                BigDecimal num = new BigDecimal(String.valueOf(distanceMatrix[i][j]));
+                BigDecimal val = (new BigDecimal("10").pow(16)).multiply(num);
+                distMatrix[i][j] = val.longValue();
             }
         }
         this.distanceMatrix = distMatrix;
@@ -85,7 +78,7 @@ public class GraphOptimizer {
                         .toBuilder()
                         .setFirstSolutionStrategy(FirstSolutionStrategy.Value.PATH_CHEAPEST_ARC)
                         .setLocalSearchMetaheuristic(LocalSearchMetaheuristic.Value.GUIDED_LOCAL_SEARCH)
-                        .setTimeLimit(Duration.newBuilder().setSeconds(1).build())
+                        .setTimeLimit(Duration.newBuilder().setSeconds(5).build())
                         .setLogSearch(false)
                         .build();
     }

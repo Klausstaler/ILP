@@ -1,19 +1,17 @@
 package uk.ac.ed.inf;
 
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.mapbox.geojson.Point;
-import org.locationtech.jts.geom.GeometryFactory;
-import uk.ac.ed.inf.backend.BackendService;
 import uk.ac.ed.inf.backend.ObstacleService;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 
 public class App 
 {
+    static {
+        System.loadLibrary("jniortools");
+    }
+
     private static final String URL =  "http://localhost";
     public static void main( String[] args ) throws IOException {
 
