@@ -10,6 +10,9 @@ import com.google.ortools.linearsolver.MPSolver.OptimizationProblemType;
 import com.google.ortools.linearsolver.MPVariable;
 
 public class OrToolsTest {
+    static {
+        System.loadLibrary("jniortools");
+    }
 
     /**
      * Adapted from https://developers.google.com/optimization/introduction/using
@@ -42,7 +45,7 @@ public class OrToolsTest {
     @Test
     public void test() {
         System.out.println("Loading native library jniortools.");
-        System.loadLibrary("jniortools");
+        //System.loadLibrary("jniortools");
         System.out.println("Running the stuff.");
         linear();
     }

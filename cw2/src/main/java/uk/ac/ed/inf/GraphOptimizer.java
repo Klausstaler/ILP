@@ -3,78 +3,91 @@ package uk.ac.ed.inf;
 import com.google.ortools.constraintsolver.*;
 import com.google.protobuf.Duration;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Logger;
 
 public class GraphOptimizer {
     private final int numDrones = 1;
     private int startLocation = 0;
     private long[][] distanceMatrix;
-    private RoutingIndexManager manager;
     private RoutingModel routing;
     private RoutingSearchParameters parameters;
 
     public GraphOptimizer(long[][] distanceMatrix, int startLocation) {
         this.distanceMatrix = distanceMatrix;
         this.startLocation = startLocation;
-        this.manager =
+        this.setupRouting();
+    }
+
+    public GraphOptimizer(long[][] distanceMatrix) {
+        this.distanceMatrix = distanceMatrix;
+        this.setupRouting();
+    }
+
+    public GraphOptimizer(double[][] distanceMatrix) {
+        long[][] distMatrix = new long[distanceMatrix.length][distanceMatrix[0].length];
+        for(int i = 0; i < distanceMatrix.length; i++) {
+            for(int j = 0; j < distanceMatrix[0].length; j++) {
+                BigInteger num = new BigInteger(String.valueOf(distanceMatrix[i][j]));
+                BigInteger val = (new BigInteger("10").pow(16)).multiply(num);
+                distMatrix[i][j] = val.longValueExact();
+            }
+        }
+        this.distanceMatrix = distMatrix;
+        this.setupRouting();
+    }
+
+    public GraphOptimizer(double[][] distanceMatrix, int startLocation) {
+        this(distanceMatrix);
+        this.startLocation = startLocation;
+    }
+
+    public int[] optimize() {
+
+        Assignment solution = routing.solveWithParameters(this.parameters);
+
+        int[] sol = new int[this.distanceMatrix.length+1];
+        sol[0] = this.startLocation;
+        int idx = 1;
+        int currLocation = (int) solution.value(routing.nextVar(this.startLocation));
+
+        while (!routing.isEnd(currLocation)) {
+            sol[idx] = currLocation;
+            idx++;
+            currLocation = (int) solution.value(routing.nextVar(currLocation));
+        }
+        sol[idx] = this.startLocation;
+        System.out.println(Arrays.toString(sol));
+        return sol;
+    }
+
+    private void setupRouting() {
+        RoutingIndexManager manager =
                 new RoutingIndexManager(this.distanceMatrix.length, this.numDrones,
                         this.startLocation);
         this.routing = new RoutingModel(manager);
 
+        // Define cost of each arc.
         final int transitCallbackIndex =
                 routing.registerTransitCallback((long fromIndex, long toIndex) -> {
                     int fromNode = manager.indexToNode(fromIndex);
                     int toNode = manager.indexToNode(toIndex);
                     return this.distanceMatrix[fromNode][toNode];
                 });
+        this.routing.setArcCostEvaluatorOfAllVehicles(transitCallbackIndex);
 
-        // Define cost of each arc.
-        routing.setArcCostEvaluatorOfAllVehicles(transitCallbackIndex);
-
-        // Setting first solution heuristic.
+        // Setting solution heuristic.
         this.parameters =
                 main.defaultRoutingSearchParameters()
                         .toBuilder()
                         .setFirstSolutionStrategy(FirstSolutionStrategy.Value.PATH_CHEAPEST_ARC)
                         .setLocalSearchMetaheuristic(LocalSearchMetaheuristic.Value.GUIDED_LOCAL_SEARCH)
-                        .setTimeLimit(Duration.newBuilder().setSeconds(10).build())
-                        .setLogSearch(true)
+                        .setTimeLimit(Duration.newBuilder().setSeconds(1).build())
+                        .setLogSearch(false)
                         .build();
     }
-
-    public GraphOptimizer(long[][] distanceMatrix) {
-        this.distanceMatrix = distanceMatrix;
-    }
-
-    public void optimize() {
-
-        Assignment solution = routing.solveWithParameters(this.parameters);
-        // Print solution on console.
-        printSolution(routing, manager, solution);
-    }
-
-    /// @brief Print the solution.
-    static void printSolution(
-            RoutingModel routing, RoutingIndexManager manager, Assignment solution) {
-
-        Logger logger = Logger.getLogger(TspCities.class.getName());
-        // Solution cost.
-        logger.info("Objective: " + solution.objectiveValue() + "miles");
-        // Inspect solution.
-        logger.info("Route:");
-        long routeDistance = 0;
-        String route = "";
-        long index = routing.start(0);
-        while (!routing.isEnd(index)) {
-            route += manager.indexToNode(index) + " -> ";
-            long previousIndex = index;
-            index = solution.value(routing.nextVar(index));
-            routeDistance += routing.getArcCostForVehicle(previousIndex, index, 0);
-        }
-        route += manager.indexToNode(routing.end(0));
-        logger.info(route);
-        logger.info("Route distance: " + routeDistance + "miles");
-    }
-
 
 }
