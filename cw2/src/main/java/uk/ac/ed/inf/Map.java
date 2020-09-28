@@ -1,12 +1,10 @@
 package uk.ac.ed.inf;
 
 import org.locationtech.jts.geom.*;
+import org.locationtech.jts.operation.polygonize.Polygonizer;
 import uk.ac.ed.inf.backend.ObstacleService;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 public class Map {
 
@@ -16,11 +14,11 @@ public class Map {
 
     public Map(ObstacleService obstacleService) {
 
-        Coordinate[] boundaries = {new Coordinate(-3.192473, 55.946233),
-                new Coordinate(-3.184319, 55.946233),
-                new Coordinate(-3.184319, 55.942617),
-                new Coordinate(-3.192473, 55.942617),
-                new Coordinate(-3.192473, 55.946233)};
+        Coordinate[] boundaries = {new Coordinate(-3.192473, 55.946233), //NW
+                new Coordinate(-3.184319, 55.946233), // NE
+                new Coordinate(-3.184319, 55.942617), // SE
+                new Coordinate(-3.192473, 55.942617), // SW
+                new Coordinate(-3.192473, 55.946233)}; // NW
         LinearRing shell = this.geometryFactory.createLinearRing(boundaries);
         this.playArea = this.geometryFactory.createPolygon(shell);
 
@@ -79,55 +77,57 @@ public class Map {
     }
 
     private void alignBoundaries(LinearRing obstacle) {
+        double EPSILON = 0.000001;
         LinearRing currentShell = (LinearRing) this.playArea.getBoundary().getGeometryN(0);
         MultiLineString allBounds = (MultiLineString) this.playArea.intersection(obstacle);
         List<Coordinate> coordinates = new ArrayList<>(Arrays.asList(currentShell.getCoordinates()));
-        coordinates.remove(coordinates.size()-1);
-        System.out.println(Arrays.toString(allBounds.getCoordinates()));
+        coordinates.remove(coordinates.size()-1); // remove last element as its same as first
+
+        List<LineString> orderedBounds = new ArrayList<>();
         for(int i = 0; i < allBounds.getNumGeometries(); i++) {
-            LineString bound = (LineString) allBounds.getGeometryN(i);
-            coordinates.addAll(Arrays.asList(bound.getCoordinates()));
-            System.out.println(Arrays.toString(bound.getCoordinates()));
+            LineString currBound = (LineString) allBounds.getGeometryN(i);
+            Coordinate[] currCoords = currBound.getCoordinates();
+            LineString prevBound = (orderedBounds.size() > 0) ?
+            orderedBounds.get(orderedBounds.size()-1) : null;
+            Coordinate[] prevCoords = prevBound != null ? prevBound.getCoordinates() : null;
+            if (prevCoords == null || prevCoords[prevCoords.length-1].distance(currCoords[0]) < EPSILON)
+                orderedBounds.add(currBound);
+            else if (prevCoords[0].distance(currCoords[currCoords.length-1]) < EPSILON) {
+                orderedBounds.remove(orderedBounds.size()-1);
+                orderedBounds.add(currBound);
+                orderedBounds.add(prevBound);
+            }
         }
 
-        // TODO: get coordinates out of it, have edges, align edges into rest of coordinates by
-        //  connecting to closest vertices
-        coordinates.addAll(allBounds.getCoordinates())
-        System.out.println(coordinates);
+        List<Coordinate> boundCoords = new ArrayList<>();
+        for(int i = 0; i < orderedBounds.size(); i++) {
+            LineString bound = orderedBounds.get(i);
+            if (i%2 == 0 ) {
+                boundCoords.addAll(Arrays.asList(bound.getCoordinates()));
+            }
+            else {
+                Coordinate[] wantedCoords = Arrays.copyOfRange(bound.getCoordinates(), 1,
+                        bound.getCoordinates().length);
+                boundCoords.addAll(Arrays.asList(wantedCoords));
+            }
+        }
 
-        //TODO: FIX THIS WITH TSP
-        double[][] distances = new double[coordinates.size()][coordinates.size()];
+        int closestIdx = 0;
+        double minDist = 999999;
         for(int i = 0; i < coordinates.size(); i++) {
-            for(int j = 0; j < coordinates.size()-1; j++) {
-                double dist = coordinates.get(i).distance(coordinates.get(j));
-                distances[i][j] = dist;
-                distances[j][i] = dist;
+            Coordinate currCoord = coordinates.get(i);
+            if (currCoord.distance(boundCoords.get(0)) < minDist) {
+                closestIdx = i;
+                minDist = currCoord.distance(boundCoords.get(0));
             }
         }
-        for(int i = 0; i < distances.length; i++) {
-            for(int j  = 0; j < distances.length; j++) {
-                double dist = distances[i][j];
-                if (dist == 0)
-                    System.out.println(i + " " + j);
-            }
+        for(Coordinate newCoord : boundCoords) {
+            coordinates.add(++closestIdx, newCoord);
         }
-        GraphOptimizer optimizer = new GraphOptimizer(distances);
-        int[] route = optimizer.optimize();
-        System.out.println(Arrays.toString(route));
-
-        List<Coordinate> newCoordinates = new ArrayList<>();
-        for(int idx: route) {
-            newCoordinates.add(coordinates.get(idx));
-        }
-
-        System.out.println("BOUNDARY" + newCoordinates);
-        LinearRing newShell =
-                this.geometryFactory.createLinearRing(newCoordinates.toArray(new Coordinate[0]));
-        List<LinearRing> obstacles = this.getObstacles();
-        Polygon playArea = this.geometryFactory.createPolygon(newShell,
-                obstacles.toArray(new LinearRing[0]));
-        System.out.println(playArea.isValid());
-
+        coordinates.add(coordinates.get(0));
+        System.out.println("FINAL RING " + coordinates);
+        Polygon test = this.geometryFactory.createPolygon(coordinates.toArray(new Coordinate[0]));
+        
     }
 
     public List<LinearRing> getObstacles() {
@@ -138,4 +138,84 @@ public class Map {
         return obstacles;
     }
 
+    public static Geometry validate(Geometry geom){
+        if(geom instanceof Polygon){
+            if(geom.isValid()){
+                geom.normalize(); // validate does not pick up rings in the wrong order - this will fix that
+                return geom; // If the polygon is valid just return it
+            }
+            Polygonizer polygonizer = new Polygonizer();
+            addPolygon((Polygon)geom, polygonizer);
+            return toPolygonGeometry(polygonizer.getPolygons(), geom.getFactory());
+        }else if(geom instanceof MultiPolygon){
+            if(geom.isValid()){
+                geom.normalize(); // validate does not pick up rings in the wrong order - this will fix that
+                return geom; // If the multipolygon is valid just return it
+            }
+            Polygonizer polygonizer = new Polygonizer();
+            for(int n = geom.getNumGeometries(); n-- > 0;){
+                addPolygon((Polygon)geom.getGeometryN(n), polygonizer);
+            }
+            return toPolygonGeometry(polygonizer.getPolygons(), geom.getFactory());
+        }else{
+            return geom; // In my case, I only care about polygon / multipolygon geometries
+        }
+    }
+
+    /**
+     * Add all line strings from the polygon given to the polygonizer given
+     *
+     * @param polygon polygon from which to extract line strings
+     * @param polygonizer polygonizer
+     */
+    static void addPolygon(Polygon polygon, Polygonizer polygonizer){
+        addLineString(polygon.getExteriorRing(), polygonizer);
+        for(int n = polygon.getNumInteriorRing(); n-- > 0;){
+            addLineString(polygon.getInteriorRingN(n), polygonizer);
+        }
+    }
+
+    /**
+     * Add the linestring given to the polygonizer
+     *
+     * @param linestring line string
+     * @param polygonizer polygonizer
+     */
+    static void addLineString(LineString lineString, Polygonizer polygonizer){
+
+        if(lineString instanceof LinearRing){ // LinearRings are treated differently to line strings : we need a LineString NOT a LinearRing
+            lineString = lineString.getFactory().createLineString(lineString.getCoordinateSequence());
+        }
+
+        // unioning the linestring with the point makes any self intersections explicit.
+        Point point = lineString.getFactory().createPoint(lineString.getCoordinateN(0));
+        Geometry toAdd = lineString.union(point);
+
+        //Add result to polygonizer
+        polygonizer.add(toAdd);
+    }
+
+    /**
+     * Get a geometry from a collection of polygons.
+     *
+     * @param polygons collection
+     * @param factory factory to generate MultiPolygon if required
+     * @return null if there were no polygons, the polygon if there was only one, or a MultiPolygon containing all polygons otherwise
+     */
+    static Geometry toPolygonGeometry(Collection<Polygon> polygons, GeometryFactory factory){
+        switch(polygons.size()){
+            case 0:
+                return null; // No valid polygons!
+            case 1:
+                return polygons.iterator().next(); // single polygon - no need to wrap
+            default:
+                //polygons may still overlap! Need to sym difference them
+                Iterator<Polygon> iter = polygons.iterator();
+                Geometry ret = iter.next();
+                while(iter.hasNext()){
+                    ret = ret.symDifference(iter.next());
+                }
+                return ret;
+        }
+    }
 }

@@ -42,7 +42,6 @@ public class GridVisualizer implements Visualizer {
 
                 Polygon polygon = Polygon.fromLngLats(Collections.singletonList(points));
                 features.add(Feature.fromGeometry(polygon, properties));
-
                 currLong += longSize;
             }
             currLong = MapBoundaries.NORTHWEST.getLongitude();
