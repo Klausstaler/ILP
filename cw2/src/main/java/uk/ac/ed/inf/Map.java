@@ -134,4 +134,8 @@ public class Map {
         }
         return obstacles;
     }
+
+    public Geometry getPlayArea() {
+        return this.playArea;
+    }
 }

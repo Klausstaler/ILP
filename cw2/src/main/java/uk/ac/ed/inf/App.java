@@ -3,8 +3,10 @@ package uk.ac.ed.inf;
 
 import com.mapbox.geojson.Point;
 import uk.ac.ed.inf.backend.ObstacleService;
+import uk.ac.ed.inf.backend.SensorService;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 
 public class App 
 {
@@ -13,7 +15,8 @@ public class App
     }
 
     private static final String URL =  "http://localhost";
-    public static void main( String[] args ) throws IOException {
+    public static void main( String[] args ) throws IOException, IllegalAccessException,
+            InstantiationException, InvocationTargetException {
 
         Point pos = Point.fromLngLat(-3.1924650818109512,
                 55.94621667237433);
@@ -21,10 +24,11 @@ public class App
                 55.946166356717846);
         Point pos3 = Point.fromLngLat(-3.192438930273056,
                 55.94623957724108);
-        //DroneLogger logger = new CombinedLogger(pos, "02-02-2021", ReadingLogger.class,
-        //        FlightPathLogger.class);
+        DroneLogger logger = new CombinedLogger(pos, "02-02-2021", ReadingLogger.class,
+                FlightPathLogger.class);
         ObstacleService obstacleService = new ObstacleService(URL, "80");
         Map map = new Map(obstacleService);
+        Drone drone = new Drone(logger, map, new SensorService(URL, "80", "02", "02", "2020"));
         System.out.println(map.inAllowedArea(pos));
         System.out.println(map.inAllowedArea(pos2));
         System.out.println(map.inAllowedArea(pos3));

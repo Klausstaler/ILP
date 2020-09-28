@@ -8,6 +8,7 @@ import uk.ac.ed.inf.Restrictions;
 import uk.ac.ed.inf.Sensor;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 
 public class SensorService extends BackendService {
@@ -67,6 +68,10 @@ public class SensorService extends BackendService {
 
     public Sensor sensorByLocation(String location) {
         return this.sensors.get(location);
+    }
+
+    public Collection<Sensor> getSensors() {
+        return this.sensors.values();
     }
 
 
