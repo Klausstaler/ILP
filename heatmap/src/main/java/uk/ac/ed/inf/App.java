@@ -12,8 +12,7 @@ public class App {
         Visualizer visualizer = new GridVisualizer(grid);
 
         new File("heatmap.geojson").createNewFile();
-        FileWriter writer = new FileWriter("heatmap.geojson");
-
+        FileWriter writer = new FileWriter("heatmap.geojson");;
         String res = visualizer.getFeatures().toJson();
         writer.write(res);
         writer.close();
