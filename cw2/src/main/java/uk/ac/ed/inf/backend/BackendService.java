@@ -16,18 +16,15 @@ public class BackendService {
     protected HttpURLConnection connection;
 
     public BackendService(String url, String port) throws IOException {
+        System.out.println("BackendService initializing with " + url);
+
         this.setupNewUrl(String.format("%s:%s/",url, port));
         this.baseUrl = new URL(String.format("%s:%s/",url, port));
+
+        System.out.println("Finished initialization of BackendService.");
     }
 
     protected void setupNewUrl(String url) throws IOException {
-        if (this.url != null) {
-            System.out.println(String.format("BackendService switches from %s to %s",
-                    this.url.toString(), url));
-        }
-        else {
-                System.out.println("BackendService initializing with " + url);
-        }
         this.url = new URL(url);
         this.connection =  (HttpURLConnection) this.url.openConnection();
         this.connection.setRequestMethod("GET");
@@ -37,8 +34,6 @@ public class BackendService {
         if ((this.connection.getResponseCode() == 400) || (this.connection.getResponseCode() == 500)) {
             throw new IOException("Illegal response code!");
         }
-        System.out.println("Reading response from " + this.url.toString());
-        System.out.println("Response code " + this.connection.getResponseCode());
 
         BufferedReader reader = new BufferedReader(
                 new InputStreamReader(this.connection.getInputStream()));

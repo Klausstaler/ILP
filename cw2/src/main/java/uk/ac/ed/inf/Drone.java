@@ -3,6 +3,7 @@ package uk.ac.ed.inf;
 import com.mapbox.geojson.Point;
 import uk.ac.ed.inf.backend.SensorService;
 
+import java.io.IOException;
 import java.util.Collection;
 
 public class Drone {
@@ -11,7 +12,7 @@ public class Drone {
     private Collection<Sensor> sensors;
     private DroneLogger logger;
 
-    public Drone(DroneLogger logger, Map map, SensorService sensorService) {
+    public Drone(DroneLogger logger, Map map, SensorService sensorService) throws IOException {
         this.logger = logger;
         this.sensors = sensorService.getSensors();
         this.routePlanner = new RoutePlanner(map, this.sensorsToPoints());

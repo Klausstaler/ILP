@@ -28,12 +28,14 @@ public class App
                 FlightPathLogger.class);
         ObstacleService obstacleService = new ObstacleService(URL, "80");
         Map map = new Map(obstacleService);
-        Drone drone = new Drone(logger, map, new SensorService(URL, "80", "02", "02", "2020"));
+        SensorService sensorService = new SensorService(URL, "80", "02", "02", "2020");
+        Drone drone = new Drone(logger, map, sensorService);
         System.out.println(map.inAllowedArea(pos));
         System.out.println(map.inAllowedArea(pos2));
         System.out.println(map.inAllowedArea(pos3));
         // BackendService service = new SensorService(
         //        "http://localhost", "80", "02", "02", "2021");
+        new VisualHelper(map, sensorService);
 
 // the response:
     }

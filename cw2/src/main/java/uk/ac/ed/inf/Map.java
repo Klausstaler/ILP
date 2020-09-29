@@ -127,10 +127,10 @@ public class Map {
         return orderedLines;
     }
 
-    public List<LinearRing> getObstacles() {
-        List<LinearRing> obstacles = new ArrayList<>();
+    public List<Geometry> getObstacles() {
+        List<Geometry> obstacles = new ArrayList<>();
         for(int i = 1; i < this.playArea.getBoundary().getNumGeometries(); i++ ) {
-            obstacles.add( (LinearRing) this.playArea.getBoundary().getGeometryN(i));
+            obstacles.add(this.playArea.getBoundary().getGeometryN(i));
         }
         return obstacles;
     }

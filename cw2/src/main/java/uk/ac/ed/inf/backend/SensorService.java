@@ -30,11 +30,13 @@ public class SensorService extends BackendService {
 
     private HashMap<String, Sensor> retrieveAllSensors() throws IOException {
         HashMap<String, Sensor> sensors = new HashMap<>();
+        System.out.println("Retrieving all sensors...");
         JsonArray response = this.gson.fromJson(this.readResponse(), JsonArray.class);
         for (JsonElement rawSensor : response) {
             Sensor sensor = this.JsonToSensor(rawSensor);
             sensors.put(sensor.getLocation(), sensor);
         }
+        System.out.println("All sensors retrieved!");
         return sensors;
     }
 
@@ -45,7 +47,6 @@ public class SensorService extends BackendService {
         }
         this.addCoordinates(sensorProperties);
         Sensor sensor =  this.gson.fromJson(sensorProperties, Sensor.class);
-        System.out.println(sensor.toString());
         return sensor;
     }
 
