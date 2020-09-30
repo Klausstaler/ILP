@@ -3,56 +3,36 @@ package uk.ac.ed.inf;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.Point;
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
-/***
- * Computes dist matrix for optimizer.
- */
-public class RoutePlanner {
+public class VisibilityGraph {
 
-    private GraphOptimizer optimizer;
-    private double[][] distanceMatrix;
-    private HashMap<Integer, Point> waypoints = new HashMap<>();
-    private Map map;
-    private double[][] visibilityGraph;
-    private HashMap<Integer, List<Coordinate>> paths = new HashMap<>();
-
+    private double[][] graph;
     private List<Feature> features = new ArrayList<>();
 
-    public RoutePlanner(Map map, Point... waypoints) throws IOException {
-        this.distanceMatrix = new double[waypoints.length][waypoints.length];
-        this.map = map;
-        this.visibilityGraph = this.constructVisibilityGraph();
-        for(int i = 0; i < waypoints.length; i++) {
-            this.waypoints.put(i, waypoints[i]);
-            for(int j = 0; j < waypoints.length - 1; j++) {
-                double distance = 0.0;
-                if (i != j)
-                    distance = this.calculateDistance(waypoints[i], waypoints[j]);
-                this.distanceMatrix[i][j] = distance;
-                this.distanceMatrix[j][i] = distance;
-            }
-        }
-        this.optimizer = new GraphOptimizer(this.distanceMatrix);
+    public VisibilityGraph(Geometry map) throws IOException {
+        this.graph = this.constructVisibilityGraph(map);
     }
 
-    private double[][] constructVisibilityGraph() throws IOException {
-        Geometry mapShape = this.map.getPlayArea().getBoundary();
-        List<Geometry> boundaries = new ArrayList<>();
-        for(int i = 0; i < mapShape.getNumGeometries(); i++)
-            boundaries.add(mapShape.getGeometryN(i));
+    private double[][] constructVisibilityGraph(Geometry map) throws IOException {
+
+        List<org.locationtech.jts.geom.Geometry> boundaries = new ArrayList<>();
+        for(int i = 0; i < map.getNumGeometries(); i++)
+            boundaries.add(map.getGeometryN(i));
 
 
         List<Coordinate> allCoordinates = new ArrayList<>();
-        for(Geometry obstacle: boundaries) {
+        for(org.locationtech.jts.geom.Geometry obstacle: boundaries) {
             allCoordinates.addAll(Arrays.asList(obstacle.getCoordinates()));
         }
 
@@ -61,7 +41,7 @@ public class RoutePlanner {
         for(double[] row: visibilityGraph)
             Arrays.fill(row, (double) Long.MAX_VALUE / 2);
         int offset = 0;
-        for (Geometry obstacle: boundaries) {
+        for (org.locationtech.jts.geom.Geometry obstacle: boundaries) {
             Coordinate[] coordinates = obstacle.getCoordinates();
             for(int idx = 0; idx < coordinates.length-1; idx++) {
                 int pos = idx + offset;
@@ -90,7 +70,7 @@ public class RoutePlanner {
                 to.y += to.y < from.y ? diff_y*EPSILON : -diff_y*EPSILON;
                 Coordinate[] edgeCoords = new Coordinate[] {from, to};
                 LineString edge = factory.createLineString(edgeCoords);
-                if (this.map.inAllowedArea(edge)) {
+                if (map.covers(edge)) {
                     System.out.println("YEET EDGE FROM " + from + "TO " + to);
                     Point point1  = Point.fromLngLat(from.x, from.y);
                     Point point2 = Point.fromLngLat(to.x, to.y);
@@ -107,23 +87,10 @@ public class RoutePlanner {
 
         String res =  FeatureCollection.fromFeatures(features).toJson();
         //System.out.println(res);
-        
+
         writer.write(res);
         writer.close();
 
         return visibilityGraph;
-    }
-
-    private double calculateDistance(Point waypoint, Point waypoint1) {
-        double dist = Math.sqrt(Math.pow(waypoint.longitude() - waypoint1.longitude(), 2) +
-                Math.pow(waypoint.latitude() - waypoint1.latitude(), 2));
-        Coordinate from = new Coordinate(waypoint.longitude(), waypoint.latitude());
-        Coordinate to = new Coordinate(waypoint1.longitude(), waypoint1.latitude());
-        Coordinate[] coordinates = new Coordinate[] {from, to};
-        LineString line = new GeometryFactory().createLineString(coordinates);
-        if (!this.map.inAllowedArea(line))
-            //dist = this.shortestPath(from, to);
-            dist = (double) Long.MAX_VALUE / 2;
-        return dist;
     }
 }

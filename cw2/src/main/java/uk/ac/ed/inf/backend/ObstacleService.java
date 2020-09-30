@@ -27,8 +27,6 @@ public class ObstacleService extends  BackendService{
             LinearRing obstacle = this.toLinearRing(feature);
             obstacles.add(obstacle);
         }
-        //return obstacles.subList(3, 4);
-        //return obstacles.subList(0,3);
         return obstacles;
     }
 

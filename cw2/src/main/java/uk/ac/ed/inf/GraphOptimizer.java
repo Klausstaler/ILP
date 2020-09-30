@@ -23,9 +23,11 @@ public class GraphOptimizer {
         long[][] distMatrix = new long[distanceMatrix.length][distanceMatrix[0].length];
         for(int i = 0; i < distanceMatrix.length; i++) {
             for(int j = 0; j < distanceMatrix[0].length; j++) {
+                /*
                 BigDecimal num = new BigDecimal(String.valueOf(distanceMatrix[i][j]));
                 BigDecimal val = (new BigDecimal("10").pow(16)).multiply(num);
-                distMatrix[i][j] = val.longValue();
+                 */
+                distMatrix[i][j] = (long) (Math.pow(10, 16) * distanceMatrix[i][j]);
             }
         }
         this.distanceMatrix = distMatrix;

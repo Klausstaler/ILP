@@ -32,8 +32,8 @@ public class Map {
         return this.inAllowedArea(point);
     }
 
-    public boolean inAllowedArea(Point position) {
-        return this.playArea.intersects(position);
+    public boolean inAllowedArea(Geometry position) {
+        return this.playArea.covers(position);
     }
 
     public void addObstacles(LinearRing... obstacles) {
