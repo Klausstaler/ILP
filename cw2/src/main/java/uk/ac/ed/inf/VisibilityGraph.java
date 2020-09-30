@@ -17,37 +17,41 @@ import java.util.List;
 
 public class VisibilityGraph {
 
-    private Geometry map;
-    private double[][] graph;
+    private Geometry boundary;
+    private List<Coordinate> allCoordinates = new ArrayList<>();
+    private List<List<Double>> graph;
     private List<Feature> features = new ArrayList<>();
 
-    public VisibilityGraph(Geometry map) throws IOException {
-        this.graph = this.constructVisibilityGraph(map);
+    public VisibilityGraph(Geometry boundary) throws IOException {
+        this.boundary = boundary;
+        this.graph = this.constructVisibilityGraph();
     }
 
-    private double[][] constructVisibilityGraph(Geometry map) throws IOException {
-        this.map = map;
+    private List<List<Double>> constructVisibilityGraph() throws IOException {
         List<org.locationtech.jts.geom.Geometry> boundaries = new ArrayList<>();
-        for(int i = 0; i < map.getNumGeometries(); i++)
-            boundaries.add(map.getGeometryN(i));
+        for(int i = 0; i < boundary.getNumGeometries(); i++)
+            boundaries.add(boundary.getGeometryN(i));
 
-
-        List<Coordinate> allCoordinates = new ArrayList<>();
         for(org.locationtech.jts.geom.Geometry obstacle: boundaries) {
             allCoordinates.addAll(Arrays.asList(obstacle.getCoordinates()));
         }
 
+        List<List<Double>> visibilityGraph = new ArrayList<>();
+        for(int i = 0; i < allCoordinates.size(); i++) {
+            List<Double> row = new ArrayList<>();
+            for(int j = 0; j < allCoordinates.size(); j++)
+                row.add((double) Long.MAX_VALUE / 2);
+            visibilityGraph.add(row);
+        }
 
-        double[][] visibilityGraph = new double[allCoordinates.size()][allCoordinates.size()];
-        for(double[] row: visibilityGraph)
-            Arrays.fill(row, (double) Long.MAX_VALUE / 2);
         int offset = 0;
         for (org.locationtech.jts.geom.Geometry obstacle: boundaries) {
             Coordinate[] coordinates = obstacle.getCoordinates();
             for(int idx = 0; idx < coordinates.length-1; idx++) {
                 int pos = idx + offset;
-                visibilityGraph[pos][pos+1] = coordinates[idx].distance(coordinates[idx+1]);
-                visibilityGraph[pos+1][pos] = coordinates[idx].distance(coordinates[idx+1]);
+                double dist = coordinates[idx].distance(coordinates[idx+1]);
+                visibilityGraph.get(pos).set(pos+1, dist);
+                visibilityGraph.get(pos+1).set(pos, dist);
             }
             offset += coordinates.length;
         }
@@ -71,7 +75,7 @@ public class VisibilityGraph {
                 to.y += to.y < from.y ? diff_y*EPSILON : -diff_y*EPSILON;
                 Coordinate[] edgeCoords = new Coordinate[] {from, to};
                 LineString edge = factory.createLineString(edgeCoords);
-                if (map.covers(edge)) {
+                if (boundary.covers(edge)) {
                     Point point1  = Point.fromLngLat(from.x, from.y);
                     Point point2 = Point.fromLngLat(to.x, to.y);
                     ArrayList<Point> test = new ArrayList<>();
@@ -80,7 +84,7 @@ public class VisibilityGraph {
                     com.mapbox.geojson.LineString lineString =
                             com.mapbox.geojson.LineString.fromLngLats(test);
                     features.add(Feature.fromGeometry(lineString));
-                    visibilityGraph[i][j] = edge.getLength();
+                    visibilityGraph.get(i).set(j, edge.getLength());
                 }
             }
         }
@@ -95,10 +99,37 @@ public class VisibilityGraph {
     }
 
     public double[][] getGraph() {
+        double[][] graph = new double[this.graph.size()][this.graph.size()];
+        for(int i = 0; i < this.graph.size(); i++) {
+            graph[i] = this.graph.get(i).stream().mapToDouble(d -> d).toArray();
+        }
         return graph;
     }
 
-    public void addWayPoint(org.locationtech.jts.geom.Point waypoint) {
+    public List<Coordinate> getAllCoordinates() {
+        return allCoordinates;
+    }
 
+    public void addCoordinate(Coordinate toCoordinate) {
+        List<Double> newRow = new ArrayList<>();
+        for(int i = 0; i < allCoordinates.size(); i++) {
+            Coordinate from = allCoordinates.get(i);
+            Coordinate[] edgeCoords = new Coordinate[] {from, toCoordinate};
+            LineString edge = new GeometryFactory().createLineString(edgeCoords);
+            double dist = boundary.covers(edge) ? edge.getLength() : (double) Long.MAX_VALUE / 2;
+            graph.get(i).add(dist);
+            newRow.add(dist);
+        }
+        newRow.add(0.0);
+        allCoordinates.add(toCoordinate);
+        graph.add(newRow);
+    }
+
+    public void removeLast() {
+        allCoordinates.remove(allCoordinates.size()-1);
+        graph.remove(graph.size()-1);
+        for(List<Double> row: graph) {
+            row.remove(row.size()-1);
+        }
     }
 }

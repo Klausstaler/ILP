@@ -51,27 +51,31 @@ public class PathFinder {
             int currNode = this.nodePriorityQueue.remove().node;
             settled.add(currNode);
             this.paths.get(currNode).add(currNode);
-
             this.expandNeighbors(currNode);
         }
+
         return this.paths.get(target).stream().mapToInt(i -> i).toArray();
     }
+
 
     private void expandNeighbors(int currNode) {
 
         for (int newNode = 0; newNode < this.distMatrix.length; newNode++) {
-
+            double edgeDist = this.distMatrix[currNode][newNode];
             if (!settled.contains(newNode)) {
-                double edgeDist = this.distMatrix[currNode][newNode];
                 double newDist = this.dists[currNode] + edgeDist;
                 if (newDist < this.dists[newNode]) {
                     this.dists[newNode] = newDist;
                     List<Integer> newPath = new ArrayList<>(this.paths.get(currNode));
                     this.paths.put(newNode, newPath);
+                    nodePriorityQueue.add(new Node(newNode, this.dists[newNode]));
                 }
-                nodePriorityQueue.add(new Node(newNode, this.dists[newNode]));
             }
         }
+    }
+
+    public int getNumNodes() {
+        return this.distMatrix.length;
     }
 }
 

@@ -14,7 +14,6 @@ import java.util.List;
  */
 public class RoutePlanner {
 
-    private final PathFinder pathFinder;
     private GraphOptimizer optimizer;
     private double[][] distanceMatrix;
     private HashMap<Integer, Point> waypoints = new HashMap<>();
@@ -38,20 +37,30 @@ public class RoutePlanner {
                 this.distanceMatrix[j][i] = distance;
             }
         }
-        this.pathFinder = new PathFinder(this.visibilityGraph.getGraph());
         this.optimizer = new GraphOptimizer(this.distanceMatrix);
     }
 
     private double calculateDistance(Point waypoint, Point waypoint1) {
-        double dist = Math.sqrt(Math.pow(waypoint.longitude() - waypoint1.longitude(), 2) +
-                Math.pow(waypoint.latitude() - waypoint1.latitude(), 2));
+
         Coordinate from = new Coordinate(waypoint.longitude(), waypoint.latitude());
         Coordinate to = new Coordinate(waypoint1.longitude(), waypoint1.latitude());
         Coordinate[] coordinates = new Coordinate[] {from, to};
         LineString line = new GeometryFactory().createLineString(coordinates);
-        if (!this.map.inAllowedArea(line))
-            //dist = this.shortestPath(from, to);
+        double dist = line.getLength();
+        if (!this.map.inAllowedArea(line)) {
+            this.visibilityGraph.addCoordinate(new Coordinate(waypoint.longitude(), waypoint.latitude()));
+            this.visibilityGraph.addCoordinate(new Coordinate(waypoint1.longitude(), waypoint1.latitude()));
+            PathFinder pathFinder = new PathFinder(this.visibilityGraph.getGraph());
+            int[] path = pathFinder.shortestPath(pathFinder.getNumNodes()-2,
+                    pathFinder.getNumNodes()-1);
+
+            System.out.println("SHORTEST PATH FROM " + waypoint + "TO " + waypoint1);
+            for(int i = 1; i < path.length-1; i++)
+                System.out.println(this.visibilityGraph.getAllCoordinates().get(path[i]));
+            this.visibilityGraph.removeLast();
+            this.visibilityGraph.removeLast();
             dist = (double) Long.MAX_VALUE / 2;
+        }
         return dist;
     }
 }
