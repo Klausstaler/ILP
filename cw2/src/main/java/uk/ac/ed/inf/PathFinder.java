@@ -1,8 +1,10 @@
 package uk.ac.ed.inf;
 
+import org.locationtech.jts.geom.Point;
+
 import java.util.*;
 
-public class Dijkstra {
+public class PathFinder {
 
     private double[] dists;
     private double[][] distMatrix;
@@ -10,7 +12,7 @@ public class Dijkstra {
     private PriorityQueue<Node> nodePriorityQueue;
     private HashMap<Integer, List<Integer>> paths = new HashMap<>();
 
-    public Dijkstra(double[][] distMatrix) {
+    public PathFinder(double[][] distMatrix) {
 
         this.nodePriorityQueue = new PriorityQueue<>(distMatrix.length, new Node());
         this.distMatrix = distMatrix;
@@ -21,8 +23,28 @@ public class Dijkstra {
         }
     }
 
+    public static void main(String[] arg) {
+        int V = 5;
+        int source = 0;
+
+        double[][] distMatrix = new double[V][V];
+        for (double[] row : distMatrix) {
+            Arrays.fill(row, Integer.MAX_VALUE);
+        }
+        distMatrix[0][1] = 9.0;
+        distMatrix[0][2] = 6.0;
+        distMatrix[0][3] = 5.0;
+        distMatrix[0][4] = 3.0;
+        distMatrix[2][1] = 2.0;
+        distMatrix[2][3] = 4.0;
+
+        // Calculate the single source shortest path
+        PathFinder dpq = new PathFinder(distMatrix);
+        dpq.shortestPath(0, 3);
+    }
+
     public int[] shortestPath(int src, int target) {
-        this.nodePriorityQueue.add(new Node(src,0));
+        this.nodePriorityQueue.add(new Node(src, 0));
         this.dists[src] = 0;
 
         while (!settled.contains(target)) {
@@ -51,27 +73,6 @@ public class Dijkstra {
             }
         }
     }
-
-    public static void main(String arg[])
-    {
-        int V = 5;
-        int source = 0;
-
-        double[][] distMatrix = new double[V][V];
-        for(double[] row : distMatrix) {
-            Arrays.fill(row, Integer.MAX_VALUE);
-        }
-        distMatrix[0][1] = 9.0;
-        distMatrix[0][2] = 6.0;
-        distMatrix[0][3] = 5.0;
-        distMatrix[0][4] = 3.0;
-        distMatrix[2][1] = 2.0;
-        distMatrix[2][3] = 4.0;
-
-        // Calculate the single source shortest path
-        Dijkstra dpq = new Dijkstra(distMatrix);
-        dpq.shortestPath(0, 3);
-    }
 }
 
 // Class to represent a node in the graph
@@ -79,19 +80,16 @@ class Node implements Comparator<Node> {
     public int node;
     public double cost;
 
-    public Node()
-    {
+    public Node() {
     }
 
-    public Node(int node, double cost)
-    {
+    public Node(int node, double cost) {
         this.node = node;
         this.cost = cost;
     }
 
     @Override
-    public int compare(Node node1, Node node2)
-    {
+    public int compare(Node node1, Node node2) {
         if (node1.cost < node2.cost)
             return -1;
         if (node1.cost > node2.cost)

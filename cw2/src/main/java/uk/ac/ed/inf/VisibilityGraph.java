@@ -17,6 +17,7 @@ import java.util.List;
 
 public class VisibilityGraph {
 
+    private Geometry map;
     private double[][] graph;
     private List<Feature> features = new ArrayList<>();
 
@@ -25,7 +26,7 @@ public class VisibilityGraph {
     }
 
     private double[][] constructVisibilityGraph(Geometry map) throws IOException {
-
+        this.map = map;
         List<org.locationtech.jts.geom.Geometry> boundaries = new ArrayList<>();
         for(int i = 0; i < map.getNumGeometries(); i++)
             boundaries.add(map.getGeometryN(i));
@@ -71,7 +72,6 @@ public class VisibilityGraph {
                 Coordinate[] edgeCoords = new Coordinate[] {from, to};
                 LineString edge = factory.createLineString(edgeCoords);
                 if (map.covers(edge)) {
-                    System.out.println("YEET EDGE FROM " + from + "TO " + to);
                     Point point1  = Point.fromLngLat(from.x, from.y);
                     Point point2 = Point.fromLngLat(to.x, to.y);
                     ArrayList<Point> test = new ArrayList<>();
@@ -92,5 +92,13 @@ public class VisibilityGraph {
         writer.close();
 
         return visibilityGraph;
+    }
+
+    public double[][] getGraph() {
+        return graph;
+    }
+
+    public void addWayPoint(org.locationtech.jts.geom.Point waypoint) {
+
     }
 }
