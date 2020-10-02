@@ -27,6 +27,7 @@ public class App
         DroneLogger logger = new CombinedLogger(pos, "02-02-2021", ReadingLogger.class,
                 FlightPathLogger.class);
         ObstacleService obstacleService = new ObstacleService(URL, "80");
+        System.out.println("Obstacle service");
         Map map = new Map(obstacleService);
         SensorService sensorService = new SensorService(URL, "80", "02", "02", "2020");
         Drone drone = new Drone(logger, map, sensorService);

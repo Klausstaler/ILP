@@ -21,8 +21,6 @@ public class RoutePlanner {
     private VisibilityGraph visibilityGraph;
     private HashMap<Integer, List<Coordinate>> paths = new HashMap<>();
 
-    private List<Feature> features = new ArrayList<>();
-
     public RoutePlanner(Map map, Point... waypoints) throws IOException {
         this.distanceMatrix = new double[waypoints.length][waypoints.length];
         this.map = map;
@@ -30,6 +28,7 @@ public class RoutePlanner {
         for(int i = 0; i < waypoints.length; i++) {
             this.waypoints.put(i, waypoints[i]);
             for(int j = 0; j < waypoints.length - 1; j++) {
+                System.out.println(i + " " + j);
                 double distance = 0.0;
                 if (i != j)
                     distance = this.calculateDistance(waypoints[i], waypoints[j]);
@@ -51,12 +50,13 @@ public class RoutePlanner {
             this.visibilityGraph.addCoordinate(new Coordinate(waypoint.longitude(), waypoint.latitude()));
             this.visibilityGraph.addCoordinate(new Coordinate(waypoint1.longitude(), waypoint1.latitude()));
             PathFinder pathFinder = new PathFinder(this.visibilityGraph.getGraph());
-            int[] path = pathFinder.shortestPath(pathFinder.getNumNodes()-2,
+            Pair<int[], Double> path_dist = pathFinder.shortestPath(pathFinder.getNumNodes()-2,
                     pathFinder.getNumNodes()-1);
 
             System.out.println("SHORTEST PATH FROM " + waypoint + "TO " + waypoint1);
-            for(int i = 1; i < path.length-1; i++)
-                System.out.println(this.visibilityGraph.getAllCoordinates().get(path[i]));
+            for(int i = 1; i < path_dist.first.length-1; i++) {
+                System.out.println(this.visibilityGraph.getAllCoordinates().get(path_dist.first[i]));
+            }
             this.visibilityGraph.removeLast();
             this.visibilityGraph.removeLast();
             dist = (double) Long.MAX_VALUE / 2;

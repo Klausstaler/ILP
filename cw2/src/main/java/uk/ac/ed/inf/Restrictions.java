@@ -1,7 +1,8 @@
 package uk.ac.ed.inf;
 
 public enum Restrictions {
-    MIN_BATTERY(10.0);
+    MIN_BATTERY(10.0),
+    MAX_MOVES(150.0);
 
     private final double value;
 

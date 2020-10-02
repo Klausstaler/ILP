@@ -1,6 +1,5 @@
 package uk.ac.ed.inf;
 
-import org.locationtech.jts.geom.Point;
 
 import java.util.*;
 
@@ -17,33 +16,11 @@ public class PathFinder {
         this.nodePriorityQueue = new PriorityQueue<>(distMatrix.length, new Node());
         this.distMatrix = distMatrix;
         this.dists = new double[distMatrix.length];
-        for (int i = 0; i < distMatrix.length; i++) {
-            dists[i] = Integer.MAX_VALUE;
-            this.paths.put(i, new ArrayList<>());
-        }
+        this.initialize();
     }
 
-    public static void main(String[] arg) {
-        int V = 5;
-        int source = 0;
-
-        double[][] distMatrix = new double[V][V];
-        for (double[] row : distMatrix) {
-            Arrays.fill(row, Integer.MAX_VALUE);
-        }
-        distMatrix[0][1] = 9.0;
-        distMatrix[0][2] = 6.0;
-        distMatrix[0][3] = 5.0;
-        distMatrix[0][4] = 3.0;
-        distMatrix[2][1] = 2.0;
-        distMatrix[2][3] = 4.0;
-
-        // Calculate the single source shortest path
-        PathFinder dpq = new PathFinder(distMatrix);
-        dpq.shortestPath(0, 3);
-    }
-
-    public int[] shortestPath(int src, int target) {
+    public Pair<int[], Double> shortestPath(int src, int target) {
+        this.initialize();
         this.nodePriorityQueue.add(new Node(src, 0));
         this.dists[src] = 0;
 
@@ -53,8 +30,8 @@ public class PathFinder {
             this.paths.get(currNode).add(currNode);
             this.expandNeighbors(currNode);
         }
-
-        return this.paths.get(target).stream().mapToInt(i -> i).toArray();
+        int[] path = this.paths.get(target).stream().mapToInt(i -> i).toArray();
+        return new Pair<>(path, this.dists[target]);
     }
 
 
@@ -72,6 +49,15 @@ public class PathFinder {
                 }
             }
         }
+    }
+
+    private void initialize() {
+        for (int i = 0; i < distMatrix.length; i++) {
+            dists[i] = Integer.MAX_VALUE;
+            this.paths.put(i, new ArrayList<>());
+        }
+        this.settled.clear();
+        this.nodePriorityQueue.clear();
     }
 
     public int getNumNodes() {
