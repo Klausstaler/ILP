@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -18,20 +19,19 @@ public class GridReader {
      * @throws FileNotFoundException
      */
     public static int[][] readGridValues(String filePath) throws FileNotFoundException {
-
         Scanner scanner = new Scanner(new File(filePath));
-        scanner.useDelimiter(", |\\r|\\n"); // pattern matching for right delimiting
-        ArrayList<ArrayList<Integer>> grid = new ArrayList<>();
-        ArrayList<Integer> currRow = new ArrayList<>();
-        while (scanner.hasNext()) {
-            if (!scanner.hasNextInt()) { // evaluates to false if new line is reached
-                grid.add(currRow);
-                currRow = new ArrayList<>();
-                scanner.next();
-            }
-            currRow.add(Integer.parseInt(scanner.next()));
+
+        List<List<Integer>> grid = new ArrayList<>();
+        while(scanner.hasNextLine()) {
+
+            String line = scanner.nextLine().replace(" ",""); // remove spaces
+
+            List<Integer> gridRow = new ArrayList<>();
+            for(String val : line.split(","))
+                gridRow.add(Integer.parseInt(val));
+            grid.add(gridRow);
         }
-        grid.add(currRow);
+
         return GridReader.listToArray(grid);
     }
 
@@ -39,7 +39,7 @@ public class GridReader {
      * @param grid 2D ArrayList of Integer objects
      * @return 2D Array of ints
      */
-    private static int[][] listToArray(ArrayList<ArrayList<Integer>> grid) {
+    private static int[][] listToArray(List<List<Integer>> grid) {
         int[][] res = new int[grid.size()][grid.get(0).size()];
         for (int i = 0; i < grid.size(); i++) {
             res[i] = Arrays.stream(grid.get(i).toArray())
