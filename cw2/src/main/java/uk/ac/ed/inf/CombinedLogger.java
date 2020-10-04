@@ -1,6 +1,6 @@
 package uk.ac.ed.inf;
 
-import com.mapbox.geojson.Point;
+import org.locationtech.jts.geom.Point;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
