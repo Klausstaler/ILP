@@ -3,22 +3,16 @@ package uk.ac.ed.inf;
 import org.locationtech.jts.geom.Point;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class CombinedLogger extends DroneLogger {
 
-    private List<DroneLogger> loggers = new ArrayList<>();
+    private List<DroneLogger> loggers;
 
-    public CombinedLogger(Point initialPos, String date, Class<?>... loggerClasses) throws
-            IllegalAccessException, InvocationTargetException, InstantiationException {
+    public CombinedLogger(Point initialPos, String date, DroneLogger... loggerClasses) {
 
-        for (Class<?> loggerClass : loggerClasses) {
-            Object object = loggerClass.getConstructors()[0].newInstance(initialPos, date); //
-            // assuming each logger class only implements one Constructor
-            this.loggers.add((DroneLogger) object);
-        }
+        this.loggers = Arrays.asList(loggerClasses);
         System.out.println("Combined logger initialized...");
     }
 
