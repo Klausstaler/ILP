@@ -1,6 +1,8 @@
 package uk.ac.ed.inf;
 
-import com.mapbox.geojson.Point;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 
 import java.util.Objects;
 
@@ -10,17 +12,15 @@ public class Sensor {
     private double battery;
     private Double reading;
 
-    private Point coordinates;
+    private Point coordinate;
 
-    public Sensor(String location, double battery, double longitude, double latitude) {
+    public Sensor(String location, double battery) {
         this.location = location;
         this.battery = battery;
-        this.coordinates = Point.fromLngLat(longitude, latitude);
     }
 
-    public Sensor(String location, double battery, double reading, double longitude,
-                  double latitude) {
-        this(location, battery, longitude, latitude);
+    public Sensor(String location, double battery, double reading) {
+        this(location, battery);
         this.reading = reading;
     }
 
@@ -36,8 +36,12 @@ public class Sensor {
         return reading;
     }
 
-    public Point getCoordinates() {
-        return coordinates;
+    public Point getCoordinate() {
+        return coordinate;
+    }
+
+    public void setCoordinate(Point coordinate) {
+        this.coordinate = coordinate;
     }
 
     @Override
@@ -59,7 +63,7 @@ public class Sensor {
                 "location='" + location + '\'' +
                 ", battery=" + battery +
                 ", reading=" + reading +
-                ", coordinates=" + coordinates +
+                ", coordinates=" + coordinate +
                 '}';
     }
 }

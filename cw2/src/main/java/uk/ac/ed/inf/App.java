@@ -30,10 +30,10 @@ public class App
         System.out.println("Obstacle service");
         Map map = new Map(obstacleService);
         SensorService sensorService = new SensorService(URL, "80", "02", "02", "2020");
-        Drone drone = new Drone(logger, map, sensorService);
-        System.out.println(map.inAllowedArea(pos));
-        System.out.println(map.inAllowedArea(pos2));
-        System.out.println(map.inAllowedArea(pos3));
+        //Drone drone = new Drone(logger, map, sensorService);
+        //System.out.println(map.inAllowedArea(pos));
+        //System.out.println(map.inAllowedArea(pos2));
+        //System.out.println(map.inAllowedArea(pos3));
         // BackendService service = new SensorService(
         //        "http://localhost", "80", "02", "02", "2021");
         new VisualHelper(map, sensorService);

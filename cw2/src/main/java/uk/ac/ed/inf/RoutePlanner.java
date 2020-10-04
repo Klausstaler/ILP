@@ -1,11 +1,9 @@
 package uk.ac.ed.inf;
 
-import com.mapbox.geojson.Feature;
-import com.mapbox.geojson.Point;
+
 import org.locationtech.jts.geom.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -41,14 +39,12 @@ public class RoutePlanner {
 
     private double calculateDistance(Point waypoint, Point waypoint1) {
 
-        Coordinate from = new Coordinate(waypoint.longitude(), waypoint.latitude());
-        Coordinate to = new Coordinate(waypoint1.longitude(), waypoint1.latitude());
-        Coordinate[] coordinates = new Coordinate[] {from, to};
+        Coordinate[] coordinates = new Coordinate[] {waypoint.getCoordinate(), waypoint1.getCoordinate()};
         LineString line = new GeometryFactory().createLineString(coordinates);
         double dist = line.getLength();
         if (!this.map.inAllowedArea(line)) {
-            this.visibilityGraph.addCoordinate(new Coordinate(waypoint.longitude(), waypoint.latitude()));
-            this.visibilityGraph.addCoordinate(new Coordinate(waypoint1.longitude(), waypoint1.latitude()));
+            this.visibilityGraph.addCoordinate(waypoint.getCoordinate());
+            this.visibilityGraph.addCoordinate(waypoint1.getCoordinate());
             PathFinder pathFinder = new PathFinder(this.visibilityGraph.getGraph());
             Pair<int[], Double> path_dist = pathFinder.shortestPath(pathFinder.getNumNodes()-2,
                     pathFinder.getNumNodes()-1);

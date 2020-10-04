@@ -1,6 +1,6 @@
 package uk.ac.ed.inf;
 
-import com.mapbox.geojson.Point;
+import org.locationtech.jts.geom.Point;
 
 import java.io.IOException;
 
@@ -23,8 +23,8 @@ public class FlightPathLogger extends DroneLogger {
         }
 
         String line = String.format("%d,%f,%f,%d,%f,%f,%s\n",this.lineNbr,
-                this.position.longitude(), this.position.latitude(), direction, newPos.longitude(),
-                newPos.latitude(), read_sensor.getLocation());
+                this.position.getX(), this.position.getY(), direction, newPos.getX(),
+                newPos.getY(), read_sensor.getLocation());
         if (this.lineNbr != 1) {
             line = "\n" + line;
         }
@@ -41,8 +41,8 @@ public class FlightPathLogger extends DroneLogger {
 
     private int calculateAngle(Point otherPos) {
         // TODO: extract this method and put it in appropriate class
-        double dy = otherPos.longitude() - this.position.longitude();
-        double dx = otherPos.latitude() - this.position.latitude();
+        double dx = otherPos.getX() - this.position.getX();
+        double dy = otherPos.getY() - this.position.getY();
         int angle = (int) Math.round(Math.toDegrees(Math.atan2(dy, dx)));
 
         if(angle < 0){

@@ -2,12 +2,11 @@ package uk.ac.ed.inf;
 
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
-import com.mapbox.geojson.MultiLineString;
-import com.mapbox.geojson.Point;
+import com.mapbox.geojson.LineString;
+import org.locationtech.jts.geom.Point;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -34,10 +33,13 @@ public class ReadingLogger extends DroneLogger {
     @Override
     public void close() throws IOException {
         // TODO: Write flight path and markers
-        ArrayList<Feature> allFeatures = new ArrayList<>(this.markers.values());
+        List<Feature> allFeatures = new ArrayList<>(this.markers.values());
+        List<com.mapbox.geojson.Point> flightPathGeo = new ArrayList<>();
+        for (Point coord : this.flightPath)
+            flightPathGeo.add(com.mapbox.geojson.Point.fromLngLat(coord.getX(), coord.getY()));
 
-        MultiLineString line = MultiLineString.fromLngLats(Collections.singletonList(this.flightPath));
-        allFeatures.add(Feature.fromGeometry(line));
+        LineString flightPath = LineString.fromLngLats(flightPathGeo);
+        allFeatures.add(Feature.fromGeometry(flightPath));
 
         FeatureCollection features = FeatureCollection.fromFeatures(allFeatures);
         this.file.write(features.toJson());

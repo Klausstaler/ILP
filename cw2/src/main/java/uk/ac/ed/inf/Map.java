@@ -25,13 +25,6 @@ public class Map {
         this.addObstacles(obstacles);
     }
 
-    public boolean inAllowedArea(com.mapbox.geojson.Point position) {
-        Point point = this.geometryFactory.createPoint(new Coordinate(position.longitude(),
-                        position.latitude()));
-
-        return this.inAllowedArea(point);
-    }
-
     public boolean inAllowedArea(Geometry position) {
         return this.playArea.covers(position);
     }

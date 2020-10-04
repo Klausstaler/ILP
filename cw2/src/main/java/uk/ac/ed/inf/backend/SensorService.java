@@ -3,7 +3,9 @@ package uk.ac.ed.inf.backend;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.mapbox.geojson.Point;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 import uk.ac.ed.inf.Restrictions;
 import uk.ac.ed.inf.Sensor;
 
@@ -35,6 +37,7 @@ public class SensorService extends BackendService {
         for (JsonElement rawSensor : response) {
             Sensor sensor = this.JsonToSensor(rawSensor);
             sensors.put(sensor.getLocation(), sensor);
+            System.out.println(sensor);
         }
         System.out.println("All sensors retrieved!");
         return sensors;
@@ -45,12 +48,13 @@ public class SensorService extends BackendService {
         if (sensorProperties.get("battery").getAsInt() < Restrictions.MIN_BATTERY.getValue()) {
             sensorProperties.remove("reading");
         }
-        this.addCoordinates(sensorProperties);
+        Point coordinate = this.getCoordinates(sensorProperties);
         Sensor sensor =  this.gson.fromJson(sensorProperties, Sensor.class);
+        sensor.setCoordinate(coordinate);
         return sensor;
     }
 
-    private void addCoordinates(JsonObject sensorProperties) throws IOException {
+    private Point getCoordinates(JsonObject sensorProperties) throws IOException {
         String[] location = sensorProperties.get("location").getAsString().split("\\.");
         String prevUrl = this.url.toString();
 
@@ -60,11 +64,13 @@ public class SensorService extends BackendService {
 
         JsonObject response = this.gson.fromJson(this.readResponse(), JsonObject.class);
         JsonObject coords = response.get("coordinates").getAsJsonObject();
-        Point point = Point.fromLngLat(coords.get("lng").getAsDouble(),
-                coords.get("lat").getAsDouble());
-        sensorProperties.add("coordinates", this.gson.toJsonTree(point, Point.class));
+        Point coordinate = new GeometryFactory().createPoint(new Coordinate(
+                coords.get("lng").getAsDouble(),
+                coords.get("lat").getAsDouble()));
+        //sensorProperties.add("coordinates", this.gson.toJsonTree(point, Point.class));
 
         this.setupNewUrl(prevUrl);
+        return coordinate;
     }
 
     public Sensor sensorByLocation(String location) {
