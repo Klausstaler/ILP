@@ -16,16 +16,9 @@ public class Sensor extends Point {
         super(new GeometryFactory().getCoordinateSequenceFactory().create(new Coordinate[]{coordinate}),
                 factory);
         this.location = location;
+        this.reading = reading;
         this.battery = battery;
     }
-
-    /*
-    public Sensor(String location, double battery, double reading, Coordinate coordinate,
-                  GeometryFactory factory) {
-        this(location, battery, coordinate, factory);
-        this.reading = reading;
-    }
-     */
 
     public String getLocation() {
         return location;

@@ -17,15 +17,4 @@ public class Drone {
         this.sensors = sensorService.getSensors();
         this.routePlanner = new RoutePlanner(map, (List) this.sensors);
     }
-    /*
-    private Point[] sensorsToPoints() {
-        Point[] points = new Point[this.sensors.size()];
-        int idx = 0;
-        for (Sensor sensor : this.sensors) {
-            points[idx] = sensor.getCoordinate();
-            idx++;
-        }
-        return points;
-    }
-     */
 }
