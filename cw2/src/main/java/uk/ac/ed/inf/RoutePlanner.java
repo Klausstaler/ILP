@@ -19,17 +19,17 @@ public class RoutePlanner {
     private VisibilityGraph visibilityGraph;
     private HashMap<Integer, List<Coordinate>> paths = new HashMap<>();
 
-    public RoutePlanner(Map map, Point... waypoints) throws IOException {
-        this.distanceMatrix = new double[waypoints.length][waypoints.length];
+    public RoutePlanner(Map map, List<Point> waypoints) throws IOException {
+        this.distanceMatrix = new double[waypoints.size()][waypoints.size()];
         this.map = map;
         this.visibilityGraph = new VisibilityGraph(this.map.getPlayArea());
-        for(int i = 0; i < waypoints.length; i++) {
-            this.waypoints.put(i, waypoints[i]);
-            for(int j = 0; j < waypoints.length - 1; j++) {
+        for(int i = 0; i < waypoints.size(); i++) {
+            this.waypoints.put(i, waypoints.get(i));
+            for(int j = 0; j < waypoints.size() - 1; j++) {
                 System.out.println(i + " " + j);
                 double distance = 0.0;
                 if (i != j)
-                    distance = this.calculateDistance(waypoints[i], waypoints[j]);
+                    distance = this.calculateDistance(waypoints.get(i), waypoints.get(j));
                 this.distanceMatrix[i][j] = distance;
                 this.distanceMatrix[j][i] = distance;
             }

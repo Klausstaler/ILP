@@ -1,28 +1,31 @@
 package uk.ac.ed.inf;
 
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Point;
+
+import org.locationtech.jts.geom.*;
 
 import java.util.Objects;
 
-public class Sensor {
+public class Sensor extends Point {
 
     private String location;
     private double battery;
     private Double reading;
 
-    private Point coordinate;
-
-    public Sensor(String location, double battery) {
+    public Sensor(String location, double battery, Double reading, Coordinate coordinate,
+                  GeometryFactory factory) {
+        super(new GeometryFactory().getCoordinateSequenceFactory().create(new Coordinate[]{coordinate}),
+                factory);
         this.location = location;
         this.battery = battery;
     }
 
-    public Sensor(String location, double battery, double reading) {
-        this(location, battery);
+    /*
+    public Sensor(String location, double battery, double reading, Coordinate coordinate,
+                  GeometryFactory factory) {
+        this(location, battery, coordinate, factory);
         this.reading = reading;
     }
+     */
 
     public String getLocation() {
         return location;
@@ -36,14 +39,11 @@ public class Sensor {
         return reading;
     }
 
-    public Point getCoordinate() {
-        return coordinate;
-    }
-
+    /*
     public void setCoordinate(Point coordinate) {
         this.coordinate = coordinate;
     }
-
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -63,7 +63,7 @@ public class Sensor {
                 "location='" + location + '\'' +
                 ", battery=" + battery +
                 ", reading=" + reading +
-                ", coordinates=" + coordinate +
+                ", coordinates=" + this.getCoordinate() +
                 '}';
     }
 }

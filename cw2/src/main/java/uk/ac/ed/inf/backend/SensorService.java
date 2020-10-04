@@ -10,8 +10,10 @@ import uk.ac.ed.inf.Restrictions;
 import uk.ac.ed.inf.Sensor;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 public class SensorService extends BackendService {
 
@@ -45,16 +47,22 @@ public class SensorService extends BackendService {
 
     private Sensor JsonToSensor(JsonElement rawSensor) throws IOException {
         JsonObject sensorProperties = rawSensor.getAsJsonObject();
-        if (sensorProperties.get("battery").getAsInt() < Restrictions.MIN_BATTERY.getValue()) {
-            sensorProperties.remove("reading");
+        String location = sensorProperties.get("location").getAsString();
+        Coordinate coordinate = this.getCoordinate(sensorProperties);
+        Double reading = null;
+        double battery = sensorProperties.get("battery").getAsDouble();
+
+        if (battery > Restrictions.MIN_BATTERY.getValue()) {
+            String readingVal = sensorProperties.get("reading").getAsString();
+            reading = Double.valueOf(readingVal);
         }
-        Point coordinate = this.getCoordinates(sensorProperties);
-        Sensor sensor =  this.gson.fromJson(sensorProperties, Sensor.class);
-        sensor.setCoordinate(coordinate);
+
+        GeometryFactory fac = new GeometryFactory();
+        Sensor sensor = new Sensor(location, battery, reading, coordinate, fac);
         return sensor;
     }
 
-    private Point getCoordinates(JsonObject sensorProperties) throws IOException {
+    private Coordinate getCoordinate(JsonObject sensorProperties) throws IOException {
         String[] location = sensorProperties.get("location").getAsString().split("\\.");
         String prevUrl = this.url.toString();
 
@@ -64,10 +72,9 @@ public class SensorService extends BackendService {
 
         JsonObject response = this.gson.fromJson(this.readResponse(), JsonObject.class);
         JsonObject coords = response.get("coordinates").getAsJsonObject();
-        Point coordinate = new GeometryFactory().createPoint(new Coordinate(
+        Coordinate coordinate = new Coordinate(
                 coords.get("lng").getAsDouble(),
-                coords.get("lat").getAsDouble()));
-        //sensorProperties.add("coordinates", this.gson.toJsonTree(point, Point.class));
+                coords.get("lat").getAsDouble());
 
         this.setupNewUrl(prevUrl);
         return coordinate;
@@ -77,8 +84,8 @@ public class SensorService extends BackendService {
         return this.sensors.get(location);
     }
 
-    public Collection<Sensor> getSensors() {
-        return this.sensors.values();
+    public List<Sensor> getSensors() {
+        return new ArrayList<Sensor>(this.sensors.values());
     }
 
 

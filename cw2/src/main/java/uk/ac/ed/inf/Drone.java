@@ -1,23 +1,23 @@
 package uk.ac.ed.inf;
 
 
-import org.locationtech.jts.geom.Point;
 import uk.ac.ed.inf.backend.SensorService;
 
 import java.io.IOException;
-import java.util.Collection;
+import java.util.List;
 
 public class Drone {
 
     private RoutePlanner routePlanner;
-    private Collection<Sensor> sensors;
+    private List<Sensor> sensors;
     private DroneLogger logger;
 
     public Drone(DroneLogger logger, Map map, SensorService sensorService) throws IOException {
         this.logger = logger;
         this.sensors = sensorService.getSensors();
-        this.routePlanner = new RoutePlanner(map, this.sensorsToPoints());
+        this.routePlanner = new RoutePlanner(map, (List) this.sensors);
     }
+    /*
     private Point[] sensorsToPoints() {
         Point[] points = new Point[this.sensors.size()];
         int idx = 0;
@@ -27,4 +27,5 @@ public class Drone {
         }
         return points;
     }
+     */
 }
