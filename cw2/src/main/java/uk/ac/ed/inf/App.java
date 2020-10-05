@@ -18,16 +18,17 @@ public class App
         ObstacleService obstacleService = new ObstacleService(URL, "80");
         System.out.println("Obstacle service");
         Map map = new Map(obstacleService);
-        SensorService sensorService = new SensorService(URL, "80", "02", "02", "2020");
+        SensorService sensorService = new SensorService(URL, "80", "01", "02", "2020");
 
-        ReadingLogger logger1 = new ReadingLogger(initalPoint,"02-02-2021", sensorService.getSensors());
-        FlightPathLogger logger2 = new FlightPathLogger(initalPoint,"02-02-2021");
+        ReadingLogger logger1 = new ReadingLogger(initalPoint,"01-02-2021",
+                sensorService.getSensors());
+        FlightPathLogger logger2 = new FlightPathLogger(initalPoint,"01-02-2021");
         DroneLogger logger = new CombinedLogger(logger1, logger2);
+        new VisualHelper(map, sensorService);
         Drone drone = new Drone(initalPoint, logger, map, sensorService);
         //System.out.println(map.inAllowedArea(pos));
         //System.out.println(map.inAllowedArea(pos2));
         //System.out.println(map.inAllowedArea(pos3));
-        new VisualHelper(map, sensorService);
 
 // the response:
     }

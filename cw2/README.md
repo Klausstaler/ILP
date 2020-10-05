@@ -7,3 +7,5 @@ Put lib\ortools.lib from (https://github.com/google/or-tools/releases/tag/v6.7.2
 [ ] - Think about removing combined logger and instead loop over all loggers in drone class
 [ ] - extract geometry methods from Map
 [X] - use points or coordinates everywhere
+[ ] - fix issue with navigating boundaries
+[ ] - fix issue when two readings are too close and no move would be needed
