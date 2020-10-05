@@ -22,13 +22,15 @@ public class GraphOptimizer {
         long[][] distMatrix = new long[distanceMatrix.length][distanceMatrix[0].length];
         for(int i = 0; i < distanceMatrix.length; i++) {
             for(int j = 0; j < distanceMatrix[0].length; j++) {
-                distMatrix[i][j] = (long) (Math.pow(10, 14) * distanceMatrix[i][j]);
+                distMatrix[i][j] = (long) (Math.pow(10, 8) * distanceMatrix[i][j]);
             }
         }
 
+        /*
         for(long[] row: distMatrix) {
             System.out.println(Arrays.toString(row));
         }
+         */
         this.distanceMatrix = distMatrix;
         this.setupRouting();
     }
@@ -37,8 +39,9 @@ public class GraphOptimizer {
 
         Assignment solution = routing.solveWithParameters(this.parameters);
 
-        int[] sol = new int[this.distanceMatrix.length];
-        int idx = 0;
+        int[] sol = new int[this.distanceMatrix.length+1];
+        sol[0] = this.startLocation;
+        int idx = 1;
         int currLocation = (int) solution.value(routing.nextVar(this.startLocation));
 
         while (!routing.isEnd(currLocation)) {
@@ -48,7 +51,6 @@ public class GraphOptimizer {
         }
         sol[idx] = this.startLocation;
         System.out.println("NOW SOLUTION");
-        System.out.println(sol.length);
         System.out.println(Arrays.toString(sol));
         return sol;
     }
@@ -74,7 +76,7 @@ public class GraphOptimizer {
                         .toBuilder()
                         .setFirstSolutionStrategy(FirstSolutionStrategy.Value.PATH_CHEAPEST_ARC)
                         .setLocalSearchMetaheuristic(LocalSearchMetaheuristic.Value.GUIDED_LOCAL_SEARCH)
-                        .setTimeLimit(Duration.newBuilder().setSeconds(5).build())
+                        .setTimeLimit(Duration.newBuilder().setSeconds(10).build())
                         .setLogSearch(false)
                         .build();
     }

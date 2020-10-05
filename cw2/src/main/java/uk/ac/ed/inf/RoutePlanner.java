@@ -6,6 +6,7 @@ import org.locationtech.jts.geom.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 /***
@@ -15,20 +16,21 @@ public class RoutePlanner {
 
     private GraphOptimizer optimizer;
     private double[][] distanceMatrix;
-    private List<Point> waypoints;
+    private HashMap<Point, Integer> waypoints = new HashMap<>();
+    private HashMap<Integer, Integer> route = new HashMap<>(); // replace by simple list
     private Map map;
     private VisibilityGraph visibilityGraph;
     private List<List<List<Coordinate>>> paths = new ArrayList<>();
 
     public RoutePlanner(Map map, List<Point> waypoints) throws IOException {
-        this.waypoints = waypoints;
         this.distanceMatrix = new double[waypoints.size()][waypoints.size()];
         this.map = map;
         this.visibilityGraph = new VisibilityGraph(this.map.getPlayArea());
 
         for(int i = 0; i < waypoints.size(); i++) {
+            this.waypoints.put(waypoints.get(i), i);
             List<List<Coordinate>> row = new ArrayList<>();
-            for(int j = 0; j < waypoints.size() - 1; j++) {
+            for(int j = 0; j < waypoints.size(); j++) {
                 double distance = 0.0;
                 row.add(new ArrayList<>());
                 if (i != j) {
@@ -42,12 +44,18 @@ public class RoutePlanner {
             }
             paths.add(row);
         }
+        /*
         for(double[] row : distanceMatrix) {
             System.out.println(Arrays.toString(row));
         }
+
+         */
         System.out.println("NOW OPTIMIZER");
         this.optimizer = new GraphOptimizer(this.distanceMatrix);
-        System.out.println(Arrays.toString(this.optimizer.optimize()));
+        int[] route = this.optimizer.optimize();
+        for(int i = 0; i < route.length -1; i++)
+            this.route.put(route[i], route[i+1]);
+        System.out.println("NUM waypoints" + paths.size() + "NUM elements" + paths.get(0).size());
     }
 
     private Pair<List<Coordinate>, Double> calculateDistance(Point waypoint, Point waypoint1) {
@@ -75,7 +83,9 @@ public class RoutePlanner {
         return new Pair<>(path, dist);
     }
 
-    public List<Coordinate> getNextRoute() {
-        return null;
+    public List<Coordinate> getNextRoute(Point waypoint) {
+        int waypointIdx = this.waypoints.get(waypoint);
+        //System.out.println("ROUTEPLANNER WAYPOINT IDX " + waypointIdx);
+        return this.paths.get(waypointIdx).get(this.route.get(waypointIdx));
     }
 }
