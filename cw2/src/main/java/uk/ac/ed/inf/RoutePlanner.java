@@ -5,6 +5,7 @@ import org.locationtech.jts.geom.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /***
@@ -24,32 +25,29 @@ public class RoutePlanner {
         this.distanceMatrix = new double[waypoints.size()][waypoints.size()];
         this.map = map;
         this.visibilityGraph = new VisibilityGraph(this.map.getPlayArea());
-        this.initPaths();
 
         for(int i = 0; i < waypoints.size(); i++) {
+            List<List<Coordinate>> row = new ArrayList<>();
             for(int j = 0; j < waypoints.size() - 1; j++) {
                 double distance = 0.0;
+                row.add(new ArrayList<>());
                 if (i != j) {
                     Pair<List<Coordinate>, Double> pathInfo =
                             this.calculateDistance(waypoints.get(i),
                                     waypoints.get(j));
                     distance = pathInfo.second;
-                    paths.get(i).set(j, pathInfo.first);
+                    row.set(j, pathInfo.first);
                 }
                 this.distanceMatrix[i][j] = distance;
             }
-        }
-        this.optimizer = new GraphOptimizer(this.distanceMatrix);
-    }
-
-    private void initPaths() {
-        for(int i = 0; i < waypoints.size(); i++) {
-            List<List<Coordinate>> row = new ArrayList<>();
-            for (int j = 0; j < waypoints.size(); j++) {
-                row.add(new ArrayList<>());
-            }
             paths.add(row);
         }
+        for(double[] row : distanceMatrix) {
+            System.out.println(Arrays.toString(row));
+        }
+        System.out.println("NOW OPTIMIZER");
+        this.optimizer = new GraphOptimizer(this.distanceMatrix);
+        System.out.println(Arrays.toString(this.optimizer.optimize()));
     }
 
     private Pair<List<Coordinate>, Double> calculateDistance(Point waypoint, Point waypoint1) {
@@ -65,9 +63,9 @@ public class RoutePlanner {
                     pathFinder.getNumNodes()-1);
             dist = pair.second;
 
-            System.out.println("SHORTEST PATH FROM " + waypoint + "TO " + waypoint1);
+            //System.out.println("SHORTEST PATH FROM " + waypoint + "TO " + waypoint1);
             for(int i = 1; i < pair.first.length-1; i++) {
-                System.out.println(this.visibilityGraph.getAllCoordinates().get(pair.first[i]));
+                //System.out.println(this.visibilityGraph.getAllCoordinates().get(pair.first[i]));
                 path.add(this.visibilityGraph.getAllCoordinates().get(pair.first[i]));
             }
             this.visibilityGraph.removeLast();
@@ -75,5 +73,9 @@ public class RoutePlanner {
         }
         path.add(waypoint1.getCoordinate());
         return new Pair<>(path, dist);
+    }
+
+    public List<Coordinate> getNextRoute() {
+        return null;
     }
 }

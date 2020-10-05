@@ -5,6 +5,7 @@ import org.locationtech.jts.geom.Point;
 import uk.ac.ed.inf.backend.SensorService;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Drone {
@@ -18,7 +19,10 @@ public class Drone {
         this.position = position;
         this.logger = logger;
         this.sensors = sensorService.getSensors();
-        this.routePlanner = new RoutePlanner(map, (List) this.sensors);
+        List<Point> waypoints = new ArrayList<>();
+        waypoints.add(position);
+        waypoints.addAll(sensors);
+        this.routePlanner = new RoutePlanner(map, waypoints);
     }
 
     public void navigate() {
