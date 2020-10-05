@@ -27,7 +27,6 @@ public class RoutePlanner {
         this.visibilityGraph = new VisibilityGraph(this.map.getPlayArea());
 
         System.out.println("Calculating distances and paths for waypoints...");
-        System.out.println(waypoints.get(0));
         for(int i = 0; i < waypoints.size(); i++) {;
             this.waypoints.put(waypoints.get(i), i);
             List<List<Coordinate>> row = new ArrayList<>();

@@ -21,10 +21,11 @@ public class FlightPathLogger extends DroneLogger {
             throw new IllegalArgumentException("The direction of the drone is not a multiple of " +
                     "10!");
         }
+        String location = read_sensor == null ? null : read_sensor.getLocation();
 
         String line = String.format("%d,%f,%f,%d,%f,%f,%s\n",this.lineNbr,
                 this.position.getX(), this.position.getY(), direction, newPos.getX(),
-                newPos.getY(), read_sensor.getLocation());
+                newPos.getY(), location);
         if (this.lineNbr != 1) {
             line = "\n" + line;
         }

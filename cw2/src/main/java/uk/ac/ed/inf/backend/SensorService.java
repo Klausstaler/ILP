@@ -4,8 +4,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
-import uk.ac.ed.inf.Restrictions;
 import uk.ac.ed.inf.Sensor;
 
 import java.io.IOException;
@@ -14,6 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 
 public class SensorService extends BackendService {
+
+    private static final double MIN_BATTERY = 10.0;
 
     private HashMap<String, Sensor> sensors = new HashMap<>();
 
@@ -49,7 +49,7 @@ public class SensorService extends BackendService {
         Double reading = null;
         double battery = sensorProperties.get("battery").getAsDouble();
 
-        if (battery > Restrictions.MIN_BATTERY.getValue()) {
+        if (battery > MIN_BATTERY) {
             String readingVal = sensorProperties.get("reading").getAsString();
             reading = Double.valueOf(readingVal);
         }

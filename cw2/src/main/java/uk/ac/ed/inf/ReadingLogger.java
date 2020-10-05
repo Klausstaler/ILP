@@ -12,6 +12,8 @@ import java.util.List;
 
 public class ReadingLogger extends DroneLogger {
 
+    private static final double MIN_BATTERY = 10.0;
+
     private List<Coordinate> flightPath = new ArrayList<>();
     private HashMap<String, Feature> markers;
 
@@ -48,7 +50,7 @@ public class ReadingLogger extends DroneLogger {
 
     private void updateMarkerProps(Sensor read_sensor) {
         Feature marker = this.markers.get(read_sensor.getLocation());
-        MarkerProperties markerProps =(read_sensor.getBattery() < Restrictions.MIN_BATTERY.getValue()) ?
+        MarkerProperties markerProps =(read_sensor.getBattery() < MIN_BATTERY) ?
                 MarkerProperties.from("lowBattery") :
                 MarkerProperties.fromAirPollution(read_sensor.getReading());
 
