@@ -1,11 +1,11 @@
 package uk.ac.ed.inf;
 
-public class Pair<T, U> {
-    public final T first;
-    public final U second;
+public class PathInfo<T, U> {
+    public final T path;
+    public final U distance;
 
-    public Pair(T first, U second) {
-        this.first = first;
-        this.second = second;
+    public PathInfo(T path, U distance) {
+        this.path = path;
+        this.distance = distance;
     }
 }
