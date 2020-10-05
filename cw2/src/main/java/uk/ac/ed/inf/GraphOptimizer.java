@@ -36,6 +36,7 @@ public class GraphOptimizer {
     }
 
     public int[] optimize() {
+        System.out.println("Starting graph optimization....");
 
         Assignment solution = routing.solveWithParameters(this.parameters);
 
@@ -52,6 +53,7 @@ public class GraphOptimizer {
         sol[idx] = this.startLocation;
         System.out.println("NOW SOLUTION");
         System.out.println(Arrays.toString(sol));
+        System.out.println("Finished optimizing!");
         return sol;
     }
 

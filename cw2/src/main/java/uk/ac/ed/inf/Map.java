@@ -31,10 +31,10 @@ public class Map {
 
     public void addObstacles(List<LinearRing> obstacles) {
 
+        List<LinearRing> holes = this.fitObstacles(obstacles);
+
         Geometry boundaries = this.playArea.getBoundary();
         LinearRing shell = (LinearRing) boundaries.getGeometryN(0);
-
-        List<LinearRing> holes = this.fitObstacles(obstacles);
         for(int i = 1; i < boundaries.getNumGeometries(); i++) {
             holes.add((LinearRing) boundaries.getGeometryN(i));
         }

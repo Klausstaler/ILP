@@ -27,6 +27,7 @@ public class RoutePlanner {
         this.map = map;
         this.visibilityGraph = new VisibilityGraph(this.map.getPlayArea());
 
+        System.out.println("Calculating distances and paths for waypoints...");
         for(int i = 0; i < waypoints.size(); i++) {
             this.waypoints.put(waypoints.get(i), i);
             List<List<Coordinate>> row = new ArrayList<>();
@@ -44,6 +45,7 @@ public class RoutePlanner {
             }
             paths.add(row);
         }
+        System.out.println("Finished calculating distances and paths for waypoints!");
         /*
         for(double[] row : distanceMatrix) {
             System.out.println(Arrays.toString(row));
@@ -55,7 +57,6 @@ public class RoutePlanner {
         int[] route = this.optimizer.optimize();
         for(int i = 0; i < route.length -1; i++)
             this.route.put(route[i], route[i+1]);
-        System.out.println("NUM waypoints" + paths.size() + "NUM elements" + paths.get(0).size());
     }
 
     private Pair<List<Coordinate>, Double> calculateDistance(Point waypoint, Point waypoint1) {

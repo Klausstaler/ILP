@@ -37,7 +37,6 @@ public class SensorService extends BackendService {
         for (JsonElement rawSensor : response) {
             Sensor sensor = this.JsonToSensor(rawSensor);
             sensors.put(sensor.getLocation(), sensor);
-            System.out.println(sensor);
         }
         System.out.println("All sensors retrieved!");
         return sensors;

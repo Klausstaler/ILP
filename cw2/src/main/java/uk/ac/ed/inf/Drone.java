@@ -39,13 +39,10 @@ public class Drone {
         List<com.mapbox.geojson.Point> points = new ArrayList<>();
         points.add(this.toGeoJSON(position.getCoordinate()));
         List<Coordinate> route = this.routePlanner.getNextRoute(position);
-        int idx = 0;
         while (route.get(route.size()-1) != position.getCoordinate()) {
-            System.out.println(idx++);
             for( Coordinate coord : route)
                 points.add(this.toGeoJSON(coord));
             Coordinate nextPos = route.get(route.size()-1);
-            System.out.println(nextPos);
             route = this.routePlanner.getNextRoute(test.get(nextPos));
         }
         for( Coordinate coord : route)
