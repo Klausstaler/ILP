@@ -1,6 +1,6 @@
 package uk.ac.ed.inf;
 
-import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Coordinate;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -17,7 +17,7 @@ public class CombinedLogger extends DroneLogger {
     }
 
     @Override
-    public void log(Point newPos, Sensor read_sensor) throws IOException {
+    public void log(Coordinate newPos, Sensor read_sensor) throws IOException {
         for( DroneLogger logger : this.loggers) {
             logger.log(newPos, read_sensor);
         }

@@ -4,17 +4,14 @@ package uk.ac.ed.inf;
 import org.locationtech.jts.geom.*;
 
 import java.util.Objects;
-
-public class Sensor extends Point {
+public class Sensor extends Coordinate {
 
     private String location;
     private double battery;
     private Double reading;
 
-    public Sensor(String location, double battery, Double reading, Coordinate coordinate,
-                  GeometryFactory factory) {
-        super(new GeometryFactory().getCoordinateSequenceFactory().create(new Coordinate[]{coordinate}),
-                factory);
+    public Sensor(String location, double battery, Double reading, double x, double y) {
+        super(x, y);
         this.location = location;
         this.reading = reading;
         this.battery = battery;
@@ -51,7 +48,7 @@ public class Sensor extends Point {
                 "location='" + location + '\'' +
                 ", battery=" + battery +
                 ", reading=" + reading +
-                ", coordinates=" + this.getCoordinate() +
+                ", coordinates=" + this.x + " " + this.y +
                 '}';
     }
 }

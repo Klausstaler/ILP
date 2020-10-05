@@ -2,8 +2,6 @@ package uk.ac.ed.inf;
 
 
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Point;
 import uk.ac.ed.inf.backend.ObstacleService;
 import uk.ac.ed.inf.backend.SensorService;
 
@@ -17,8 +15,7 @@ public class App
 
     private static final String URL =  "http://localhost";
     public static void main( String[] args ) throws IOException {
-        Point initalPoint =
-                new GeometryFactory().createPoint(new Coordinate(-3.1878, 55.9444));
+        Coordinate initalPoint = new Coordinate(-3.1878, 55.9444);
 
         ReadingLogger logger1 = new ReadingLogger(initalPoint,"02-02-2021");
         FlightPathLogger logger2 = new FlightPathLogger(initalPoint,"02-02-2021");

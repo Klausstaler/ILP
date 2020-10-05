@@ -6,3 +6,4 @@ Put lib\ortools.lib from (https://github.com/google/or-tools/releases/tag/v6.7.2
 [ ] - Create adapter class to switch from Mapbox to JTS
 [ ] - Think about removing combined logger and instead loop over all loggers in drone class
 [ ] - extract geometry methods from Map
+[X] - use points or coordinates everywhere

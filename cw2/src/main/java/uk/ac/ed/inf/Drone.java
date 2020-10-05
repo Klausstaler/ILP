@@ -18,32 +18,32 @@ import java.util.List;
 
 public class Drone {
 
-    private Point position;
+    private Coordinate position;
     private RoutePlanner routePlanner;
     private List<Sensor> sensors;
     private DroneLogger logger;
 
-    public Drone(Point position, DroneLogger logger, Map map, SensorService sensorService) throws IOException {
+    public Drone(Coordinate position, DroneLogger logger, Map map, SensorService sensorService) throws IOException {
         this.position = position;
         this.logger = logger;
         this.sensors = sensorService.getSensors();
-        List<Point> waypoints = new ArrayList<>();
+        List<Coordinate> waypoints = new ArrayList<>();
         waypoints.add(position);
         waypoints.addAll(sensors);
         this.routePlanner = new RoutePlanner(map, waypoints);
-
         // Testing
-        HashMap<Coordinate, Point> test = new HashMap<>();
-        for (Point waypoint : waypoints)
-            test.put(waypoint.getCoordinate(), waypoint);
+
+        //HashMap<Coordinate, Point> test = new HashMap<>();
+        //for (Point waypoint : waypoints)
+         //   test.put(waypoint.getCoordinate(), waypoint);
         List<com.mapbox.geojson.Point> points = new ArrayList<>();
-        points.add(this.toGeoJSON(position.getCoordinate()));
+        points.add(this.toGeoJSON(position));
         List<Coordinate> route = this.routePlanner.getNextRoute(position);
-        while (route.get(route.size()-1) != position.getCoordinate()) {
+        while (route.get(route.size()-1) != position) {
             for( Coordinate coord : route)
                 points.add(this.toGeoJSON(coord));
             Coordinate nextPos = route.get(route.size()-1);
-            route = this.routePlanner.getNextRoute(test.get(nextPos));
+            route = this.routePlanner.getNextRoute(nextPos);
         }
         for( Coordinate coord : route)
             points.add(this.toGeoJSON(coord));
@@ -53,11 +53,20 @@ public class Drone {
         FileWriter writer = new FileWriter("line.geojson");
         writer.write(coll.toJson());
         writer.close();
-    }
 
+    }
+/*
     public void navigate() {
+        List<Coordinate> route = this.routePlanner.getNextRoute(position);
+        Coordinate currCoord = position.getCoordinate();
+        while (route.get(route.size()-1) != position.getCoordinate()) {
+            for( Coordinate coord : route) {
+                currCoord = coord;
+            }
+            route = this.routePlanner.getNextRoute(test.get(currCoord));
+        }
     }
-
+*/
     private com.mapbox.geojson.Point toGeoJSON(Coordinate coord) {
         return com.mapbox.geojson.Point.fromLngLat(coord.getX(), coord.getY());
     }

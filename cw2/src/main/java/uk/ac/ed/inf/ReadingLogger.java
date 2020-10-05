@@ -3,7 +3,7 @@ package uk.ac.ed.inf;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.LineString;
-import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Coordinate;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,17 +12,17 @@ import java.util.List;
 
 public class ReadingLogger extends DroneLogger {
 
-    private List<Point> flightPath = new ArrayList<>();
+    private List<Coordinate> flightPath = new ArrayList<>();
     private HashMap<String, Feature> markers;
 
-    public ReadingLogger(Point initialPos, String date) throws IOException {
+    public ReadingLogger(Coordinate initialPos, String date) throws IOException {
         super(initialPos, "readings"+date+".geojson");
         this.flightPath.add(initialPos);
         System.out.println("Reading logger initialized...");
     }
 
     @Override
-    public void log(Point newPos, Sensor read_sensor) {
+    public void log(Coordinate newPos, Sensor read_sensor) {
         this.flightPath.add(newPos);
         this.position = newPos;
         if (read_sensor != null) {
@@ -35,8 +35,8 @@ public class ReadingLogger extends DroneLogger {
         // TODO: Write flight path and markers
         List<Feature> allFeatures = new ArrayList<>(this.markers.values());
         List<com.mapbox.geojson.Point> flightPathGeo = new ArrayList<>();
-        for (Point coord : this.flightPath)
-            flightPathGeo.add(com.mapbox.geojson.Point.fromLngLat(coord.getX(), coord.getY()));
+        for (Coordinate coord : this.flightPath)
+            flightPathGeo.add(com.mapbox.geojson.Point.fromLngLat(coord.x, coord.y));
 
         LineString flightPath = LineString.fromLngLats(flightPathGeo);
         allFeatures.add(Feature.fromGeometry(flightPath));

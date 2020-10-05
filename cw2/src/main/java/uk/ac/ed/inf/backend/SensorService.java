@@ -54,8 +54,7 @@ public class SensorService extends BackendService {
             reading = Double.valueOf(readingVal);
         }
 
-        GeometryFactory fac = new GeometryFactory();
-        Sensor sensor = new Sensor(location, battery, reading, coordinate, fac);
+        Sensor sensor = new Sensor(location, battery, reading, coordinate.x, coordinate.y);
         return sensor;
     }
 

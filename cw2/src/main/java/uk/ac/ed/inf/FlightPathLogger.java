@@ -1,6 +1,6 @@
 package uk.ac.ed.inf;
 
-import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Coordinate;
 
 import java.io.IOException;
 
@@ -8,13 +8,13 @@ public class FlightPathLogger extends DroneLogger {
 
     private int lineNbr = 1;
 
-    public FlightPathLogger(Point initialPos, String date) throws IOException {
+    public FlightPathLogger(Coordinate initialPos, String date) throws IOException {
         super(initialPos, "flightpath"+date+".txt");
         System.out.println("Flightpath logger initialized...");
     }
 
     @Override
-    public void log(Point newPos, Sensor read_sensor) throws IOException {
+    public void log(Coordinate newPos, Sensor read_sensor) throws IOException {
         int direction = this.calculateAngle(newPos);
         System.out.println("Direction is:" + direction);
         if (direction > 350 || direction < 0 || direction % 10 != 0) {
@@ -39,7 +39,7 @@ public class FlightPathLogger extends DroneLogger {
         this.file.close();
     }
 
-    private int calculateAngle(Point otherPos) {
+    private int calculateAngle(Coordinate otherPos) {
         // TODO: extract this method and put it in appropriate class
         double dx = otherPos.getX() - this.position.getX();
         double dy = otherPos.getY() - this.position.getY();
