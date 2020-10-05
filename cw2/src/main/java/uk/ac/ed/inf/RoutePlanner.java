@@ -26,7 +26,6 @@ public class RoutePlanner {
         for(int i = 0; i < waypoints.size(); i++) {
             this.waypoints.put(i, waypoints.get(i));
             for(int j = 0; j < waypoints.size() - 1; j++) {
-                System.out.println(i + " " + j);
                 double distance = 0.0;
                 if (i != j)
                     distance = this.calculateDistance(waypoints.get(i), waypoints.get(j));

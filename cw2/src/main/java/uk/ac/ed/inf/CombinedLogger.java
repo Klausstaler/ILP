@@ -10,7 +10,7 @@ public class CombinedLogger extends DroneLogger {
 
     private List<DroneLogger> loggers;
 
-    public CombinedLogger(Point initialPos, String date, DroneLogger... loggerClasses) {
+    public CombinedLogger(DroneLogger... loggerClasses) {
 
         this.loggers = Arrays.asList(loggerClasses);
         System.out.println("Combined logger initialized...");

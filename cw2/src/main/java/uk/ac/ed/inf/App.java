@@ -31,8 +31,7 @@ public class App
                 pos.latitude()));
         ReadingLogger logger1 = new ReadingLogger(initalPoint,"02-02-2021");
         FlightPathLogger logger2 = new FlightPathLogger(initalPoint,"02-02-2021");
-        DroneLogger logger = new CombinedLogger(initalPoint,
-                "02-02-2021", logger1, logger2);
+        DroneLogger logger = new CombinedLogger(logger1, logger2);
         ObstacleService obstacleService = new ObstacleService(URL, "80");
         System.out.println("Obstacle service");
         Map map = new Map(obstacleService);

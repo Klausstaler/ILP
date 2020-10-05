@@ -21,20 +21,20 @@ public class Map {
         LinearRing shell = this.geometryFactory.createLinearRing(boundaries);
         this.playArea = this.geometryFactory.createPolygon(shell);
 
-        LinearRing[] obstacles = obstacleService.getObstacles().toArray(new LinearRing[0]);
-        this.addObstacles(obstacles);
+
+        this.addObstacles(obstacleService.getObstacles());
     }
 
     public boolean inAllowedArea(Geometry position) {
         return this.playArea.covers(position);
     }
 
-    public void addObstacles(LinearRing... obstacles) {
-        obstacles = this.fitObstacles(obstacles);
+    public void addObstacles(List<LinearRing> obstacles) {
+
         Geometry boundaries = this.playArea.getBoundary();
         LinearRing shell = (LinearRing) boundaries.getGeometryN(0);
-        List<LinearRing> holes = new ArrayList<>(Arrays.asList(obstacles));
 
+        List<LinearRing> holes = this.fitObstacles(obstacles);
         for(int i = 1; i < boundaries.getNumGeometries(); i++) {
             holes.add((LinearRing) boundaries.getGeometryN(i));
         }
@@ -42,7 +42,7 @@ public class Map {
         this.playArea = this.geometryFactory.createPolygon(shell, holes.toArray(new LinearRing[0]));
     }
 
-    private LinearRing[] fitObstacles(LinearRing... obstacles) {
+    private List<LinearRing> fitObstacles(List<LinearRing> obstacles) {
         List<LinearRing> obstaclesInBounds = new ArrayList<>();
 
         for (LinearRing obstacle : obstacles) {
@@ -53,7 +53,7 @@ public class Map {
                 this.alignBoundaries(obstacle);
             }
         }
-        return obstaclesInBounds.toArray(new LinearRing[0]);
+        return obstaclesInBounds;
     }
 
     private void alignBoundaries(LinearRing obstacle) {

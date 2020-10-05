@@ -17,6 +17,7 @@ import java.util.List;
 
 public class VisibilityGraph {
 
+    private static final double EPSILON = 0.001;
     private Geometry boundary;
     private List<Coordinate> allCoordinates = new ArrayList<>();
     private List<List<Double>> graph;
@@ -59,22 +60,13 @@ public class VisibilityGraph {
         new File("graphviz.geojson").createNewFile();
         FileWriter writer = new FileWriter("graphviz.geojson");
 
-        double EPSILON = 0.001;
-        GeometryFactory factory = new GeometryFactory();
         for(int i = 0; i < allCoordinates.size(); i++) {
             for(int j = 0; j < allCoordinates.size(); j++) {
                 if (i == j)
                     continue;
                 Coordinate from = allCoordinates.get(i).copy();
                 Coordinate to = allCoordinates.get(j).copy();
-                double diff_x = Math.abs(from.x - to.x);
-                double diff_y = Math.abs(from.y - to.y);
-                from.x += from.x < to.x ? diff_x*EPSILON : -diff_x*EPSILON;
-                to.x += from.x > to.x ? diff_x*EPSILON : -diff_x*EPSILON;
-                from.y += from.y < to.y ? diff_y*EPSILON : -diff_y*EPSILON;
-                to.y += to.y < from.y ? diff_y*EPSILON : -diff_y*EPSILON;
-                Coordinate[] edgeCoords = new Coordinate[] {from, to};
-                LineString edge = factory.createLineString(edgeCoords);
+                LineString edge = this.createEdge(from ,to);
                 if (boundary.covers(edge)) {
                     Point point1  = Point.fromLngLat(from.x, from.y);
                     Point point2 = Point.fromLngLat(to.x, to.y);
@@ -90,12 +82,23 @@ public class VisibilityGraph {
         }
 
         String res =  FeatureCollection.fromFeatures(features).toJson();
-        //System.out.println(res);
 
         writer.write(res);
         writer.close();
 
         return visibilityGraph;
+    }
+
+    private LineString createEdge(Coordinate from, Coordinate to) {
+        GeometryFactory factory = new GeometryFactory();
+        double diff_x = Math.abs(from.x - to.x);
+        double diff_y = Math.abs(from.y - to.y);
+        from.x += from.x < to.x ? diff_x*EPSILON : -diff_x*EPSILON;
+        to.x += from.x > to.x ? diff_x*EPSILON : -diff_x*EPSILON;
+        from.y += from.y < to.y ? diff_y*EPSILON : -diff_y*EPSILON;
+        to.y += to.y < from.y ? diff_y*EPSILON : -diff_y*EPSILON;
+        Coordinate[] edgeCoords = new Coordinate[] {from, to};
+        return factory.createLineString(edgeCoords);
     }
 
     public double[][] getGraph() {

@@ -32,11 +32,6 @@ public class Sensor extends Point {
         return reading;
     }
 
-    /*
-    public void setCoordinate(Point coordinate) {
-        this.coordinate = coordinate;
-    }
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
