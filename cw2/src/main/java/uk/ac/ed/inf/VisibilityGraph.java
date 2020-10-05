@@ -37,16 +37,45 @@ public class VisibilityGraph {
             allCoordinates.addAll(Arrays.asList(obstacle.getCoordinates()));
         }
 
-        List<List<Double>> visibilityGraph = new ArrayList<>();
+        List<List<Double>> visibilityGraph = this.initGraph(allCoordinates);
+        this.connectEdges(visibilityGraph, boundaries);
+
+
+        new File("graphviz.geojson").createNewFile(); // remove later
+        FileWriter writer = new FileWriter("graphviz.geojson"); // remove later
+
         for(int i = 0; i < allCoordinates.size(); i++) {
-            List<Double> row = new ArrayList<>();
-            for(int j = 0; j < allCoordinates.size(); j++)
-                row.add((double) Long.MAX_VALUE / 2);
-            visibilityGraph.add(row);
+            for(int j = 0; j < allCoordinates.size(); j++) {
+                if (i == j)
+                    continue;
+                Coordinate from = allCoordinates.get(i).copy(); // remove later
+                Coordinate to = allCoordinates.get(j).copy(); // remove later
+                LineString edge = this.createEdge(allCoordinates.get(i) ,allCoordinates.get(j));
+                if (boundary.covers(edge)) {
+                    Point point1  = Point.fromLngLat(from.x, from.y); // remove later
+                    Point point2 = Point.fromLngLat(to.x, to.y); // remove later
+                    ArrayList<Point> test = new ArrayList<>(); // remove later
+                    test.add(point1); // remove later
+                    test.add(point2); // remove later
+                    com.mapbox.geojson.LineString lineString =
+                            com.mapbox.geojson.LineString.fromLngLats(test); // remove later
+                    features.add(Feature.fromGeometry(lineString)); // remove later
+                    visibilityGraph.get(i).set(j, edge.getLength());
+                }
+            }
         }
 
+        String res =  FeatureCollection.fromFeatures(features).toJson(); // remove later
+
+        writer.write(res); // remove later
+        writer.close(); // remove later
+
+        return visibilityGraph;
+    }
+
+    private void connectEdges(List<List<Double>> visibilityGraph, List<Geometry> boundaries) {
         int offset = 0;
-        for (org.locationtech.jts.geom.Geometry obstacle: boundaries) {
+        for (Geometry obstacle: boundaries) {
             Coordinate[] coordinates = obstacle.getCoordinates();
             for(int idx = 0; idx < coordinates.length-1; idx++) {
                 int pos = idx + offset;
@@ -56,40 +85,26 @@ public class VisibilityGraph {
             }
             offset += coordinates.length;
         }
+    }
 
-        new File("graphviz.geojson").createNewFile();
-        FileWriter writer = new FileWriter("graphviz.geojson");
-
-        for(int i = 0; i < allCoordinates.size(); i++) {
-            for(int j = 0; j < allCoordinates.size(); j++) {
+    private List<List<Double>> initGraph(List<Coordinate> coordinates) {
+        List<List<Double>> graph = new ArrayList<>();
+        for(int i = 0; i < coordinates.size(); i++) {
+            List<Double> row = new ArrayList<>();
+            for(int j = 0; j < coordinates.size(); j++) {
                 if (i == j)
-                    continue;
-                Coordinate from = allCoordinates.get(i).copy();
-                Coordinate to = allCoordinates.get(j).copy();
-                LineString edge = this.createEdge(from ,to);
-                if (boundary.covers(edge)) {
-                    Point point1  = Point.fromLngLat(from.x, from.y);
-                    Point point2 = Point.fromLngLat(to.x, to.y);
-                    ArrayList<Point> test = new ArrayList<>();
-                    test.add(point1);
-                    test.add(point2);
-                    com.mapbox.geojson.LineString lineString =
-                            com.mapbox.geojson.LineString.fromLngLats(test);
-                    features.add(Feature.fromGeometry(lineString));
-                    visibilityGraph.get(i).set(j, edge.getLength());
-                }
+                    row.add(0.0);
+                else
+                    row.add((double) Long.MAX_VALUE / 2);
             }
+            graph.add(row);
         }
-
-        String res =  FeatureCollection.fromFeatures(features).toJson();
-
-        writer.write(res);
-        writer.close();
-
-        return visibilityGraph;
+        return graph;
     }
 
     private LineString createEdge(Coordinate from, Coordinate to) {
+        from = from.copy();
+        to = to.copy();
         GeometryFactory factory = new GeometryFactory();
         double diff_x = Math.abs(from.x - to.x);
         double diff_y = Math.abs(from.y - to.y);
