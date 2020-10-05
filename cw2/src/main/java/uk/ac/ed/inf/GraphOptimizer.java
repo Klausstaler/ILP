@@ -29,11 +29,6 @@ public class GraphOptimizer {
         this.setupRouting();
     }
 
-    public GraphOptimizer(double[][] distanceMatrix, int startLocation) {
-        this(distanceMatrix);
-        this.startLocation = startLocation;
-    }
-
     public int[] optimize() {
 
         Assignment solution = routing.solveWithParameters(this.parameters);

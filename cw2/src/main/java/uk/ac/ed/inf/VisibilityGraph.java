@@ -29,7 +29,7 @@ public class VisibilityGraph {
     }
 
     private List<List<Double>> constructVisibilityGraph() throws IOException {
-        List<org.locationtech.jts.geom.Geometry> boundaries = new ArrayList<>();
+        List<Geometry> boundaries = new ArrayList<>();
         for(int i = 0; i < boundary.getNumGeometries(); i++)
             boundaries.add(boundary.getGeometryN(i));
 
