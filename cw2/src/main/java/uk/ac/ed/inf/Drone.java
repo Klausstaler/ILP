@@ -1,14 +1,13 @@
 package uk.ac.ed.inf;
 
 
-import com.mapbox.geojson.Feature;
-import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.Point;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import uk.ac.ed.inf.backend.SensorService;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class Drone {
@@ -20,18 +19,18 @@ public class Drone {
     private Coordinate position;
     private RoutePlanner routePlanner;
     private Map map;
-    private List<Sensor> sensors;
+    private HashSet<Sensor> sensorsToRead = new HashSet<>();
     private DroneLogger logger;
     private int numMoves = 0;
 
     public Drone(Coordinate position, DroneLogger logger, Map map, SensorService sensorService) throws Exception {
         this.position = position;
         this.logger = logger;
-        this.sensors = sensorService.getSensors();
+        this.sensorsToRead.addAll(sensorService.getSensors());
         this.map = map;
         List<Coordinate> waypoints = new ArrayList<>();
         waypoints.add(position);
-        waypoints.addAll(sensors);
+        waypoints.addAll(sensorsToRead);
         this.routePlanner = new RoutePlanner(map, waypoints);
         this.visitSensors();
     }
@@ -43,7 +42,6 @@ public class Drone {
         while (route.get(route.size()-1) != position) {
             for( Coordinate coord : route) {
                 Coordinate newCoord = this.navigate(currCoord, coord);
-                this.collectSensorReading();
                 currCoord = newCoord;
                 referenceCoord = coord;
             }
@@ -55,7 +53,17 @@ public class Drone {
         this.logger.close();
     }
 
-    private void collectSensorReading() {
+    private Sensor collectSensorReading(Coordinate coordinate) {
+        Sensor read_sensor = null;
+        for(Sensor sensor : sensorsToRead) {
+            if (sensor.distance(coordinate) < SENSOR_RADIUS) {
+                read_sensor = sensor;
+                sensorsToRead.remove(sensor);
+                break;
+            }
+        }
+        return read_sensor;
+
     }
 
     private Coordinate navigate(Coordinate from, Coordinate to) throws Exception {
@@ -71,7 +79,7 @@ public class Drone {
             LineString edge = new GeometryFactory().createLineString(edgeCoords);
             if (this.map.inAllowedArea(edge)) {
                 this.numMoves++;
-                this.logger.log(newCoordinate, null);
+                this.logger.log(newCoordinate, collectSensorReading(newCoordinate));
                 currentCoordinate = newCoordinate;
             }
             else {
