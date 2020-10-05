@@ -17,7 +17,7 @@ public class CombinedLogger extends DroneLogger {
     }
 
     @Override
-    public void log(Coordinate newPos, Sensor read_sensor) throws IOException {
+    public void log(Coordinate newPos, Sensor read_sensor) {
         for( DroneLogger logger : this.loggers) {
             logger.log(newPos, read_sensor);
         }

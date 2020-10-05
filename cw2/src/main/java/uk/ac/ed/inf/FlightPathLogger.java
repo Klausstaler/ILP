@@ -14,22 +14,31 @@ public class FlightPathLogger extends DroneLogger {
     }
 
     @Override
-    public void log(Coordinate newPos, Sensor read_sensor) throws IOException {
+    public void log(Coordinate newPos, Sensor read_sensor) {
         int direction = this.calculateAngle(newPos);
-        System.out.println("Direction is:" + direction);
+        System.out.println("Direction is: " + direction);
         if (direction > 350 || direction < 0 || direction % 10 != 0) {
             throw new IllegalArgumentException("The direction of the drone is not a multiple of " +
                     "10!");
         }
-        String location = read_sensor == null ? null : read_sensor.getLocation();
+        String location = read_sensor == null ? "null" : read_sensor.getLocation();
+        String currX = String.valueOf(this.position.getX()).replace(',', '.');
+        String currY = String.valueOf(this.position.getY()).replace(',', '.');
+        String newX = String.valueOf(newPos.getX()).replace(',', '.');
+        String newY = String.valueOf(newPos.getY()).replace(',', '.');
 
-        String line = String.format("%d,%f,%f,%d,%f,%f,%s\n",this.lineNbr,
-                this.position.getX(), this.position.getY(), direction, newPos.getX(),
-                newPos.getY(), location);
+        String line = String.format("%d,%s,%s,%d,%s,%s,%s",this.lineNbr,
+                currX, currY, direction, newX, newY, location);
         if (this.lineNbr != 1) {
             line = "\n" + line;
         }
-        this.file.write(line);
+
+        try {
+            this.file.write(line);
+        }
+        catch (IOException exception) {
+            System.out.println("ERROR SAVING FLIGHT PATH!");
+        }
 
         this.position = newPos;
         this.lineNbr++;
@@ -37,6 +46,7 @@ public class FlightPathLogger extends DroneLogger {
 
     @Override
     public void close() throws IOException {
+        System.out.println("CLOSING FILE");
         this.file.close();
     }
 

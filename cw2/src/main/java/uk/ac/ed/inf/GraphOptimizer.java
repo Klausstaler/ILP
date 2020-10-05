@@ -78,7 +78,7 @@ public class GraphOptimizer {
                         .toBuilder()
                         .setFirstSolutionStrategy(FirstSolutionStrategy.Value.PATH_CHEAPEST_ARC)
                         .setLocalSearchMetaheuristic(LocalSearchMetaheuristic.Value.GUIDED_LOCAL_SEARCH)
-                        .setTimeLimit(Duration.newBuilder().setSeconds(10).build())
+                        .setTimeLimit(Duration.newBuilder().setSeconds(2).build())
                         .setLogSearch(false)
                         .build();
     }

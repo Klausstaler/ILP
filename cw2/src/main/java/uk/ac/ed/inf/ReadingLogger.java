@@ -3,6 +3,7 @@ package uk.ac.ed.inf;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.LineString;
+import com.mapbox.geojson.Point;
 import org.locationtech.jts.geom.Coordinate;
 
 import java.io.IOException;
@@ -15,11 +16,17 @@ public class ReadingLogger extends DroneLogger {
     private static final double MIN_BATTERY = 10.0;
 
     private List<Coordinate> flightPath = new ArrayList<>();
-    private HashMap<String, Feature> markers;
+    private HashMap<String, Feature> markers = new HashMap<>();
 
-    public ReadingLogger(Coordinate initialPos, String date) throws IOException {
+    public ReadingLogger(Coordinate initialPos, String date, List<Sensor> sensors) throws IOException {
         super(initialPos, "readings"+date+".geojson");
         this.flightPath.add(initialPos);
+        for(Sensor sensor : sensors) {
+            Feature feature = Feature.fromGeometry(Point.fromLngLat(sensor.x, sensor.y));
+            feature.addStringProperty("marker-color",
+                    MarkerProperties.from("notVisited").getRgbString());
+            markers.put(sensor.getLocation(), feature);
+        }
         System.out.println("Reading logger initialized...");
     }
 

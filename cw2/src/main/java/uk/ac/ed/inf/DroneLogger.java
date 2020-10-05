@@ -17,7 +17,7 @@ public abstract class DroneLogger {
         this.file = new FileWriter(loggingPath);
     }
 
-    abstract public void log(Coordinate newPos, Sensor read_sensor) throws IOException;
+    abstract public void log(Coordinate newPos, Sensor read_sensor);
 
     abstract public void close() throws IOException;
 }
