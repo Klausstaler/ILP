@@ -95,7 +95,6 @@ public class Drone {
         double dx = to.getX() - from.getX();
         double dy = to.getY() - from.getY();
         double angle = Math.toDegrees(Math.atan2(dy, dx));
-        //int angle = (int) (Math.round(Math.toDegrees(Math.atan2(dy, dx))) / 10) * 10;
 
         if(angle < 0){
             angle += 360;

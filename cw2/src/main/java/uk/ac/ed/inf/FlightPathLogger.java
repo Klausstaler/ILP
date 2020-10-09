@@ -22,6 +22,7 @@ public class FlightPathLogger extends DroneLogger {
                     "10!");
         }
         String location = read_sensor == null ? "null" : read_sensor.getLocation();
+        // replace comma decimal sep by dot
         String currX = String.valueOf(this.position.getX()).replace(',', '.');
         String currY = String.valueOf(this.position.getY()).replace(',', '.');
         String newX = String.valueOf(newPos.getX()).replace(',', '.');
