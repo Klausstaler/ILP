@@ -1,5 +1,8 @@
 package uk.ac.ed.inf;
 
+/**
+ * Enum to store map boundary information.
+ */
 public enum MapBoundaries {
 
     NORTHWEST(55.946233, -3.192473),

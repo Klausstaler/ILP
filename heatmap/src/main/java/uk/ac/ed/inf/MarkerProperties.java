@@ -1,5 +1,8 @@
 package uk.ac.ed.inf;
 
+/**
+ * Enum to keep the different marker properties for GEOJSON files.
+ */
 public enum MarkerProperties {
 
     SAFE1("#00ff00", "lighthouse"),

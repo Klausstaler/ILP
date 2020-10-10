@@ -35,6 +35,11 @@
       <artifactId>jts-core</artifactId>
       <version>1.17.1</version>
     </dependency>
+    <dependency>
+      <groupId>io.github.oliviercailloux</groupId>
+      <artifactId>google-or-tools</artifactId>
+      <version>6.7.2</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -53,7 +58,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.22.1</version>
         <configuration>
-          <argLine>-Djava.library.path=lib</argLine>
+          <argLine>-Djava.library.path=lib/</argLine>
         </configuration>
       </plugin>
       <plugin>
@@ -101,8 +106,8 @@
         <configuration>
           <source>11</source>
           <target>11</target>
+          <showWarnings>true</showWarnings>
           <release>11</release>
-          <showWarings>true</showWarings>
           <compilerArgs>
             <arg>-Xlint:all,-classfile</arg>
           </compilerArgs>

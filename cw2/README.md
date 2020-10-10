@@ -9,3 +9,4 @@ Put lib\ortools.lib from (https://github.com/google/or-tools/releases/tag/v6.7.2
 [X] - use points or coordinates everywhere
 [ ] - fix issue with navigating boundaries
 [ ] - fix issue when two readings are too close and no move would be needed
+[ ] - remove dependency injection of objects which are only used to retrieve data
