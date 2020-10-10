@@ -18,6 +18,19 @@
     <maven.compiler.target>1.7</maven.compiler.target>
   </properties>
 
+  <repositories>
+    <repository>
+      <id>jniortools</id>
+      <name>jniortools</name>
+      <url>file://${project.basedir}/ortools-win32-x86-64</url>
+    </repository>
+    <repository>
+      <id>or-tools</id>
+      <name>or-tools</name>
+      <url>file://${project.basedir}/ortools-java</url>
+    </repository>
+  </repositories>
+
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -36,9 +49,14 @@
       <version>1.17.1</version>
     </dependency>
     <dependency>
-      <groupId>io.github.oliviercailloux</groupId>
-      <artifactId>google-or-tools</artifactId>
-      <version>6.7.2</version>
+      <groupId>com.google.ortools</groupId>
+      <artifactId>ortools-win32-x86-64</artifactId>
+      <version>8.0.9999</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.ortools</groupId>
+      <artifactId>ortools-java</artifactId>
+      <version>8.0.9999</version>
     </dependency>
   </dependencies>
 
@@ -58,7 +76,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.22.1</version>
         <configuration>
-          <argLine>-Djava.library.path=lib/</argLine>
+          <argLine>-Djava.library.path=ortools-win32-x86-64\target\classes\win32-x86-64</argLine>
         </configuration>
       </plugin>
       <plugin>
