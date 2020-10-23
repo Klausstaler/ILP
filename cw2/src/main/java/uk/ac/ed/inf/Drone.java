@@ -39,7 +39,6 @@ public class Drone {
         Coordinate referenceCoord = position;
         while (route.get(route.size()-1) != position) {
             for(Coordinate coord : route) {
-                System.out.println("FLYING TO " + coord);
                 Coordinate newCoord = this.navigate(currCoord, coord);
                 currCoord = newCoord;
                 referenceCoord = coord;
@@ -66,30 +65,41 @@ public class Drone {
 
     private Coordinate navigate(Coordinate from, Coordinate to) throws Exception {
         Coordinate currentCoordinate = from;
-        boolean isFirst = true;
-        while (currentCoordinate.distance(to) > SENSOR_RADIUS || isFirst) {
+        boolean isFirstMove = true;
+        boolean addToAngle = false;
+        while (currentCoordinate.distance(to) > SENSOR_RADIUS || isFirstMove) {
             int angle = this.calculateAngle(currentCoordinate, to);
-            System.out.println(angle);
-            double new_x = currentCoordinate.x + Math.cos(Math.toRadians(angle))*MOVE_LENGTH;
-            double new_y = currentCoordinate.y + Math.sin(Math.toRadians(angle))*MOVE_LENGTH;
-            Coordinate newCoordinate = new Coordinate(new_x, new_y);
-            System.out.println("Flying from " + currentCoordinate + "to " + newCoordinate);
-
-            Coordinate[] edgeCoords = new Coordinate[]{currentCoordinate, newCoordinate};
-            LineString edge = new GeometryFactory().createLineString(edgeCoords);
-            if (this.map.inAllowedArea(edge)) {
-                this.numMoves++;
-                this.logger.log(newCoordinate, collectSensorReading(newCoordinate));
-                currentCoordinate = newCoordinate;
+            Coordinate newCoordinate = this.getNewCoordinate(currentCoordinate, angle);
+            int counter = 1;
+            while (!this.verifyMove(currentCoordinate, newCoordinate)) {
+                angle = addToAngle ? Math.min(350, angle+10*counter) : Math.max(0,
+                        angle-10*counter);
+                addToAngle = !addToAngle;
+                newCoordinate = this.getNewCoordinate(currentCoordinate, angle+10);
+                if (counter++ > 35) {
+                    System.out.println("OUTSIDE AREA");
+                    this.logger.close();
+                    throw new Exception("BRUH OUTSIDE ALLOWED AREA");
+                }
             }
-            else {
-                System.out.println("OUTSIDE AREA M8");
-                this.logger.close();
-                throw new Exception("BRUH OUTSIDE ALLOWED AREA");
-            }
-            isFirst = false;
+            this.numMoves++;
+            this.logger.log(newCoordinate, collectSensorReading(newCoordinate));
+            currentCoordinate = newCoordinate;
+            isFirstMove = false;
         }
         return currentCoordinate;
+    }
+
+    private boolean verifyMove(Coordinate currentCoordinate, Coordinate newCoordinate) {
+        Coordinate[] edgeCoords = new Coordinate[]{currentCoordinate, newCoordinate};
+        LineString edge = new GeometryFactory().createLineString(edgeCoords);
+        return this.map.inAllowedArea(edge);
+    }
+
+    private Coordinate getNewCoordinate(Coordinate currentCoordinate, int angle) {
+        double new_x = currentCoordinate.x + Math.cos(Math.toRadians(angle))*MOVE_LENGTH;
+        double new_y = currentCoordinate.y + Math.sin(Math.toRadians(angle))*MOVE_LENGTH;
+        return new Coordinate(new_x, new_y);
     }
 
     private int calculateAngle(Coordinate from, Coordinate to) {
@@ -100,7 +110,6 @@ public class Drone {
         if(angle < 0){
             angle += 360;
         }
-        System.out.println("Unrounded angle is " + angle);
         return (int) Math.round(angle / 10) *10;
     }
 

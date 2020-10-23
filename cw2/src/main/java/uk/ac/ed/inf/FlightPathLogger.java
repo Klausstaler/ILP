@@ -16,7 +16,6 @@ public class FlightPathLogger extends DroneLogger {
     @Override
     public void log(Coordinate newPos, Sensor read_sensor) {
         int direction = this.calculateAngle(newPos);
-        System.out.println("Direction is: " + direction);
         if (direction > 350 || direction < 0 || direction % 10 != 0) {
             throw new IllegalArgumentException("The direction of the drone is not a multiple of " +
                     "10!");
