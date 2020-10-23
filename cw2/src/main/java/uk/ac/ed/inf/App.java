@@ -16,7 +16,7 @@ public class App
         String year = "2021";
         String date = String.format("%s-%s-%s", day, month, year);
 
-        Coordinate initalPoint = new Coordinate(-3.1878, 55.9444);
+        Coordinate initalPoint = new Coordinate( -3.188396, 55.944425);
         ObstacleService obstacleService = new ObstacleService(URL, port);
         System.out.println("Obstacle service");
         Map map = new Map(obstacleService.getObstacles());
