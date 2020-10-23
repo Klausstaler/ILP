@@ -5,7 +5,7 @@ import org.locationtech.jts.geom.Coordinate;
 import uk.ac.ed.inf.backend.ObstacleService;
 import uk.ac.ed.inf.backend.SensorService;
 
-public class App 
+public class App
 {
     private static final String URL =  "http://localhost";
     public static void main( String[] args ) throws Exception {
@@ -25,9 +25,8 @@ public class App
         ReadingLogger logger1 = new ReadingLogger(initalPoint,date,
                 sensorService.getSensors());
         FlightPathLogger logger2 = new FlightPathLogger(initalPoint,date);
-        DroneLogger logger = new CombinedLogger(logger1, logger2);
         new VisualHelper(map, sensorService);
-        Drone drone = new Drone(initalPoint, logger, map, sensorService.getSensors());
+        Drone drone = new Drone(initalPoint, map, sensorService.getSensors(), logger1, logger2);
 
 // the response:
     }

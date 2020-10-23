@@ -5,7 +5,9 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
@@ -19,12 +21,12 @@ public class Drone {
     private RoutePlanner routePlanner;
     private Geometry map;
     private HashSet<Sensor> sensorsToRead = new HashSet<>();
-    private DroneLogger logger;
+    private List<DroneLogger> loggers;
     private int numMoves = 0;
 
-    public Drone(Coordinate position, DroneLogger logger, Geometry map, List<Sensor> sensors) throws Exception {
+    public Drone(Coordinate position, Geometry map, List<Sensor> sensors, DroneLogger... loggers) throws Exception {
         this.position = position;
-        this.logger = logger;
+        this.loggers = Arrays.asList(loggers);
         this.sensorsToRead.addAll(sensors);
         this.map = map;
         List<Coordinate> waypoints = new ArrayList<>();
@@ -49,7 +51,7 @@ public class Drone {
         this.navigate(currCoord, position);
         if (numMoves > MAX_MOVES)
             throw new Exception("too many moves :(");
-        this.logger.close();
+        this.loggers.forEach((DroneLogger::close));
     }
 
     private Sensor collectSensorReading(Coordinate coordinate) {
@@ -80,12 +82,15 @@ public class Drone {
                 newCoordinate = this.getNewCoordinate(currentCoordinate, angle+10);
                 if (counter++ > 35) {
                     System.out.println("OUTSIDE AREA");
-                    this.logger.close();
+                    this.loggers.forEach((DroneLogger::close));
                     throw new Exception("BRUH OUTSIDE ALLOWED AREA");
                 }
             }
             this.numMoves++;
-            this.logger.log(newCoordinate, collectSensorReading(newCoordinate));
+            for(DroneLogger logger: loggers) {
+                logger.log(newCoordinate,
+                        collectSensorReading(newCoordinate));
+            }
             currentCoordinate = newCoordinate;
             isFirstMove = false;
         }

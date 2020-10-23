@@ -19,5 +19,5 @@ public abstract class DroneLogger {
 
     abstract public void log(Coordinate newPos, Sensor read_sensor);
 
-    abstract public void close() throws IOException;
+    abstract public void close();
 }

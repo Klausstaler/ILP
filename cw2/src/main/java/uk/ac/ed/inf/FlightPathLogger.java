@@ -45,9 +45,14 @@ public class FlightPathLogger extends DroneLogger {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         System.out.println("CLOSING FILE");
-        this.file.close();
+        try {
+            this.file.close();
+        }
+        catch (Exception e) {
+            System.out.println("ERROR CLOSING FLIGHTPATHLOGGER");
+        }
     }
 
     private int calculateAngle(Coordinate otherPos) {

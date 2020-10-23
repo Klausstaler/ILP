@@ -54,7 +54,7 @@ public class Map extends Polygon{
 
     private int getClosestPoint(List<Coordinate> coordinates, Coordinate coordinate) {
         int closestIdx = 0;
-        double minDist = 999999;
+        double minDist = Double.MAX_VALUE;
         for(int i = 0; i < coordinates.size(); i++) {
             Coordinate currCoord = coordinates.get(i);
             if (currCoord.distance(coordinate) < minDist) {
@@ -88,13 +88,5 @@ public class Map extends Polygon{
             }
         }
         return orderedLines;
-    }
-
-    public List<Geometry> getObstacles() {
-        List<Geometry> obstacles = new ArrayList<>();
-        for(int i = 1; i < this.getBoundary().getNumGeometries(); i++ ) {
-            obstacles.add(this.getBoundary().getGeometryN(i));
-        }
-        return obstacles;
     }
 }
