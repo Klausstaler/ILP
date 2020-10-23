@@ -28,9 +28,6 @@ public class App
         DroneLogger logger = new CombinedLogger(logger1, logger2);
         new VisualHelper(map, sensorService);
         Drone drone = new Drone(initalPoint, logger, map, sensorService.getSensors());
-        //System.out.println(map.inAllowedArea(pos));
-        //System.out.println(map.inAllowedArea(pos2));
-        //System.out.println(map.inAllowedArea(pos3));
 
 // the response:
     }

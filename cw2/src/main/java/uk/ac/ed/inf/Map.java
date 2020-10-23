@@ -4,81 +4,52 @@ import org.locationtech.jts.geom.*;
 
 import java.util.*;
 
-public class Map {
+public class Map extends Polygon{
 
-    private final GeometryFactory geometryFactory = new GeometryFactory();
-    private Polygon playArea;
-
+    private static GeometryFactory geomFact = new GeometryFactory();
 
     public Map(List<LinearRing> obstacles) {
+        super(createShell(), getHoles(obstacles), geomFact);
+        for (LinearRing obstacle : obstacles) {
+            if (!this.covers(obstacle))
+                this.alignShell(obstacle);
+        }
+    }
 
+    private static LinearRing createShell() {
         Coordinate[] boundaries = {new Coordinate(-3.192473, 55.946233), //NW
                 new Coordinate(-3.184319, 55.946233), // NE
                 new Coordinate(-3.184319, 55.942617), // SE
                 new Coordinate(-3.192473, 55.942617), // SW
                 new Coordinate(-3.192473, 55.946233)}; // NW
-        LinearRing shell = this.geometryFactory.createLinearRing(boundaries);
-        this.playArea = this.geometryFactory.createPolygon(shell);
-
-
-        this.addObstacles(obstacles);
+        return geomFact.createLinearRing(boundaries);
     }
 
-    public boolean inAllowedArea(Geometry position) {
-        return this.playArea.covers(position);
-    }
-
-    public void addObstacles(List<LinearRing> obstacles) {
-
-        List<LinearRing> holes = this.fitObstacles(obstacles);
-
-        Geometry boundaries = this.playArea.getBoundary();
-        LinearRing shell = (LinearRing) boundaries.getGeometryN(0);
-        for(int i = 1; i < boundaries.getNumGeometries(); i++) {
-            holes.add((LinearRing) boundaries.getGeometryN(i));
-        }
-
-        this.playArea = this.geometryFactory.createPolygon(shell, holes.toArray(new LinearRing[0]));
-    }
-
-    private List<LinearRing> fitObstacles(List<LinearRing> obstacles) {
-        List<LinearRing> obstaclesInBounds = new ArrayList<>();
-
+    private static LinearRing[] getHoles(List<LinearRing> obstacles) {
+        Polygon provisionalMap = geomFact.createPolygon(createShell());
+        List<LinearRing> holes = new ArrayList<>();
         for (LinearRing obstacle : obstacles) {
-            if (this.playArea.covers(obstacle)) {
-                obstaclesInBounds.add(obstacle);
-            }
-            else {
-                this.alignBoundaries(obstacle);
-            }
+            if (provisionalMap.covers(obstacle))
+                holes.add(obstacle);
         }
-        return obstaclesInBounds;
+        return holes.toArray(new LinearRing[0]);
     }
 
-    private void alignBoundaries(LinearRing obstacle) {
-        LinearRing currentShell = (LinearRing) this.playArea.getBoundary().getGeometryN(0);
-        MultiLineString newBounds = (MultiLineString) this.playArea.intersection(obstacle);
-        List<Coordinate> coordinates = new ArrayList<>(Arrays.asList(currentShell.getCoordinates()));
+    private void alignShell(LinearRing obstacle) {
+        MultiLineString newBounds = (MultiLineString) this.intersection(obstacle);
+        List<Coordinate> coordinates = new ArrayList<>(Arrays.asList(this.shell.getCoordinates()));
         coordinates.remove(coordinates.size()-1);
 
         List<LineString> orderedBounds = this.alignLines(newBounds);
-
-        List<Coordinate> additionalBoundaryCoords = new ArrayList<>();
-        for(LineString bound: orderedBounds)
-            additionalBoundaryCoords.addAll(Arrays.asList(bound.getCoordinates()));
-
-
-        int closestIdx = this.getClosestPoint(coordinates, additionalBoundaryCoords.get(0));
-
-        for(Coordinate newCoord : additionalBoundaryCoords) {
-            coordinates.add(++closestIdx, newCoord);
+        int closestIdx = this.getClosestPoint(coordinates,
+                orderedBounds.get(0).getCoordinateN(0));
+        for(LineString bound: orderedBounds) {
+            for (Coordinate coordinate : bound.getCoordinates()) {
+                coordinates.add(++closestIdx, coordinate);
+            }
         }
         coordinates.add(coordinates.get(0));
-
-        LinearRing shell =
-                this.geometryFactory.createLinearRing(coordinates.toArray(new Coordinate[0]));
-        this.playArea = this.geometryFactory.createPolygon(shell,
-                this.getObstacles().toArray(new LinearRing[0]));
+        this.shell = geomFact.createLinearRing(coordinates.toArray(new Coordinate[0]));
     }
 
     private int getClosestPoint(List<Coordinate> coordinates, Coordinate coordinate) {
@@ -121,13 +92,9 @@ public class Map {
 
     public List<Geometry> getObstacles() {
         List<Geometry> obstacles = new ArrayList<>();
-        for(int i = 1; i < this.playArea.getBoundary().getNumGeometries(); i++ ) {
-            obstacles.add(this.playArea.getBoundary().getGeometryN(i));
+        for(int i = 1; i < this.getBoundary().getNumGeometries(); i++ ) {
+            obstacles.add(this.getBoundary().getGeometryN(i));
         }
         return obstacles;
-    }
-
-    public Geometry getPlayArea() {
-        return this.playArea;
     }
 }

@@ -5,7 +5,6 @@ import org.locationtech.jts.geom.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -16,14 +15,14 @@ public class RoutePlanner {
 
     private HashMap<Coordinate, Integer> waypoints = new HashMap<>();
     private int[] route; // element i gives us the next closest waypoint from i
-    private Map map;
+    private Geometry map;
     private VisibilityGraph visibilityGraph;
     private List<List<List<Coordinate>>> paths = new ArrayList<>();
 
-    public RoutePlanner(Map map, List<Coordinate> waypoints) throws IOException {
+    public RoutePlanner(Geometry map, List<Coordinate> waypoints) throws IOException {
         double[][] distanceMatrix = new double[waypoints.size()][waypoints.size()];
         this.map = map;
-        this.visibilityGraph = new VisibilityGraph(this.map.getPlayArea());
+        this.visibilityGraph = new VisibilityGraph(this.map);
 
         System.out.println("Calculating distances and paths for waypoints...");
         for(int i = 0; i < waypoints.size(); i++) {;
@@ -62,7 +61,7 @@ public class RoutePlanner {
         double dist = line.getLength();
 
         List<Coordinate> path = new ArrayList<>();
-        if (!this.map.inAllowedArea(line)) {
+        if (!this.map.covers(line)) {
             this.visibilityGraph.addCoordinate(waypoint);
             this.visibilityGraph.addCoordinate(waypoint1);
             PathFinder pathFinder = new PathFinder(this.visibilityGraph.getGraph());

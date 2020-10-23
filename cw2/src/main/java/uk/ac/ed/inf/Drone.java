@@ -2,6 +2,7 @@ package uk.ac.ed.inf;
 
 
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import java.util.ArrayList;
@@ -16,12 +17,12 @@ public class Drone {
 
     private Coordinate position;
     private RoutePlanner routePlanner;
-    private Map map;
+    private Geometry map;
     private HashSet<Sensor> sensorsToRead = new HashSet<>();
     private DroneLogger logger;
     private int numMoves = 0;
 
-    public Drone(Coordinate position, DroneLogger logger, Map map, List<Sensor> sensors) throws Exception {
+    public Drone(Coordinate position, DroneLogger logger, Geometry map, List<Sensor> sensors) throws Exception {
         this.position = position;
         this.logger = logger;
         this.sensorsToRead.addAll(sensors);
@@ -94,7 +95,7 @@ public class Drone {
     private boolean verifyMove(Coordinate currentCoordinate, Coordinate newCoordinate) {
         Coordinate[] edgeCoords = new Coordinate[]{currentCoordinate, newCoordinate};
         LineString edge = new GeometryFactory().createLineString(edgeCoords);
-        return this.map.inAllowedArea(edge);
+        return this.map.covers(edge);
     }
 
     private Coordinate getNewCoordinate(Coordinate currentCoordinate, int angle) {
