@@ -13,8 +13,6 @@ import java.util.List;
  */
 public class RoutePlanner {
 
-    private GraphOptimizer optimizer;
-    private double[][] distanceMatrix;
     private HashMap<Coordinate, Integer> waypoints = new HashMap<>();
     private int[] route;
     private Map map;
@@ -22,7 +20,7 @@ public class RoutePlanner {
     private List<List<List<Coordinate>>> paths = new ArrayList<>();
 
     public RoutePlanner(Map map, List<Coordinate> waypoints) throws IOException {
-        this.distanceMatrix = new double[waypoints.size()][waypoints.size()];
+        double[][] distanceMatrix = new double[waypoints.size()][waypoints.size()];
         this.map = map;
         this.visibilityGraph = new VisibilityGraph(this.map.getPlayArea());
 
@@ -37,10 +35,10 @@ public class RoutePlanner {
                     Pair<List<Coordinate>, Double> pathInfo =
                             this.calculateDistance(waypoints.get(i),
                                     waypoints.get(j));
+                    row.set(j, pathInfo.first); // needed path
                     distance = pathInfo.second;
-                    row.set(j, pathInfo.first);
                 }
-                this.distanceMatrix[i][j] = distance;
+                distanceMatrix[i][j] = distance;
             }
             paths.add(row);
         }
@@ -52,8 +50,8 @@ public class RoutePlanner {
 
          */
         System.out.println("NOW OPTIMIZER");
-        this.optimizer = new GraphOptimizer(this.distanceMatrix);
-        int[] routeIdxs = this.optimizer.optimize();
+        GraphOptimizer optimizer = new GraphOptimizer(distanceMatrix);
+        int[] routeIdxs = optimizer.optimize();
         this.route = new int[routeIdxs.length-1];
         for(int i = 0; i < route.length - 1; i++) {
             this.route[routeIdxs[i]] = routeIdxs[i + 1];

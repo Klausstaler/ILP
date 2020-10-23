@@ -33,7 +33,7 @@ public class VisibilityGraph {
         for(int i = 0; i < boundary.getNumGeometries(); i++)
             boundaries.add(boundary.getGeometryN(i));
 
-        for(org.locationtech.jts.geom.Geometry obstacle: boundaries) {
+        for(Geometry obstacle: boundaries) {
             allCoordinates.addAll(Arrays.asList(obstacle.getCoordinates()));
         }
 

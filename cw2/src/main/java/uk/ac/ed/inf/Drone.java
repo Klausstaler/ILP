@@ -1,7 +1,6 @@
 package uk.ac.ed.inf;
 
 
-import com.mapbox.geojson.Point;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
@@ -40,6 +39,7 @@ public class Drone {
         Coordinate referenceCoord = position;
         while (route.get(route.size()-1) != position) {
             for(Coordinate coord : route) {
+                System.out.println("FLYING TO " + coord);
                 Coordinate newCoord = this.navigate(currCoord, coord);
                 currCoord = newCoord;
                 referenceCoord = coord;
@@ -66,8 +66,10 @@ public class Drone {
 
     private Coordinate navigate(Coordinate from, Coordinate to) throws Exception {
         Coordinate currentCoordinate = from;
-        while (currentCoordinate.distance(to) > SENSOR_RADIUS) {
+        boolean isFirst = true;
+        while (currentCoordinate.distance(to) > SENSOR_RADIUS || isFirst) {
             int angle = this.calculateAngle(currentCoordinate, to);
+            System.out.println(angle);
             double new_x = currentCoordinate.x + Math.cos(Math.toRadians(angle))*MOVE_LENGTH;
             double new_y = currentCoordinate.y + Math.sin(Math.toRadians(angle))*MOVE_LENGTH;
             Coordinate newCoordinate = new Coordinate(new_x, new_y);
@@ -85,6 +87,7 @@ public class Drone {
                 this.logger.close();
                 throw new Exception("BRUH OUTSIDE ALLOWED AREA");
             }
+            isFirst = false;
         }
         return currentCoordinate;
     }
@@ -97,10 +100,8 @@ public class Drone {
         if(angle < 0){
             angle += 360;
         }
+        System.out.println("Unrounded angle is " + angle);
         return (int) Math.round(angle / 10) *10;
     }
 
-    private Point toGeoJSON(Coordinate coord) {
-        return Point.fromLngLat(coord.getX(), coord.getY());
-    }
 }
