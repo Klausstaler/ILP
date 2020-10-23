@@ -56,44 +56,60 @@ public class Drone {
 
     private Sensor collectSensorReading(Coordinate coordinate) {
         Sensor read_sensor = null;
+        double minDistance = Double.MAX_VALUE;
         for(Sensor sensor : sensorsToRead) {
-            if (sensor.distance(coordinate) < SENSOR_RADIUS) {
+            double dist = sensor.distance(coordinate);
+            if (dist < minDistance) {
+                minDistance = dist;
                 read_sensor = sensor;
-                sensorsToRead.remove(sensor);
-                break;
             }
         }
-        return read_sensor;
+        if (minDistance < SENSOR_RADIUS) {
+            sensorsToRead.remove(read_sensor);
+            return read_sensor;
+        }
+        return null;
     }
 
     private Coordinate navigate(Coordinate from, Coordinate to) throws Exception {
         Coordinate currentCoordinate = from;
         boolean isFirstMove = true;
-        boolean addToAngle = false;
+        boolean subtractOfAngle = false;
 
+
+        System.out.println("NAVIGATING FROM " + from + " TO " + to);
         while (currentCoordinate.distance(to) > SENSOR_RADIUS || isFirstMove) {
+            int counter = 0;
             int angle = this.calculateAngle(currentCoordinate, to);
+            System.out.println("INITIAL ANGLE " + angle);
             Coordinate newCoordinate = this.getNewCoordinate(currentCoordinate, angle);
-            int counter = 1;
             while (!this.verifyMove(currentCoordinate, newCoordinate)) {
-                angle = addToAngle ? Math.min(350, angle+10*counter) : Math.max(0,
-                        angle-10*counter);
-                addToAngle = !addToAngle;
-                newCoordinate = this.getNewCoordinate(currentCoordinate, angle+10);
+                if (subtractOfAngle) {
+                    int newAngle = (angle-10*counter);
+                    angle = newAngle < 0 ? newAngle + 360 : newAngle;
+                }
+                else {
+                    angle = (angle + 10 * counter) % 360;
+                }
+                System.out.println("COMPUTED ANGLE " + angle);
+                subtractOfAngle = !subtractOfAngle;
+                newCoordinate = this.getNewCoordinate(currentCoordinate, angle);
                 if (counter++ > 35) {
-                    System.out.println("OUTSIDE AREA");
                     this.loggers.forEach((DroneLogger::close));
                     throw new Exception("BRUH OUTSIDE ALLOWED AREA");
                 }
             }
             this.numMoves++;
+            System.out.println("ANGLE " + angle);
+            System.out.println("FROM " + currentCoordinate + "TO " + newCoordinate);
+            Sensor reading = collectSensorReading(newCoordinate);
             for(DroneLogger logger: loggers) {
-                logger.log(newCoordinate,
-                        collectSensorReading(newCoordinate));
+                logger.log(newCoordinate, reading);
             }
             currentCoordinate = newCoordinate;
             isFirstMove = false;
         }
+        System.out.println("ENDING MOVE");
         return currentCoordinate;
     }
 
