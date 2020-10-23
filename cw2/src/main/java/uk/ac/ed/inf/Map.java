@@ -63,14 +63,14 @@ public class Map {
 
         List<LineString> orderedBounds = this.alignLines(newBounds);
 
-        List<Coordinate> boundCoords = new ArrayList<>();
+        List<Coordinate> additionalBoundaryCoords = new ArrayList<>();
         for(LineString bound: orderedBounds)
-            boundCoords.addAll(Arrays.asList(bound.getCoordinates()));
+            additionalBoundaryCoords.addAll(Arrays.asList(bound.getCoordinates()));
 
 
-        int closestIdx = this.getClosestPoint(coordinates, boundCoords.get(0));
+        int closestIdx = this.getClosestPoint(coordinates, additionalBoundaryCoords.get(0));
 
-        for(Coordinate newCoord : boundCoords) {
+        for(Coordinate newCoord : additionalBoundaryCoords) {
             coordinates.add(++closestIdx, newCoord);
         }
         coordinates.add(coordinates.get(0));
@@ -96,7 +96,7 @@ public class Map {
     }
 
     private List<LineString> alignLines(MultiLineString lines) {
-        double EPSILON = 0.000001;
+        final double EPSILON = 0.000001;
         List<LineString> orderedLines = new ArrayList<>();
 
         for(int i = 0; i < lines.getNumGeometries(); i++) {

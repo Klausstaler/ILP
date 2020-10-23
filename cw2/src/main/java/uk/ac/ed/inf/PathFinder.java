@@ -27,7 +27,7 @@ public class PathFinder {
         while (!settled.contains(target)) {
             int currNode = this.nodePriorityQueue.remove().node;
             settled.add(currNode);
-            this.paths.get(currNode).add(currNode);
+            this.paths.get(currNode).add(currNode); // add the currentNode as last element
             this.expandNeighbors(currNode);
         }
         int[] path = this.paths.get(target).stream().mapToInt(i -> i).toArray();
