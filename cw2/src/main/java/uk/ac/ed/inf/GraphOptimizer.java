@@ -32,12 +32,17 @@ public class GraphOptimizer {
 
         int[] sol = new int[this.distanceMatrix.length+1];
         int idx = 0;
+        String id;
         for(var route : Solutions.bestOf(solutions).getRoutes()) {
+            /*
             var id = route.getStart().getLocation().getId();
             sol[idx++] = Integer.parseInt(id);
+            System.out.println(Arrays.toString(sol));
+             */
             for (var activity : route.getActivities()) {
                 id = activity.getLocation().getId();
                 sol[idx++] = Integer.parseInt(id);
+                System.out.println(Arrays.toString(sol));
             }
             id = route.getEnd().getLocation().getId();
             System.out.println(Arrays.toString(sol));

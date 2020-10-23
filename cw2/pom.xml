@@ -49,16 +49,6 @@
       <version>1.17.1</version>
     </dependency>
     <dependency>
-      <groupId>com.google.ortools</groupId>
-      <artifactId>ortools-win32-x86-64</artifactId>
-      <version>8.0.9999</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.ortools</groupId>
-      <artifactId>ortools-java</artifactId>
-      <version>8.0.9999</version>
-    </dependency>
-    <dependency>
       <groupId>com.graphhopper</groupId>
       <artifactId>jsprit-core</artifactId>
       <version>1.8</version>
