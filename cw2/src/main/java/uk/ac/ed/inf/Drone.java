@@ -75,6 +75,7 @@ public class Drone {
         Coordinate currentCoordinate = from;
         boolean isFirstMove = true;
         boolean subtractOfAngle = false;
+        HashSet<Coordinate> visited = new HashSet<>();
 
 
         System.out.println("NAVIGATING FROM " + from + " TO " + to);
@@ -85,7 +86,7 @@ public class Drone {
             Coordinate newCoordinate = this.getNewCoordinate(currentCoordinate, angle);
             while (!this.verifyMove(currentCoordinate, newCoordinate)) {
                 if (subtractOfAngle) {
-                    int newAngle = (angle-10*counter);
+                    int newAngle = (angle-10*counter) % 360;
                     angle = newAngle < 0 ? newAngle + 360 : newAngle;
                 }
                 else {
@@ -93,7 +94,8 @@ public class Drone {
                 }
                 System.out.println("COMPUTED ANGLE " + angle);
                 subtractOfAngle = !subtractOfAngle;
-                newCoordinate = this.getNewCoordinate(currentCoordinate, angle);
+                Coordinate candidate = this.getNewCoordinate(currentCoordinate, angle);
+                newCoordinate = visited.contains(candidate) ? newCoordinate : candidate;
                 if (counter++ > 35) {
                     this.loggers.forEach((DroneLogger::close));
                     throw new Exception("BRUH OUTSIDE ALLOWED AREA");
@@ -106,6 +108,7 @@ public class Drone {
             for(DroneLogger logger: loggers) {
                 logger.log(newCoordinate, reading);
             }
+            visited.add(newCoordinate);
             currentCoordinate = newCoordinate;
             isFirstMove = false;
         }
