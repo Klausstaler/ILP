@@ -58,6 +58,11 @@
       <artifactId>ortools-java</artifactId>
       <version>8.0.9999</version>
     </dependency>
+    <dependency>
+      <groupId>com.graphhopper</groupId>
+      <artifactId>jsprit-core</artifactId>
+      <version>1.8</version>
+    </dependency>
   </dependencies>
 
   <build>
