@@ -34,11 +34,6 @@ public class GraphOptimizer {
         int idx = 0;
         String id;
         for(var route : Solutions.bestOf(solutions).getRoutes()) {
-            /*
-            var id = route.getStart().getLocation().getId();
-            sol[idx++] = Integer.parseInt(id);
-            System.out.println(Arrays.toString(sol));
-             */
             for (var activity : route.getActivities()) {
                 id = activity.getLocation().getId();
                 sol[idx++] = Integer.parseInt(id);

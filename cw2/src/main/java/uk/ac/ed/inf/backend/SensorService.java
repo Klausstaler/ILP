@@ -76,10 +76,6 @@ public class SensorService extends BackendService {
         return coordinate;
     }
 
-    public Sensor sensorByLocation(String location) {
-        return this.sensors.get(location);
-    }
-
     public List<Sensor> getSensors() {
         return new ArrayList<Sensor>(this.sensors.values());
     }

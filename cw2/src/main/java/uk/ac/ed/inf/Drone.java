@@ -67,6 +67,7 @@ public class Drone {
         Coordinate currentCoordinate = from;
         boolean isFirstMove = true;
         boolean addToAngle = false;
+
         while (currentCoordinate.distance(to) > SENSOR_RADIUS || isFirstMove) {
             int angle = this.calculateAngle(currentCoordinate, to);
             Coordinate newCoordinate = this.getNewCoordinate(currentCoordinate, angle);
