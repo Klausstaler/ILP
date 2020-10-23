@@ -19,7 +19,7 @@ public class ReadingLogger extends DroneLogger {
     private HashMap<String, Feature> markers = new HashMap<>();
 
     public ReadingLogger(Coordinate initialPos, String date, List<Sensor> sensors) throws IOException {
-        super(initialPos, "readings"+date+".geojson");
+        super(initialPos, "readings-"+date+".geojson");
         this.flightPath.add(initialPos);
         for(Sensor sensor : sensors) {
             Feature feature = Feature.fromGeometry(Point.fromLngLat(sensor.x, sensor.y));

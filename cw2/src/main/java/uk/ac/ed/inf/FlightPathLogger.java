@@ -9,7 +9,7 @@ public class FlightPathLogger extends DroneLogger {
     private int lineNbr = 1;
 
     public FlightPathLogger(Coordinate initialPos, String date) throws IOException {
-        super(initialPos, "flightpath"+date+".txt");
+        super(initialPos, "flightpath-"+date+".txt");
         System.out.println("Flightpath logger initialized...");
     }
 
