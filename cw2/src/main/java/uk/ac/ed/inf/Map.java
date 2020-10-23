@@ -1,7 +1,6 @@
 package uk.ac.ed.inf;
 
 import org.locationtech.jts.geom.*;
-import uk.ac.ed.inf.backend.ObstacleService;
 
 import java.util.*;
 
@@ -11,7 +10,7 @@ public class Map {
     private Polygon playArea;
 
 
-    public Map(ObstacleService obstacleService) {
+    public Map(List<LinearRing> obstacles) {
 
         Coordinate[] boundaries = {new Coordinate(-3.192473, 55.946233), //NW
                 new Coordinate(-3.184319, 55.946233), // NE
@@ -22,7 +21,7 @@ public class Map {
         this.playArea = this.geometryFactory.createPolygon(shell);
 
 
-        this.addObstacles(obstacleService.getObstacles());
+        this.addObstacles(obstacles);
     }
 
     public boolean inAllowedArea(Geometry position) {

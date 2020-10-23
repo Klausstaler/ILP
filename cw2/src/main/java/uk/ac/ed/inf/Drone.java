@@ -5,7 +5,6 @@ import com.mapbox.geojson.Point;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
-import uk.ac.ed.inf.backend.SensorService;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -23,10 +22,10 @@ public class Drone {
     private DroneLogger logger;
     private int numMoves = 0;
 
-    public Drone(Coordinate position, DroneLogger logger, Map map, SensorService sensorService) throws Exception {
+    public Drone(Coordinate position, DroneLogger logger, Map map, List<Sensor> sensors) throws Exception {
         this.position = position;
         this.logger = logger;
-        this.sensorsToRead.addAll(sensorService.getSensors());
+        this.sensorsToRead.addAll(sensors);
         this.map = map;
         List<Coordinate> waypoints = new ArrayList<>();
         waypoints.add(position);
@@ -40,7 +39,7 @@ public class Drone {
         Coordinate currCoord = position;
         Coordinate referenceCoord = position;
         while (route.get(route.size()-1) != position) {
-            for( Coordinate coord : route) {
+            for(Coordinate coord : route) {
                 Coordinate newCoord = this.navigate(currCoord, coord);
                 currCoord = newCoord;
                 referenceCoord = coord;
@@ -63,7 +62,6 @@ public class Drone {
             }
         }
         return read_sensor;
-
     }
 
     private Coordinate navigate(Coordinate from, Coordinate to) throws Exception {
