@@ -3,6 +3,7 @@ package uk.ac.ed.inf.backend;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mapbox.geojson.FeatureCollection;
 import org.locationtech.jts.geom.Coordinate;
 import uk.ac.ed.inf.Sensor;
 
@@ -43,7 +44,7 @@ public class SensorService extends BackendService {
     }
 
     private Sensor JsonToSensor(JsonElement rawSensor) throws IOException {
-        JsonObject sensorProperties = rawSensor.getAsJsonObject(); // USE FEATURES INSTEAD OF GSON
+        JsonObject sensorProperties = rawSensor.getAsJsonObject();
         String location = sensorProperties.get("location").getAsString();
         Coordinate coordinate = this.getCoordinate(sensorProperties);
         Double reading = null;

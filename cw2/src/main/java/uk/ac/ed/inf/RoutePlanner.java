@@ -61,7 +61,8 @@ public class RoutePlanner {
         paths.get(from_idx).set(to_idx, path); // path from i to j with possible
         // waypoints in between
         List<Coordinate> reversedPath = new ArrayList<>(path);
-        reversedPath.remove(reversedPath.size()-1); // remove to Coordinate
+        reversedPath.remove(reversedPath.size()-1); // remove 'to' coordinate, as we now go from
+        // need 'from' at the end
         Collections.reverse(reversedPath);
         reversedPath.add(from);
         paths.get(to_idx).set(from_idx, reversedPath);
@@ -80,13 +81,13 @@ public class RoutePlanner {
             int[] routeIdxs = pair.first;
             dist = pair.second;
 
-            for (int i = 1; i < routeIdxs.length - 1; i++) {
+            for (int i = 1; i < routeIdxs.length; i++) {
                 path.add(this.visibilityGraph.getAllCoordinates().get(routeIdxs[i]));
             }
             this.visibilityGraph.removeLast();
             this.visibilityGraph.removeLast();
         }
-        path.add(to);
+        else path.add(to);
         return new Pair<>(path, dist);
     }
 
