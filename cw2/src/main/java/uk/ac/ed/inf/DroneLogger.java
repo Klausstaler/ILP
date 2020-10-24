@@ -10,8 +10,6 @@ public abstract class DroneLogger {
     protected Coordinate position;
     protected FileWriter file;
 
-    public DroneLogger() {}
-
     public DroneLogger(Coordinate initialPos, String loggingPath) throws IOException {
         this.position = initialPos;
         this.file = new FileWriter(loggingPath);

@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ObstacleService extends  BackendService{
+public class ObstacleService extends BackendService {
 
     private List<LinearRing> obstacles;
 
@@ -23,7 +23,7 @@ public class ObstacleService extends  BackendService{
         List<LinearRing> obstacles = new ArrayList<>();
 
         FeatureCollection features = FeatureCollection.fromJson(this.readResponse());
-        for (Feature feature: features.features()) {
+        for (Feature feature : features.features()) {
             LinearRing obstacle = this.toLinearRing(feature);
             obstacles.add(obstacle);
         }
@@ -38,9 +38,7 @@ public class ObstacleService extends  BackendService{
             Coordinate coordinate = new Coordinate(point.longitude(), point.latitude());
             coordinates.add(coordinate);
         }
-        LinearRing ring =
-                new GeometryFactory().createLinearRing(coordinates.toArray(new Coordinate[0]));
-        return ring;
+        return new GeometryFactory().createLinearRing(coordinates.toArray(new Coordinate[0]));
     }
 
     public List<LinearRing> getObstacles() {

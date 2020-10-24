@@ -2,9 +2,11 @@ package uk.ac.ed.inf;
 
 import org.locationtech.jts.geom.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-public class Map extends Polygon{
+public class Map extends Polygon {
 
     private static GeometryFactory geomFact = new GeometryFactory();
 
@@ -38,12 +40,12 @@ public class Map extends Polygon{
     private void alignShell(LinearRing obstacle) {
         MultiLineString newBounds = (MultiLineString) this.intersection(obstacle);
         List<Coordinate> coordinates = new ArrayList<>(Arrays.asList(this.shell.getCoordinates()));
-        coordinates.remove(coordinates.size()-1);
+        coordinates.remove(coordinates.size() - 1);
 
         List<LineString> orderedBounds = this.alignLines(newBounds);
         int closestIdx = this.getClosestPoint(coordinates,
                 orderedBounds.get(0).getCoordinateN(0));
-        for(LineString bound: orderedBounds) {
+        for (LineString bound : orderedBounds) {
             for (Coordinate coordinate : bound.getCoordinates()) {
                 coordinates.add(++closestIdx, coordinate);
             }
@@ -55,7 +57,7 @@ public class Map extends Polygon{
     private int getClosestPoint(List<Coordinate> coordinates, Coordinate coordinate) {
         int closestIdx = 0;
         double minDist = Double.MAX_VALUE;
-        for(int i = 0; i < coordinates.size(); i++) {
+        for (int i = 0; i < coordinates.size(); i++) {
             Coordinate currCoord = coordinates.get(i);
             if (currCoord.distance(coordinate) < minDist) {
                 closestIdx = i;
@@ -70,19 +72,19 @@ public class Map extends Polygon{
         final double EPSILON = 0.000001;
         List<LineString> orderedLines = new ArrayList<>();
 
-        for(int i = 0; i < lines.getNumGeometries(); i++) {
+        for (int i = 0; i < lines.getNumGeometries(); i++) {
 
             LineString currLine = (LineString) lines.getGeometryN(i);
             Coordinate[] currCoords = currLine.getCoordinates();
 
             LineString prevLine = (orderedLines.size() > 0) ?
-                    orderedLines.get(orderedLines.size()-1) : null;
+                    orderedLines.get(orderedLines.size() - 1) : null;
             Coordinate[] prevCoords = prevLine != null ? prevLine.getCoordinates() : null;
 
-            if (prevCoords == null || prevCoords[prevCoords.length-1].distance(currCoords[0]) < EPSILON)
+            if (prevCoords == null || prevCoords[prevCoords.length - 1].distance(currCoords[0]) < EPSILON)
                 orderedLines.add(currLine);
-            else if (prevCoords[0].distance(currCoords[currCoords.length-1]) < EPSILON) {
-                orderedLines.remove(orderedLines.size()-1);
+            else if (prevCoords[0].distance(currCoords[currCoords.length - 1]) < EPSILON) {
+                orderedLines.remove(orderedLines.size() - 1);
                 orderedLines.add(currLine);
                 orderedLines.add(prevLine);
             }

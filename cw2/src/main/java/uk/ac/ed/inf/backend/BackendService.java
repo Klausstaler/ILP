@@ -18,15 +18,15 @@ public class BackendService {
     public BackendService(String url, String port) throws IOException {
         System.out.println("BackendService initializing with " + url);
 
-        this.setupNewUrl(String.format("%s:%s/",url, port));
-        this.baseUrl = new URL(String.format("%s:%s/",url, port));
+        this.setupNewUrl(String.format("%s:%s/", url, port));
+        this.baseUrl = new URL(String.format("%s:%s/", url, port));
 
         System.out.println("Finished initialization of BackendService.");
     }
 
     protected void setupNewUrl(String url) throws IOException {
         this.url = new URL(url);
-        this.connection =  (HttpURLConnection) this.url.openConnection();
+        this.connection = (HttpURLConnection) this.url.openConnection();
         this.connection.setRequestMethod("GET");
     }
 

@@ -19,9 +19,9 @@ public class ReadingLogger extends DroneLogger {
     private HashMap<String, Feature> markers = new HashMap<>();
 
     public ReadingLogger(Coordinate initialPos, String date, List<Sensor> sensors) throws IOException {
-        super(initialPos, "readings-"+date+".geojson");
+        super(initialPos, "readings-" + date + ".geojson");
         this.flightPath.add(initialPos);
-        for(Sensor sensor : sensors) {
+        for (Sensor sensor : sensors) {
             Feature feature = Feature.fromGeometry(Point.fromLngLat(sensor.x, sensor.y));
             feature.addStringProperty("marker-color",
                     MarkerProperties.from("notVisited").getRgbString());
@@ -53,15 +53,14 @@ public class ReadingLogger extends DroneLogger {
         try {
             this.file.write(features.toJson());
             this.file.close();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("ERROR CLOSING READINGLOGGER");
         }
     }
 
     private void updateMarkerProps(Sensor read_sensor) {
         Feature marker = this.markers.get(read_sensor.getLocation());
-        MarkerProperties markerProps =(read_sensor.getBattery() < MIN_BATTERY) ?
+        MarkerProperties markerProps = (read_sensor.getBattery() < MIN_BATTERY) ?
                 MarkerProperties.from("lowBattery") :
                 MarkerProperties.fromAirPollution(read_sensor.getReading());
 

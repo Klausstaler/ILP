@@ -1,9 +1,10 @@
 package uk.ac.ed.inf;
 
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
 
 import java.util.Objects;
+
 public class Sensor extends Coordinate {
 
     private String location;

@@ -19,19 +19,19 @@ public class PathFinder {
         this.initialize();
     }
 
-    public Pair<int[], Double> shortestPath(int src, int target) {
+    public Pair<int[], Double> shortestPath(int srcIdx, int targetIdx) {
         this.initialize();
-        this.nodePriorityQueue.add(new Node(src, 0));
-        this.dists[src] = 0;
+        this.nodePriorityQueue.add(new Node(srcIdx, 0));
+        this.dists[srcIdx] = 0;
 
-        while (!settled.contains(target)) {
+        while (!settled.contains(targetIdx)) {
             int currNode = this.nodePriorityQueue.remove().node;
             settled.add(currNode);
             this.paths.get(currNode).add(currNode); // add the currentNode as last element
             this.expandNeighbors(currNode);
         }
-        int[] path = this.paths.get(target).stream().mapToInt(i -> i).toArray();
-        return new Pair<>(path, this.dists[target]);
+        int[] path = this.paths.get(targetIdx).stream().mapToInt(i -> i).toArray();
+        return new Pair<>(path, this.dists[targetIdx]);
     }
 
 

@@ -9,7 +9,7 @@ public class FlightPathLogger extends DroneLogger {
     private int lineNbr = 1;
 
     public FlightPathLogger(Coordinate initialPos, String date) throws IOException {
-        super(initialPos, "flightpath-"+date+".txt");
+        super(initialPos, "flightpath-" + date + ".txt");
         System.out.println("Flightpath logger initialized...");
     }
 
@@ -27,7 +27,7 @@ public class FlightPathLogger extends DroneLogger {
         String newX = String.valueOf(newPos.getX()).replace(',', '.');
         String newY = String.valueOf(newPos.getY()).replace(',', '.');
 
-        String line = String.format("%d,%s,%s,%d,%s,%s,%s",this.lineNbr,
+        String line = String.format("%d,%s,%s,%d,%s,%s,%s", this.lineNbr,
                 currX, currY, direction, newX, newY, location);
         if (this.lineNbr != 1) {
             line = "\n" + line;
@@ -35,8 +35,7 @@ public class FlightPathLogger extends DroneLogger {
 
         try {
             this.file.write(line);
-        }
-        catch (IOException exception) {
+        } catch (IOException exception) {
             System.out.println("ERROR SAVING FLIGHT PATH!");
         }
 
@@ -49,8 +48,7 @@ public class FlightPathLogger extends DroneLogger {
         System.out.println("CLOSING FILE");
         try {
             this.file.close();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("ERROR CLOSING FLIGHTPATHLOGGER");
         }
     }

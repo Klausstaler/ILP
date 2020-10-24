@@ -1,7 +1,10 @@
 package uk.ac.ed.inf;
 
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,11 +28,11 @@ public class RoutePlanner {
         this.visibilityGraph = new VisibilityGraph(this.map);
 
         System.out.println("Calculating distances and paths for waypoints...");
-        for(int i = 0; i < waypoints.size(); i++) {;
+        for (int i = 0; i < waypoints.size(); i++) {
             this.waypoints.put(waypoints.get(i), i);
             List<List<Coordinate>> paths = new ArrayList<>(); // all paths from i to all other
             // waypoints
-            for(int j = 0; j < waypoints.size(); j++) {
+            for (int j = 0; j < waypoints.size(); j++) {
                 double distance = 0.0;
                 paths.add(new ArrayList<>());
                 if (i != j) {
@@ -49,34 +52,34 @@ public class RoutePlanner {
         System.out.println("NOW OPTIMIZER");
         GraphOptimizer optimizer = new GraphOptimizer(distanceMatrix);
         int[] routeIdxs = optimizer.optimize();
-        this.route = new int[routeIdxs.length-1];
-        for(int i = 0; i < route.length - 1; i++) {
+        this.route = new int[routeIdxs.length - 1];
+        for (int i = 0; i < route.length - 1; i++) {
             this.route[routeIdxs[i]] = routeIdxs[i + 1];
         }
     }
 
-    private Pair<List<Coordinate>, Double> calculateDistance(Coordinate waypoint, Coordinate waypoint1) {
-        Coordinate[] coordinates = new Coordinate[] {waypoint, waypoint1};
+    private Pair<List<Coordinate>, Double> calculateDistance(Coordinate from, Coordinate to) {
+        Coordinate[] coordinates = new Coordinate[]{from, to};
         LineString line = new GeometryFactory().createLineString(coordinates);
         double dist = line.getLength();
 
         List<Coordinate> path = new ArrayList<>();
         if (!this.map.covers(line)) {
-            this.visibilityGraph.addCoordinate(waypoint);
-            this.visibilityGraph.addCoordinate(waypoint1);
+            this.visibilityGraph.addCoordinate(from);
+            this.visibilityGraph.addCoordinate(to);
             PathFinder pathFinder = new PathFinder(this.visibilityGraph.getGraph());
-            Pair<int[], Double> pair = pathFinder.shortestPath(pathFinder.getNumNodes()-2,
-                    pathFinder.getNumNodes()-1);
+            Pair<int[], Double> pair = pathFinder.shortestPath(pathFinder.getNumNodes() - 2,
+                    pathFinder.getNumNodes() - 1);
             int[] routeIdxs = pair.first;
             dist = pair.second;
 
-            for(int i = 1; i < routeIdxs.length-1; i++) {
+            for (int i = 1; i < routeIdxs.length - 1; i++) {
                 path.add(this.visibilityGraph.getAllCoordinates().get(routeIdxs[i]));
             }
             this.visibilityGraph.removeLast();
             this.visibilityGraph.removeLast();
         }
-        path.add(waypoint1);
+        path.add(to);
         return new Pair<>(path, dist);
     }
 

@@ -9,7 +9,6 @@ import com.graphhopper.jsprit.core.problem.job.Service;
 import com.graphhopper.jsprit.core.problem.vehicle.VehicleImpl;
 import com.graphhopper.jsprit.core.problem.vehicle.VehicleType;
 import com.graphhopper.jsprit.core.problem.vehicle.VehicleTypeImpl;
-import com.graphhopper.jsprit.core.reporting.SolutionPrinter;
 import com.graphhopper.jsprit.core.util.Solutions;
 import com.graphhopper.jsprit.core.util.VehicleRoutingTransportCostsMatrix;
 
@@ -26,30 +25,6 @@ public class GraphOptimizer {
         this.setupRouting();
     }
 
-    public int[] optimize() {
-
-        System.out.println("Starting graph optimization....");
-
-        var solutions = this.routing.searchSolutions();
-
-        int[] sol = new int[this.distanceMatrix.length+1];
-        int idx = Integer.parseInt(this.startLocation);
-        for(var route : Solutions.bestOf(solutions).getRoutes()) {
-            var id = route.getStart().getLocation().getId();
-            sol[idx++] = Integer.parseInt(id);
-            for (var activity : route.getActivities()) {
-                id = activity.getLocation().getId();
-                if (!id.equals(this.startLocation))
-                    sol[idx++] = Integer.parseInt(id);
-            }
-        }
-        sol[this.distanceMatrix.length] = Integer.parseInt(this.startLocation);
-        System.out.println("NOW SOLUTION");
-        System.out.println(Arrays.toString(sol));
-        System.out.println("Finished optimizing!");
-        return sol;
-    }
-
     private void setupRouting() {
 
         VehicleType type =
@@ -59,8 +34,8 @@ public class GraphOptimizer {
                 .setEndLocation(Location.newInstance(this.startLocation)).setType(type).build();
 
         var costMatrixBuilder = VehicleRoutingTransportCostsMatrix.Builder.newInstance(true);
-        for(int i = 0; i < this.distanceMatrix.length; i++) {
-            for(int j = 0; j < i; j++) {
+        for (int i = 0; i < this.distanceMatrix.length; i++) {
+            for (int j = 0; j < i; j++) {
                 double dist = this.distanceMatrix[i][j];
                 var from = String.valueOf(i);
                 var to = String.valueOf(j);
@@ -77,6 +52,30 @@ public class GraphOptimizer {
         }
         this.routeTemp = routingBuilder.build();
         this.routing = Jsprit.createAlgorithm(routingBuilder.build());
+    }
+
+    public int[] optimize() {
+
+        System.out.println("Starting graph optimization....");
+
+        var solutions = this.routing.searchSolutions();
+
+        int[] sol = new int[this.distanceMatrix.length + 1];
+        int idx = Integer.parseInt(this.startLocation);
+        for (var route : Solutions.bestOf(solutions).getRoutes()) {
+            var id = route.getStart().getLocation().getId();
+            sol[idx++] = Integer.parseInt(id);
+            for (var activity : route.getActivities()) {
+                id = activity.getLocation().getId();
+                if (!id.equals(this.startLocation))
+                    sol[idx++] = Integer.parseInt(id);
+            }
+        }
+        sol[this.distanceMatrix.length] = Integer.parseInt(this.startLocation);
+        System.out.println("NOW SOLUTION");
+        System.out.println(Arrays.toString(sol));
+        System.out.println("Finished optimizing!");
+        return sol;
     }
 
 }

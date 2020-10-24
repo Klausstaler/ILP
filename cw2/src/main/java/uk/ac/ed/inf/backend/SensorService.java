@@ -49,7 +49,7 @@ public class SensorService extends BackendService {
         Double reading = null;
         double battery = sensorProperties.get("battery").getAsDouble();
 
-        if (battery > MIN_BATTERY) {
+        if (battery > MIN_BATTERY) { // TODO: do this in drone class?
             String readingVal = sensorProperties.get("reading").getAsString();
             reading = Double.valueOf(readingVal);
         }

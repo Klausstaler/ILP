@@ -47,7 +47,7 @@ public enum MarkerProperties {
     }
 
     public static MarkerProperties from(String markerType) {
-        switch(markerType) {
+        switch (markerType) {
             case "lowBattery":
                 return MarkerProperties.LOWBATTERY;
             case "notVisited":

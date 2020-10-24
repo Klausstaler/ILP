@@ -41,8 +41,8 @@ public class Drone {
         Coordinate currCoord = position;
         Coordinate referenceCoord = position; // visited waypoint in the range of the current
         // coordinate
-        while (route.get(route.size()-1) != position) {
-            for(Coordinate coord : route) {
+        while (route.get(route.size() - 1) != position) {
+            for (Coordinate coord : route) {
                 Coordinate newCoord = this.navigate(currCoord, coord);
                 currCoord = newCoord;
                 referenceCoord = coord;
@@ -69,10 +69,9 @@ public class Drone {
             Coordinate newCoordinate = this.getNewCoordinate(currentCoordinate, angle);
             while (!this.verifyMove(currentCoordinate, newCoordinate)) {
                 if (subtractOfAngle) { // TODO: check if counter is odd or even
-                    int newAngle = (angle-10*counter) % 360;
+                    int newAngle = (angle - 10 * counter) % 360;
                     angle = newAngle < 0 ? newAngle + 360 : newAngle;
-                }
-                else {
+                } else {
                     angle = (angle + 10 * counter) % 360;
                 }
                 System.out.println("COMPUTED ANGLE " + angle);
@@ -88,7 +87,7 @@ public class Drone {
             System.out.println("ANGLE " + angle);
             System.out.println("FROM " + currentCoordinate + "TO " + newCoordinate);
             Sensor reading = this.collectSensorReading(newCoordinate);
-            for(DroneLogger logger: loggers) {
+            for (DroneLogger logger : loggers) {
                 logger.log(newCoordinate, reading);
             }
             visited.add(newCoordinate);
@@ -102,7 +101,7 @@ public class Drone {
     private Sensor collectSensorReading(Coordinate coordinate) {
         Sensor read_sensor = null;
         double minDistance = Double.MAX_VALUE;
-        for(Sensor sensor : sensorsToRead) {
+        for (Sensor sensor : sensorsToRead) {
             double dist = sensor.distance(coordinate);
             if (dist < minDistance) {
                 minDistance = dist;
@@ -123,8 +122,8 @@ public class Drone {
     }
 
     private Coordinate getNewCoordinate(Coordinate currentCoordinate, int angle) {
-        double new_x = currentCoordinate.x + Math.cos(Math.toRadians(angle))*MOVE_LENGTH;
-        double new_y = currentCoordinate.y + Math.sin(Math.toRadians(angle))*MOVE_LENGTH;
+        double new_x = currentCoordinate.x + Math.cos(Math.toRadians(angle)) * MOVE_LENGTH;
+        double new_y = currentCoordinate.y + Math.sin(Math.toRadians(angle)) * MOVE_LENGTH;
         return new Coordinate(new_x, new_y);
     }
 
