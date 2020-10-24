@@ -14,12 +14,15 @@ public class App {
         String[] dd_mm = {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10",
                 "11", "12"};
 
+        /*
         for (String day : dd_mm) {
             for (String year : new String[]{"2020", "2021"}) {
                 String month = day;
                 String date = String.format("%s-%s-%s", day, month, year);
                 System.out.println("CHECKING " + date);
-                Coordinate initalPoint = new Coordinate(-3.188396, 55.944425);
+                //Coordinate initalPoint = new Coordinate(-3.188396, 55.944425);
+                Coordinate initalPoint = new Coordinate(-3.186922967433929,
+                        55.94487577533465);
                 ObstacleService obstacleService = new ObstacleService(URL, port);
                 System.out.println("Obstacle service");
                 Map map = new Map(obstacleService.getObstacles());
@@ -33,7 +36,7 @@ public class App {
                         logger2);
             }
         }
-
+        */
         for (int d = 1; d < 31; d++) {
             for (int m = 1; m < 13; m++) {
                 for (String year : new String[]{"2020", "2021"}) {
@@ -43,7 +46,8 @@ public class App {
                     day = day.length() < 2 ? "0" + day : day;
                     String date = String.format("%s-%s-%s", day, month, year);
                     System.out.println("CHECKING " + date);
-                    Coordinate initalPoint = new Coordinate(-3.188396, 55.944425);
+                    Coordinate initalPoint = new Coordinate(-3.186922967433929,
+                            55.94487577533465);
                     ObstacleService obstacleService = new ObstacleService(URL, port);
                     System.out.println("Obstacle service");
                     Map map = new Map(obstacleService.getObstacles());
@@ -58,5 +62,6 @@ public class App {
                 }
             }
         }
+
     }
 }

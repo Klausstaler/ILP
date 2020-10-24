@@ -22,6 +22,7 @@ public class Drone {
     private Geometry map;
     private HashSet<Sensor> sensorsToRead = new HashSet<>();
     private List<DroneLogger> loggers;
+    private HashSet<Coordinate> visited = new HashSet<>();
     private int numMoves = 0;
 
     public Drone(Coordinate position, Geometry map, List<Sensor> sensors, DroneLogger... loggers) throws Exception {
@@ -41,15 +42,16 @@ public class Drone {
         Coordinate currCoord = position;
         Coordinate referenceCoord = position; // visited waypoint in the range of the current
         // coordinate
-        while (route.get(route.size() - 1) != position) {
+        boolean firstIteration = true;
+        while (referenceCoord != position || firstIteration) {
             for (Coordinate coord : route) {
                 Coordinate newCoord = this.navigate(currCoord, coord);
                 currCoord = newCoord;
                 referenceCoord = coord;
             }
             route = this.routePlanner.getNextRoute(referenceCoord);
+            firstIteration = false;
         }
-        this.navigate(currCoord, position);
         if (numMoves > MAX_MOVES)
             throw new Exception("too many moves :(");
         this.loggers.forEach((DroneLogger::close));
@@ -59,7 +61,6 @@ public class Drone {
         Coordinate currentCoordinate = from;
         boolean isFirstMove = true;
         boolean subtractOfAngle = false;
-        HashSet<Coordinate> visited = new HashSet<>();
 
         System.out.println("NAVIGATING FROM " + from + " TO " + to);
         while (currentCoordinate.distance(to) > SENSOR_RADIUS || isFirstMove) {
@@ -68,7 +69,8 @@ public class Drone {
             System.out.println("INITIAL ANGLE " + angle);
             Coordinate newCoordinate = this.getNewCoordinate(currentCoordinate, angle);
             while (!this.verifyMove(currentCoordinate, newCoordinate)) {
-                if (subtractOfAngle) { // TODO: check if counter is odd or even
+                if (counter % 2 == 1) { // ooscillate between expanding checking left and right
+                    // half of angles
                     int newAngle = (angle - 10 * counter) % 360;
                     angle = newAngle < 0 ? newAngle + 360 : newAngle;
                 } else {
@@ -77,7 +79,7 @@ public class Drone {
                 System.out.println("COMPUTED ANGLE " + angle);
                 subtractOfAngle = !subtractOfAngle;
                 Coordinate candidate = this.getNewCoordinate(currentCoordinate, angle);
-                newCoordinate = visited.contains(candidate) ? newCoordinate : candidate;
+                newCoordinate = this.visited.contains(candidate) ? newCoordinate : candidate;
                 if (counter++ > 35) {
                     this.loggers.forEach((DroneLogger::close));
                     throw new Exception("BRUH OUTSIDE ALLOWED AREA");
@@ -90,7 +92,7 @@ public class Drone {
             for (DroneLogger logger : loggers) {
                 logger.log(newCoordinate, reading);
             }
-            visited.add(newCoordinate);
+            this.visited.add(newCoordinate);
             currentCoordinate = newCoordinate;
             isFirstMove = false;
         }
