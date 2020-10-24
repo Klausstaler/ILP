@@ -18,11 +18,11 @@ public class VisibilityGraph {
 
     private void constructVisibilityGraph() {
 
-        this.initGraph();
+        this.initDistances();
         this.connectEdges();
 
         for (int i = 0; i < this.distances.size(); i++) {
-            for (int j = i+1; j < this.distances.size(); j++) {
+            for (int j = i; j < this.distances.size(); j++) {
                 Coordinate from = this.map.getCoordinates()[i];
                 Coordinate to = this.map.getCoordinates()[j];
                 if (this.map.verifyMove(from, to)) {
@@ -33,20 +33,15 @@ public class VisibilityGraph {
         }
     }
 
-    private void initGraph() {
-        List<List<Double>> graph = new ArrayList<>();
+    private void initDistances() {
+        List<List<Double>> distances = new ArrayList<>();
         int num_vertices = this.map.getCoordinates().length;
         for (int i = 0; i < num_vertices; i++) {
             List<Double> row = new ArrayList<>();
-            for (int j = 0; j < num_vertices; j++) {
-                if (i == j)
-                    row.add(0.0);
-                else
-                    row.add(Double.MAX_VALUE);
-            }
-            graph.add(row);
+            for (int j = 0; j < num_vertices; j++) row.add(Double.MAX_VALUE);
+            distances.add(row);
         }
-        this.distances = graph;
+        this.distances = distances;
     }
 
     private void connectEdges() {
