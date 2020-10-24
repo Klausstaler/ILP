@@ -58,7 +58,6 @@ public class Drone {
     private Coordinate navigate(Coordinate from, Coordinate to) throws Exception {
         Coordinate currentCoordinate = from;
         boolean isFirstMove = true;
-
         System.out.println("NAVIGATING FROM " + from + " TO " + to);
         while (currentCoordinate.distance(to) > SENSOR_RADIUS || isFirstMove) {
             int counter = 0; // used to calculate angles for alternative paths if current path is
@@ -66,13 +65,7 @@ public class Drone {
             int angle = Angles.calculateAngle(currentCoordinate, to);
             Coordinate newCoordinate = this.getNewCoordinate(currentCoordinate, angle);
             while (!this.map.verifyMove(currentCoordinate, newCoordinate)) {
-                if (counter % 2 == 1) { // oscillate between expanding left and right
-                    // half of possible angles
-                    int newAngle = (angle - 10 * counter) % 360;
-                    angle = newAngle < 0 ? newAngle + 360 : newAngle;
-                } else {
-                    angle = (angle + 10 * counter) % 360;
-                }
+                angle = this.adjustAngle(angle, counter);
                 Coordinate candidate = this.getNewCoordinate(currentCoordinate, angle);
                 newCoordinate = this.visited.contains(candidate) ? newCoordinate : candidate;
                 if (counter++ > 35) {
@@ -87,6 +80,17 @@ public class Drone {
             this.numMoves++;
         }
         return currentCoordinate;
+    }
+
+    private int adjustAngle(int angle, int oscillation) {
+        if (oscillation % 2 == 1) { // oscillate between expanding left and right
+            // half of possible angles
+            int newAngle = (angle - 10 * oscillation) % 360;
+            angle = newAngle < 0 ? newAngle + 360 : newAngle;
+        } else {
+            angle = (angle + 10 * oscillation) % 360;
+        }
+        return angle;
     }
 
     private void log(Coordinate coordinate) {
