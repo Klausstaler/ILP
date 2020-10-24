@@ -60,7 +60,7 @@ public class RoutePlanner {
         if (!this.map.verifyMove(from, to)) {
             this.visibilityGraph.addCoordinate(from);
             this.visibilityGraph.addCoordinate(to);
-            PathFinder pathFinder = new PathFinder(this.visibilityGraph.getGraph());
+            PathFinder pathFinder = new PathFinder(this.visibilityGraph.getDistances());
             Pair<int[], Double> pair = pathFinder.shortestPath(pathFinder.getNumNodes() - 2,
                     pathFinder.getNumNodes() - 1);
             int[] routeIdxs = pair.first;
