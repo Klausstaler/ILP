@@ -37,8 +37,8 @@ public class App {
             }
         }
         */
-        for (int d = 1; d < 31; d++) {
-            for (int m = 1; m < 13; m++) {
+        for (int d = 29; d < 31; d++) {
+            for (int m = 3; m < 13; m++) {
                 for (String year : new String[]{"2020", "2021"}) {
                     String month = String.valueOf(m);
                     month = month.length() < 2 ? "0" + month : month;

@@ -55,7 +55,7 @@ public class VisibilityGraph {
                 if (i == j)
                     row.add(0.0);
                 else
-                    row.add((double) Long.MAX_VALUE / 2);
+                    row.add(Double.MAX_VALUE);
             }
             graph.add(row);
         }
@@ -108,7 +108,7 @@ public class VisibilityGraph {
             Coordinate from = allCoordinates.get(i);
             Coordinate[] edgeCoords = new Coordinate[]{from, toCoordinate};
             LineString edge = new GeometryFactory().createLineString(edgeCoords);
-            double dist = boundary.covers(edge) ? edge.getLength() : (double) Long.MAX_VALUE / 2; // make MAX_DIST variable
+            double dist = boundary.covers(edge) ? edge.getLength() : Double.MAX_VALUE;
             graph.get(i).add(dist);
             newRow.add(dist);
         }

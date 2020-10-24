@@ -18,7 +18,6 @@ public class GraphOptimizer {
     private String startLocation = "0";
     private double[][] distanceMatrix;
     private VehicleRoutingAlgorithm routing;
-    private VehicleRoutingProblem routeTemp;
 
     public GraphOptimizer(double[][] distanceMatrix) {
         this.distanceMatrix = distanceMatrix;
@@ -27,12 +26,34 @@ public class GraphOptimizer {
 
     private void setupRouting() {
 
+        var vehicle = this.constructVehicle();
+        var costMatrix = this.constructCostMatrix();
+        this.routing = this.constructRouter(costMatrix, vehicle);
+    }
+
+    private VehicleImpl constructVehicle() {
         VehicleType type =
                 VehicleTypeImpl.Builder.newInstance("type").build();
         VehicleImpl vehicle = VehicleImpl.Builder.newInstance("vehicle")
                 .setStartLocation(Location.newInstance(this.startLocation))
                 .setEndLocation(Location.newInstance(this.startLocation)).setType(type).build();
+        return vehicle;
+    }
 
+    private VehicleRoutingAlgorithm constructRouter(VehicleRoutingTransportCostsMatrix costMatrix, VehicleImpl vehicle) {
+
+        var routingBuilder = VehicleRoutingProblem.Builder.newInstance().setRoutingCost(costMatrix)
+                .addVehicle(vehicle);
+
+        for (int i = 0; i < this.distanceMatrix.length; i++) {
+            String id = String.valueOf(i);
+            var job = Service.Builder.newInstance(id).setLocation(Location.newInstance(id)).build();
+            routingBuilder = routingBuilder.addJob(job);
+        }
+        return Jsprit.createAlgorithm(routingBuilder.build());
+    }
+
+    private VehicleRoutingTransportCostsMatrix constructCostMatrix() {
         var costMatrixBuilder = VehicleRoutingTransportCostsMatrix.Builder.newInstance(true);
         for (int i = 0; i < this.distanceMatrix.length; i++) {
             for (int j = 0; j < i; j++) {
@@ -42,16 +63,7 @@ public class GraphOptimizer {
                 costMatrixBuilder.addTransportDistance(from, to, dist);
             }
         }
-        var costMatrix = costMatrixBuilder.build();
-        var routingBuilder = VehicleRoutingProblem.Builder.newInstance().setRoutingCost(costMatrix)
-                .addVehicle(vehicle);
-        for (int i = 0; i < this.distanceMatrix.length; i++) {
-            String id = String.valueOf(i);
-            var job = Service.Builder.newInstance(id).setLocation(Location.newInstance(id)).build();
-            routingBuilder = routingBuilder.addJob(job);
-        }
-        this.routeTemp = routingBuilder.build();
-        this.routing = Jsprit.createAlgorithm(routingBuilder.build());
+        return costMatrixBuilder.build();
     }
 
     public int[] optimize() {

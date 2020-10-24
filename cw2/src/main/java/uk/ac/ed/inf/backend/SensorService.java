@@ -43,7 +43,7 @@ public class SensorService extends BackendService {
     }
 
     private Sensor JsonToSensor(JsonElement rawSensor) throws IOException {
-        JsonObject sensorProperties = rawSensor.getAsJsonObject();
+        JsonObject sensorProperties = rawSensor.getAsJsonObject(); // USE FEATURES INSTEAD OF GSON
         String location = sensorProperties.get("location").getAsString();
         Coordinate coordinate = this.getCoordinate(sensorProperties);
         Double reading = null;

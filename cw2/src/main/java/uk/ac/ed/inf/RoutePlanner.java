@@ -2,27 +2,22 @@ package uk.ac.ed.inf;
 
 
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LineString;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-/***
+/**
  * Computes dist matrix for optimizer.
- */
+ **/
 public class RoutePlanner {
 
     private HashMap<Coordinate, Integer> waypoints = new HashMap<>();
     private int[] route; // element i gives us the next closest waypoint from i
-    private Geometry map;
+    private Map map;
     private VisibilityGraph visibilityGraph;
     private List<List<List<Coordinate>>> paths = new ArrayList<>();
 
-    public RoutePlanner(Geometry map, List<Coordinate> waypoints) throws IOException {
+    public RoutePlanner(Map map, List<Coordinate> waypoints) {
         double[][] distanceMatrix = new double[waypoints.size()][waypoints.size()];
         this.map = map;
         this.visibilityGraph = new VisibilityGraph(this.map);
@@ -59,12 +54,10 @@ public class RoutePlanner {
     }
 
     private Pair<List<Coordinate>, Double> calculateDistance(Coordinate from, Coordinate to) {
-        Coordinate[] coordinates = new Coordinate[]{from, to};
-        LineString line = new GeometryFactory().createLineString(coordinates);
-        double dist = line.getLength();
+        double dist = from.distance(to);
 
         List<Coordinate> path = new ArrayList<>();
-        if (!this.map.covers(line)) {
+        if (!this.map.verifyMove(from, to)) {
             this.visibilityGraph.addCoordinate(from);
             this.visibilityGraph.addCoordinate(to);
             PathFinder pathFinder = new PathFinder(this.visibilityGraph.getGraph());

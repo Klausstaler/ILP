@@ -2,9 +2,6 @@ package uk.ac.ed.inf;
 
 
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LineString;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,13 +16,13 @@ public class Drone {
 
     private Coordinate position;
     private RoutePlanner routePlanner;
-    private Geometry map;
+    private Map map;
     private HashSet<Sensor> sensorsToRead = new HashSet<>();
     private List<DroneLogger> loggers;
     private HashSet<Coordinate> visited = new HashSet<>();
     private int numMoves = 0;
 
-    public Drone(Coordinate position, Geometry map, List<Sensor> sensors, DroneLogger... loggers) throws Exception {
+    public Drone(Coordinate position, Map map, List<Sensor> sensors, DroneLogger... loggers) throws Exception {
         this.position = position;
         this.loggers = Arrays.asList(loggers);
         this.sensorsToRead.addAll(sensors);
@@ -55,49 +52,48 @@ public class Drone {
         if (numMoves > MAX_MOVES)
             throw new Exception("too many moves :(");
         this.loggers.forEach((DroneLogger::close));
+        System.out.println("Visited all sensors!");
     }
 
     private Coordinate navigate(Coordinate from, Coordinate to) throws Exception {
         Coordinate currentCoordinate = from;
         boolean isFirstMove = true;
-        boolean subtractOfAngle = false;
 
         System.out.println("NAVIGATING FROM " + from + " TO " + to);
         while (currentCoordinate.distance(to) > SENSOR_RADIUS || isFirstMove) {
-            int counter = 0;
+            int counter = 0; // used to calculate angles for alternative paths if current path is
+            // blocked
             int angle = Angles.calculateAngle(currentCoordinate, to);
-            System.out.println("INITIAL ANGLE " + angle);
             Coordinate newCoordinate = this.getNewCoordinate(currentCoordinate, angle);
-            while (!this.verifyMove(currentCoordinate, newCoordinate)) {
-                if (counter % 2 == 1) { // ooscillate between expanding checking left and right
-                    // half of angles
+            while (!this.map.verifyMove(currentCoordinate, newCoordinate)) {
+                if (counter % 2 == 1) { // oscillate between expanding left and right
+                    // half of possible angles
                     int newAngle = (angle - 10 * counter) % 360;
                     angle = newAngle < 0 ? newAngle + 360 : newAngle;
                 } else {
                     angle = (angle + 10 * counter) % 360;
                 }
-                System.out.println("COMPUTED ANGLE " + angle);
-                subtractOfAngle = !subtractOfAngle;
                 Coordinate candidate = this.getNewCoordinate(currentCoordinate, angle);
                 newCoordinate = this.visited.contains(candidate) ? newCoordinate : candidate;
                 if (counter++ > 35) {
                     this.loggers.forEach((DroneLogger::close));
-                    throw new Exception("BRUH OUTSIDE ALLOWED AREA");
+                    throw new Exception("All angles tried, none worked! :(");
                 }
             }
-            this.numMoves++;
-            System.out.println("ANGLE " + angle);
-            System.out.println("FROM " + currentCoordinate + "TO " + newCoordinate);
-            Sensor reading = this.collectSensorReading(newCoordinate);
-            for (DroneLogger logger : loggers) {
-                logger.log(newCoordinate, reading);
-            }
+            this.log(newCoordinate);
             this.visited.add(newCoordinate);
             currentCoordinate = newCoordinate;
             isFirstMove = false;
+            this.numMoves++;
         }
-        System.out.println("ENDING MOVE");
         return currentCoordinate;
+    }
+
+    private void log(Coordinate coordinate) {
+        Sensor reading = this.collectSensorReading(coordinate);
+        for (DroneLogger logger : loggers) {
+            logger.log(coordinate, reading);
+        }
     }
 
     private Sensor collectSensorReading(Coordinate coordinate) {
@@ -115,12 +111,6 @@ public class Drone {
             return read_sensor;
         }
         return null;
-    }
-
-    private boolean verifyMove(Coordinate currentCoordinate, Coordinate newCoordinate) {
-        Coordinate[] edgeCoords = new Coordinate[]{currentCoordinate, newCoordinate};
-        LineString edge = new GeometryFactory().createLineString(edgeCoords);
-        return this.map.covers(edge);
     }
 
     private Coordinate getNewCoordinate(Coordinate currentCoordinate, int angle) {

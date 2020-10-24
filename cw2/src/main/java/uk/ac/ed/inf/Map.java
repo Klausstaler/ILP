@@ -40,7 +40,8 @@ public class Map extends Polygon {
     private void alignShell(LinearRing obstacle) {
         MultiLineString newBounds = (MultiLineString) this.intersection(obstacle);
         List<Coordinate> coordinates = new ArrayList<>(Arrays.asList(this.shell.getCoordinates()));
-        coordinates.remove(coordinates.size() - 1);
+        coordinates.remove(coordinates.size() - 1); // remove last coordinate temporarily to
+        // adjust boundary
 
         List<LineString> orderedBounds = this.alignLines(newBounds);
         int closestIdx = this.getClosestPoint(coordinates,
@@ -90,5 +91,11 @@ public class Map extends Polygon {
             }
         }
         return orderedLines;
+    }
+
+    public boolean verifyMove(Coordinate from, Coordinate to) {
+        Coordinate[] edgeCoords = new Coordinate[]{from, to};
+        LineString edge = new GeometryFactory().createLineString(edgeCoords);
+        return this.covers(edge);
     }
 }
