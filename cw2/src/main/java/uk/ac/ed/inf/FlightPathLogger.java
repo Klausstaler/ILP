@@ -15,7 +15,7 @@ public class FlightPathLogger extends DroneLogger {
 
     @Override
     public void log(Coordinate newPos, Sensor read_sensor) {
-        int direction = this.calculateAngle(newPos);
+        int direction = Angles.calculateAngle(this.position, newPos);
         if (direction > 350 || direction < 0 || direction % 10 != 0) {
             throw new IllegalArgumentException("The direction of the drone is not a multiple of " +
                     "10!");
@@ -53,18 +53,5 @@ public class FlightPathLogger extends DroneLogger {
         catch (Exception e) {
             System.out.println("ERROR CLOSING FLIGHTPATHLOGGER");
         }
-    }
-
-    private int calculateAngle(Coordinate otherPos) {
-        // TODO: extract this method and put it in appropriate class
-        double dx = otherPos.getX() - this.position.getX();
-        double dy = otherPos.getY() - this.position.getY();
-        int angle = (int) Math.round(Math.toDegrees(Math.atan2(dy, dx)));
-
-        if(angle < 0){
-            angle += 360;
-        }
-
-        return angle;
     }
 }
