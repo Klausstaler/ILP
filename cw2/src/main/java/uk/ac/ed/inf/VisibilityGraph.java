@@ -86,7 +86,7 @@ public class VisibilityGraph {
     }
 
     public void removeLast() {
-        additionalCoordinates.remove(additionalCoordinates.size()-1);
+        additionalCoordinates.remove(additionalCoordinates.size() - 1);
         distances.remove(distances.size() - 1);
         for (List<Double> row : distances) {
             row.remove(row.size() - 1);

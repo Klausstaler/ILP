@@ -3,7 +3,6 @@ package uk.ac.ed.inf.backend;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.mapbox.geojson.FeatureCollection;
 import org.locationtech.jts.geom.Coordinate;
 import uk.ac.ed.inf.Sensor;
 

@@ -2,6 +2,7 @@ package uk.ac.ed.inf;
 
 
 import org.locationtech.jts.geom.Coordinate;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -23,17 +24,17 @@ public class RoutePlanner {
         this.map = map;
         this.visibilityGraph = new VisibilityGraph(this.map);
 
-        for(int i = 0; i < waypoints.size(); i++) {
+        for (int i = 0; i < waypoints.size(); i++) {
             this.waypoints.put(waypoints.get(i), i);
             List<List<Coordinate>> paths = new ArrayList<>(); // all paths from i to all other
             // waypoints
             for (int j = 0; j < waypoints.size(); j++) paths.add(new ArrayList<>());
             this.paths.add(paths);
         }
-        
+
         System.out.println("Calculating distances and paths for waypoints...");
         for (int i = 0; i < waypoints.size(); i++) {
-            for (int j = i+1; j < waypoints.size(); j++) {
+            for (int j = i + 1; j < waypoints.size(); j++) {
                 Coordinate from = waypoints.get(i);
                 Coordinate to = waypoints.get(j);
                 Pair<List<Coordinate>, Double> pathInfo =
@@ -61,7 +62,7 @@ public class RoutePlanner {
         paths.get(from_idx).set(to_idx, path); // path from i to j with possible
         // waypoints in between
         List<Coordinate> reversedPath = new ArrayList<>(path);
-        reversedPath.remove(reversedPath.size()-1); // remove 'to' coordinate, as we now go from
+        reversedPath.remove(reversedPath.size() - 1); // remove 'to' coordinate, as we now go from
         // need 'from' at the end
         Collections.reverse(reversedPath);
         reversedPath.add(from);
@@ -86,8 +87,7 @@ public class RoutePlanner {
             }
             this.visibilityGraph.removeLast();
             this.visibilityGraph.removeLast();
-        }
-        else path.add(to);
+        } else path.add(to);
         return new Pair<>(path, dist);
     }
 

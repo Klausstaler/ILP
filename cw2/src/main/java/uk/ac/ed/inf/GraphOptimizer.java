@@ -40,7 +40,8 @@ public class GraphOptimizer {
         return vehicle;
     }
 
-    private VehicleRoutingAlgorithm constructRouter(VehicleRoutingTransportCostsMatrix costMatrix, VehicleImpl vehicle) {
+    private VehicleRoutingAlgorithm constructRouter(VehicleRoutingTransportCostsMatrix costMatrix
+            , VehicleImpl vehicle) {
 
         var routingBuilder = VehicleRoutingProblem.Builder.newInstance().setRoutingCost(costMatrix)
                 .addVehicle(vehicle);
