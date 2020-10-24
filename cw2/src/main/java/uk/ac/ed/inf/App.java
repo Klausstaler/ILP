@@ -59,8 +59,11 @@ public class App {
                     new VisualHelper(map, sensorService);
                     Drone drone = new Drone(initalPoint, map, sensorService.getSensors(), logger1
                             , logger2);
+                    break;
                 }
+                break;
             }
+            break;
         }
 
     }
