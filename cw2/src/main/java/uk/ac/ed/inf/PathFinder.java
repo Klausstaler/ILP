@@ -19,33 +19,33 @@ public class PathFinder {
         this.initialize();
     }
 
-    public Pair<int[], Double> shortestPath(int srcIdx, int targetIdx) {
+    public Pair<int[], Double> shortestPath(int fromIdx, int toIdx) {
         this.initialize();
-        this.nodePriorityQueue.add(new Node(srcIdx, 0));
-        this.dists[srcIdx] = 0;
+        this.nodePriorityQueue.add(new Node(fromIdx, 0));
+        this.dists[fromIdx] = 0;
 
-        while (!settled.contains(targetIdx)) {
-            int currNode = this.nodePriorityQueue.remove().node;
-            settled.add(currNode);
-            this.paths.get(currNode).add(currNode); // add the currentNode as last element
-            this.expandNeighbors(currNode);
+        while (!settled.contains(toIdx)) {
+            int nodeIdx = this.nodePriorityQueue.remove().idx;
+            settled.add(nodeIdx);
+            this.paths.get(nodeIdx).add(nodeIdx); // add the currentNode as last element
+            this.expandNeighbors(nodeIdx);
         }
-        int[] path = this.paths.get(targetIdx).stream().mapToInt(i -> i).toArray();
-        return new Pair<>(path, this.dists[targetIdx]);
+        int[] path = this.paths.get(toIdx).stream().mapToInt(i -> i).toArray();
+        return new Pair<>(path, this.dists[toIdx]);
     }
 
 
     private void expandNeighbors(int currNode) {
 
-        for (int newNode = 0; newNode < this.distMatrix.length; newNode++) {
-            double edgeDist = this.distMatrix[currNode][newNode];
-            if (!settled.contains(newNode)) {
+        for (int nodeIdx = 0; nodeIdx < this.distMatrix.length; nodeIdx++) {
+            double edgeDist = this.distMatrix[currNode][nodeIdx];
+            if (!settled.contains(nodeIdx)) {
                 double newDist = this.dists[currNode] + edgeDist;
-                if (newDist < this.dists[newNode]) {
-                    this.dists[newNode] = newDist;
+                if (newDist < this.dists[nodeIdx]) {
+                    this.dists[nodeIdx] = newDist;
                     List<Integer> newPath = new ArrayList<>(this.paths.get(currNode));
-                    this.paths.put(newNode, newPath);
-                    nodePriorityQueue.add(new Node(newNode, this.dists[newNode]));
+                    this.paths.put(nodeIdx, newPath);
+                    nodePriorityQueue.add(new Node(nodeIdx, this.dists[nodeIdx]));
                 }
             }
         }
@@ -67,14 +67,14 @@ public class PathFinder {
 
 // Class to represent a node in the graph
 class Node implements Comparator<Node> {
-    public int node;
+    public int idx;
     public double cost;
 
     public Node() {
     }
 
-    public Node(int node, double cost) {
-        this.node = node;
+    public Node(int idx, double cost) {
+        this.idx = idx;
         this.cost = cost;
     }
 

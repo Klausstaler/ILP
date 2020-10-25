@@ -24,7 +24,7 @@ public class ReadingLogger extends DroneLogger {
         for (Sensor sensor : sensors) {
             Feature feature = Feature.fromGeometry(Point.fromLngLat(sensor.x, sensor.y));
             feature.addStringProperty("marker-color",
-                    MarkerProperties.from("notVisited").getRgbString());
+                    MarkerProperties.NOTVISITED.getRgbString());
             markers.put(sensor.getLocation(), feature);
         }
         System.out.println("Reading logger initialized...");
@@ -61,7 +61,7 @@ public class ReadingLogger extends DroneLogger {
     private void updateMarkerProps(Sensor read_sensor) {
         Feature marker = this.markers.get(read_sensor.getLocation());
         MarkerProperties markerProps = (read_sensor.getBattery() < MIN_BATTERY) ?
-                MarkerProperties.from("lowBattery") :
+                MarkerProperties.LOWBATTERY :
                 MarkerProperties.fromAirPollution(read_sensor.getReading());
 
         marker.removeProperty("marker-color");

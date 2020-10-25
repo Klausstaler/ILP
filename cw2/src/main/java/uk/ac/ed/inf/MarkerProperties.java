@@ -24,7 +24,7 @@ public enum MarkerProperties {
     }
 
     public static MarkerProperties fromAirPollution(double pollution) {
-        if (pollution < 0 || pollution > 256) {
+        if (pollution < 0 || pollution >= 256) {
             throw new IllegalArgumentException(ILLEGAL_AIR_POLLUTION);
         }
         if (pollution < 32) {
@@ -43,17 +43,6 @@ public enum MarkerProperties {
             return MarkerProperties.DANGER3;
         } else {
             return MarkerProperties.DANGER5;
-        }
-    }
-
-    public static MarkerProperties from(String markerType) {
-        switch (markerType) {
-            case "lowBattery":
-                return MarkerProperties.LOWBATTERY;
-            case "notVisited":
-                return MarkerProperties.NOTVISITED;
-            default:
-                throw new IllegalArgumentException("Specified marker type not existent.");
         }
     }
 

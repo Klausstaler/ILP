@@ -13,8 +13,11 @@ import com.graphhopper.jsprit.core.util.Solutions;
 import com.graphhopper.jsprit.core.util.VehicleRoutingTransportCostsMatrix;
 
 import java.util.Arrays;
+import java.util.Random;
 
 public class GraphOptimizer {
+
+    private static final int SEED = 5678;
     private String startLocation = "0";
     private double[][] distanceMatrix;
     private VehicleRoutingAlgorithm routing;
@@ -51,7 +54,9 @@ public class GraphOptimizer {
             var job = Service.Builder.newInstance(id).setLocation(Location.newInstance(id)).build();
             routingBuilder = routingBuilder.addJob(job);
         }
-        return Jsprit.createAlgorithm(routingBuilder.build());
+
+        var algoBuilder = Jsprit.Builder.newInstance(routingBuilder.build());
+        return algoBuilder.setRandom(new Random(SEED)).buildAlgorithm();
     }
 
     private VehicleRoutingTransportCostsMatrix constructCostMatrix() {
@@ -80,8 +85,9 @@ public class GraphOptimizer {
             sol[idx++] = Integer.parseInt(id);
             for (var activity : route.getActivities()) {
                 id = activity.getLocation().getId();
-                if (!id.equals(this.startLocation))
-                    sol[idx++] = Integer.parseInt(id);
+                // just needed because the library isn't consistent with correct insertion of
+                // start location
+                if (!id.equals(this.startLocation)) sol[idx++] = Integer.parseInt(id);
             }
         }
         sol[this.distanceMatrix.length] = Integer.parseInt(this.startLocation);

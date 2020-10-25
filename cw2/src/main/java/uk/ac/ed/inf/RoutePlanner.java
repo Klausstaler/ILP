@@ -17,7 +17,8 @@ public class RoutePlanner {
     private int[] route; // element i gives us the next closest waypoint from i
     private Map map;
     private VisibilityGraph visibilityGraph;
-    private List<List<List<Coordinate>>> paths = new ArrayList<>();
+    private List<List<List<Coordinate>>> paths = new ArrayList<>(); // shortest path from i to j
+    // over the given list of coordinates
 
     public RoutePlanner(Map map, List<Coordinate> waypoints) {
         double[][] distanceMatrix = new double[waypoints.size()][waypoints.size()];
@@ -26,8 +27,7 @@ public class RoutePlanner {
 
         for (int i = 0; i < waypoints.size(); i++) {
             this.waypoints.put(waypoints.get(i), i);
-            List<List<Coordinate>> paths = new ArrayList<>(); // all paths from i to all other
-            // waypoints
+            List<List<Coordinate>> paths = new ArrayList<>();
             for (int j = 0; j < waypoints.size(); j++) paths.add(new ArrayList<>());
             this.paths.add(paths);
         }
@@ -59,8 +59,10 @@ public class RoutePlanner {
     private void updatePaths(Coordinate from, Coordinate to, List<Coordinate> path) {
         int from_idx = this.waypoints.get(from);
         int to_idx = this.waypoints.get(to);
-        paths.get(from_idx).set(to_idx, path); // path from i to j with possible
-        // waypoints in between
+        paths.get(from_idx).set(to_idx, path); // path from i to j with possible waypoints in
+        // between
+
+        // going from i to j the same as going from j to i, just in reverse, we can reuse the path
         List<Coordinate> reversedPath = new ArrayList<>(path);
         reversedPath.remove(reversedPath.size() - 1); // remove 'to' coordinate, as we now go from
         // need 'from' at the end
@@ -76,7 +78,7 @@ public class RoutePlanner {
         if (!this.map.verifyMove(from, to)) {
             this.visibilityGraph.addCoordinate(from);
             this.visibilityGraph.addCoordinate(to);
-            PathFinder pathFinder = new PathFinder(this.visibilityGraph.getDistances());
+            var pathFinder = new PathFinder(this.visibilityGraph.getDistances());
             Pair<int[], Double> pair = pathFinder.shortestPath(pathFinder.getNumNodes() - 2,
                     pathFinder.getNumNodes() - 1);
             int[] routeIdxs = pair.first;

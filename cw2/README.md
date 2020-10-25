@@ -7,3 +7,4 @@
 [X] fix issue when two readings are too close and no move would be needed
 [X] remove dependency injection of objects which are only used to retrieve data
 [ ] think about merging all the distance matrices and graphs into one
+[ ] Make Map class Singleton

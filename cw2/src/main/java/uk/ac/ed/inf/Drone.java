@@ -31,7 +31,6 @@ public class Drone {
         waypoints.add(position);
         waypoints.addAll(sensorsToRead);
         this.routePlanner = new RoutePlanner(map, waypoints);
-        this.visitSensors();
     }
 
     public void visitSensors() throws Exception {
@@ -49,8 +48,6 @@ public class Drone {
             route = this.routePlanner.getNextRoute(referenceCoord);
             firstIteration = false;
         }
-        if (numMoves > MAX_MOVES)
-            throw new Exception("too many moves :(");
         this.loggers.forEach((DroneLogger::close));
         System.out.println("Visited all sensors!");
     }
@@ -59,12 +56,17 @@ public class Drone {
         Coordinate currentCoordinate = from;
         boolean isFirstMove = true;
         System.out.println("NAVIGATING FROM " + from + " TO " + to);
-        while (currentCoordinate.distance(to) > SENSOR_RADIUS || isFirstMove) {
-            int oscillationFac = 0; // factor to alternate between expanding angles on left and
-            // right of the inital angle
+        while (currentCoordinate.distance(to) >= SENSOR_RADIUS || isFirstMove) {
+            if (numMoves == MAX_MOVES) {
+                this.loggers.forEach((DroneLogger::close));
+                throw new Exception("too many moves :(");
+            }
+
             int angle = Angles.calculateAngle(currentCoordinate, to);
             Coordinate newCoordinate = Angles.calculateNewPos(currentCoordinate,
                     MOVE_LENGTH, angle);
+            int oscillationFac = 0; // factor to alternate between expanding angles on left and
+            // right of the inital angle
             while (!this.map.verifyMove(currentCoordinate, newCoordinate)) {
                 angle = Angles.adjustAngle(angle, oscillationFac * 10, oscillationFac % 2 == 1);
                 Coordinate candidate = Angles.calculateNewPos(currentCoordinate, MOVE_LENGTH,
