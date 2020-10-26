@@ -18,14 +18,9 @@ public class Angles {
         return new Coordinate(new_x, new_y);
     }
 
-    public static int adjustAngle(int initalAngle, int otherAngle, boolean subtract) {
-        int newAngle;
-        if (subtract) {
-            newAngle = (initalAngle - otherAngle) % 360;
-            newAngle = newAngle < 0 ? newAngle + 360 : newAngle;
-        } else {
-            newAngle = (initalAngle + otherAngle) % 360;
-        }
+    public static int adjustAngle(int initialAngle, int otherAngle, boolean subtract) {
+        int newAngle = subtract ? initialAngle - otherAngle : initialAngle + otherAngle;
+        newAngle = newAngle < 0 ? (newAngle % 360) + 360 : newAngle % 360;
         return newAngle;
     }
 }

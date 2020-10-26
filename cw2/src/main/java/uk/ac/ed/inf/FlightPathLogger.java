@@ -51,7 +51,7 @@ public class FlightPathLogger extends DroneLogger {
 
     @Override
     public void close() {
-        System.out.println("CLOSING FILE");
+        System.out.println("FlightPathLogger closing file..");
         try {
             this.file.close();
         } catch (Exception e) {

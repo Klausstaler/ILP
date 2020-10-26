@@ -1,9 +1,6 @@
 package uk.ac.ed.inf;
 
-import com.mapbox.geojson.Feature;
-import com.mapbox.geojson.FeatureCollection;
-import com.mapbox.geojson.LineString;
-import com.mapbox.geojson.Point;
+import com.mapbox.geojson.*;
 import org.locationtech.jts.geom.Coordinate;
 
 import java.io.IOException;
@@ -51,6 +48,7 @@ public class ReadingLogger extends DroneLogger {
 
         FeatureCollection features = FeatureCollection.fromFeatures(allFeatures);
         try {
+            System.out.println("ReadingLogger closing file..");
             this.file.write(features.toJson());
             this.file.close();
         } catch (Exception e) {

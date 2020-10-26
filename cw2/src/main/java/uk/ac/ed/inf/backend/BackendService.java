@@ -1,7 +1,5 @@
 package uk.ac.ed.inf.backend;
 
-import com.google.gson.Gson;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -10,9 +8,8 @@ import java.net.URL;
 
 public class BackendService {
 
+    protected final URL baseUrl;
     protected URL url;
-    protected URL baseUrl;
-    protected Gson gson = new Gson();
     protected HttpURLConnection connection;
 
     public BackendService(String url, String port) throws IOException {

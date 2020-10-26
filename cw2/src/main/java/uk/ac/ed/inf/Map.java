@@ -81,12 +81,9 @@ public class Map extends Polygon {
             LineString prevLine = (orderedLines.size() > 0) ?
                     orderedLines.get(orderedLines.size() - 1) : null;
             Coordinate[] prevCoords = prevLine != null ? prevLine.getCoordinates() : null;
-
-            if (prevCoords == null || prevCoords[prevCoords.length - 1].distance(currCoords[0]) < EPSILON)
-                orderedLines.add(currLine);
-            else if (prevCoords[0].distance(currCoords[currCoords.length - 1]) < EPSILON) {
-                orderedLines.remove(orderedLines.size() - 1);
-                orderedLines.add(currLine);
+            orderedLines.add(currLine);
+            if (prevCoords != null && prevCoords[0].distance(currCoords[currCoords.length - 1]) < EPSILON) {
+                orderedLines.remove(orderedLines.size() - 2); // remove previous line
                 orderedLines.add(prevLine);
             }
         }

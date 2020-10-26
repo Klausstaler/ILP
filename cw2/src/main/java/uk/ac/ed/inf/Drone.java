@@ -17,7 +17,6 @@ public class Drone {
     private Coordinate position;
     private RoutePlanner routePlanner;
     private Map map;
-    private HashSet<Sensor> sensorsToRead = new HashSet<>();
     private List<DroneLogger> loggers;
     private HashSet<Coordinate> visited = new HashSet<>();
     private int numMoves = 0;
@@ -25,11 +24,10 @@ public class Drone {
     public Drone(Coordinate position, Map map, List<Sensor> sensors, DroneLogger... loggers) throws Exception {
         this.position = position;
         this.loggers = Arrays.asList(loggers);
-        this.sensorsToRead.addAll(sensors);
         this.map = map;
         List<Coordinate> waypoints = new ArrayList<>();
         waypoints.add(position);
-        waypoints.addAll(sensorsToRead);
+        waypoints.addAll(sensors);
         this.routePlanner = new RoutePlanner(map, waypoints);
     }
 
@@ -49,7 +47,6 @@ public class Drone {
             firstIteration = false;
         }
         this.loggers.forEach((DroneLogger::close));
-        System.out.println("Visited all sensors!");
     }
 
     private Coordinate navigate(Coordinate from, Coordinate to) throws Exception {
@@ -77,7 +74,7 @@ public class Drone {
                     throw new Exception("All angles tried, none worked! :(");
                 }
             }
-            this.log(newCoordinate);
+            this.log(newCoordinate, to);
             this.visited.add(newCoordinate);
             currentCoordinate = newCoordinate;
             isFirstMove = false;
@@ -86,28 +83,14 @@ public class Drone {
         return currentCoordinate;
     }
 
-    private void log(Coordinate coordinate) {
-        Sensor reading = this.collectSensorReading(coordinate);
+    private void log(Coordinate coordinate, Coordinate targetCoordinate) {
+        Sensor reading = null;
+        if (coordinate.distance(targetCoordinate) < SENSOR_RADIUS && targetCoordinate instanceof Sensor) {
+            reading = (Sensor) targetCoordinate;
+        }
         for (DroneLogger logger : loggers) {
             logger.log(coordinate, reading);
         }
-    }
-
-    private Sensor collectSensorReading(Coordinate coordinate) {
-        Sensor read_sensor = null;
-        double minDistance = Double.MAX_VALUE;
-        for (Sensor sensor : sensorsToRead) {
-            double dist = sensor.distance(coordinate);
-            if (dist < minDistance) {
-                minDistance = dist;
-                read_sensor = sensor;
-            }
-        }
-        if (minDistance < SENSOR_RADIUS) {
-            sensorsToRead.remove(read_sensor);
-            return read_sensor;
-        }
-        return null;
     }
 
 }
