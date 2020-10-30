@@ -78,7 +78,7 @@ public class SensorService extends BackendService {
     }
 
     public List<Sensor> getSensors() {
-        return new ArrayList<Sensor>(this.sensors.values());
+        return new ArrayList<>(this.sensors.values());
     }
 
 

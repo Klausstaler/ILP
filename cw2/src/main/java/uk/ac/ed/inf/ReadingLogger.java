@@ -37,7 +37,7 @@ public class ReadingLogger extends DroneLogger {
     }
 
     @Override
-    public void close() {
+    public void close() throws IOException {
         List<Feature> allFeatures = new ArrayList<>(this.markers.values());
         List<com.mapbox.geojson.Point> flightPathGeo = new ArrayList<>();
         for (Coordinate coord : this.flightPath)
@@ -47,13 +47,11 @@ public class ReadingLogger extends DroneLogger {
         allFeatures.add(Feature.fromGeometry(flightPath));
 
         FeatureCollection features = FeatureCollection.fromFeatures(allFeatures);
-        try {
-            System.out.println("ReadingLogger closing file..");
-            this.file.write(features.toJson());
-            this.file.close();
-        } catch (Exception e) {
-            System.out.println("ERROR CLOSING READINGLOGGER");
-        }
+
+
+        System.out.println("ReadingLogger closing file..");
+        this.file.write(features.toJson());
+        this.file.close();
     }
 
     private void updateMarkerProps(Sensor read_sensor) {

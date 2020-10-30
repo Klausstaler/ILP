@@ -16,7 +16,7 @@ public class FlightPathLogger extends DroneLogger {
     }
 
     @Override
-    public void log(Coordinate newPos, Sensor read_sensor) {
+    public void log(Coordinate newPos, Sensor read_sensor) throws IOException {
         this.location = read_sensor == null ? "null" : read_sensor.getLocation();
         this.direction = Angles.calculateAngle(this.position, newPos);
         if (direction > 350 || direction < 0 || direction % 10 != 0) {
@@ -24,15 +24,7 @@ public class FlightPathLogger extends DroneLogger {
                     "10!");
         }
         String line = this.format(newPos);
-        if (this.lineNbr != 1) {
-            line = "\n" + line;
-        }
-
-        try {
-            this.file.write(line);
-        } catch (IOException exception) {
-            System.out.println("ERROR SAVING FLIGHT PATH!");
-        }
+        this.file.write(line);
 
         this.position = newPos;
         this.lineNbr++;
@@ -45,17 +37,14 @@ public class FlightPathLogger extends DroneLogger {
         String newX = String.valueOf(newPos.getX()).replace(',', '.');
         String newY = String.valueOf(newPos.getY()).replace(',', '.');
 
-        return String.format("%d,%s,%s,%d,%s,%s,%s", this.lineNbr,
+        return String.format("%d,%s,%s,%d,%s,%s,%s\n", this.lineNbr,
                 currX, currY, this.direction, newX, newY, this.location);
     }
 
     @Override
-    public void close() {
+    public void close() throws IOException {
         System.out.println("FlightPathLogger closing file..");
-        try {
-            this.file.close();
-        } catch (Exception e) {
-            System.out.println("ERROR CLOSING FLIGHTPATHLOGGER");
-        }
+        System.out.println("Written " + (this.lineNbr-1) + " lines!");
+        this.file.close();
     }
 }

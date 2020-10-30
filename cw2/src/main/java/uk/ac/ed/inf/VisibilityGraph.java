@@ -6,10 +6,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class VisibilityGraph {
+public class VisibilityGraph implements Graph {
     private Map map;
     private List<Coordinate> additionalCoordinates = new ArrayList<>();
     private List<List<Double>> distances;
+    private List<List<Double>> heuristics;
 
     public VisibilityGraph(Map map) {
         this.map = map;
@@ -18,30 +19,36 @@ public class VisibilityGraph {
 
     private void constructVisibilityGraph() {
 
-        this.initDistances();
+        this.initMatrices();
         this.connectEdges();
 
         for (int i = 0; i < this.distances.size(); i++) {
             for (int j = i; j < this.distances.size(); j++) {
                 Coordinate from = this.map.getCoordinates()[i];
                 Coordinate to = this.map.getCoordinates()[j];
+                double dist = from.distance(to);
                 if (this.map.verifyMove(from, to)) {
-                    this.distances.get(i).set(j, from.distance(to));
-                    this.distances.get(j).set(i, from.distance(to));
+                    this.distances.get(i).set(j, dist);
+                    this.distances.get(j).set(i, dist);
                 }
+                this.heuristics.get(i).set(j, dist);
+                this.heuristics.get(j).set(i, dist);
             }
         }
     }
 
-    private void initDistances() {
+    private void initMatrices() {
         List<List<Double>> distances = new ArrayList<>();
+        List<List<Double>> heuristics = new ArrayList<>();
         int num_vertices = this.map.getCoordinates().length;
         for (int i = 0; i < num_vertices; i++) {
             List<Double> row = new ArrayList<>();
             for (int j = 0; j < num_vertices; j++) row.add(Double.MAX_VALUE);
             distances.add(row);
+            heuristics.add(new ArrayList<>(row));
         }
         this.distances = distances;
+        this.heuristics = heuristics;
     }
 
     private void connectEdges() {
@@ -55,12 +62,16 @@ public class VisibilityGraph {
         }
     }
 
-    public double[][] getDistances() {
-        double[][] distances = new double[this.distances.size()][this.distances.size()];
-        for (int i = 0; i < this.distances.size(); i++) {
-            distances[i] = this.distances.get(i).stream().mapToDouble(d -> d).toArray();
-        }
-        return distances;
+    public double getDistance(int fromIdx, int toIdx) {
+        return this.distances.get(fromIdx).get(toIdx);
+    }
+
+    public double getHeuristic(int fromIdx, int toIdx) {
+        return this.heuristics.get(fromIdx).get(toIdx);
+    }
+
+    public int getSize() {
+        return this.distances.size();
     }
 
     public List<Coordinate> getAllCoordinates() {
@@ -72,23 +83,38 @@ public class VisibilityGraph {
 
     public void addCoordinate(Coordinate to) {
         List<Coordinate> allCoordinates = this.getAllCoordinates();
-        List<Double> newRow = new ArrayList<>();
+
+        List<Double> distanceRow = new ArrayList<>();
+        List<Double> heuristicRow = new ArrayList<>();
+
         for (int i = 0; i < allCoordinates.size(); i++) {
             Coordinate from = allCoordinates.get(i);
             double dist = from.distance(to);
+
+            heuristics.get(i).add(dist);
+            heuristicRow.add(dist);
+
             dist = map.verifyMove(from, to) ? dist : Double.MAX_VALUE;
             distances.get(i).add(dist);
-            newRow.add(dist);
+            distanceRow.add(dist);
         }
-        newRow.add(0.0);
+        distanceRow.add(0.0);
+        distances.add(distanceRow);
+
+        heuristicRow.add(0.0);
+        heuristics.add(heuristicRow);
+
         additionalCoordinates.add(to);
-        distances.add(newRow);
     }
 
     public void removeLast() {
         additionalCoordinates.remove(additionalCoordinates.size() - 1);
-        distances.remove(distances.size() - 1);
-        for (List<Double> row : distances) {
+        this.removeLast(this.distances);
+        this.removeLast(this.heuristics);
+    }
+    private void removeLast(List<List<Double>> distMatrix) {
+        distMatrix.remove(distMatrix.size() - 1);
+        for (List<Double> row : distMatrix) {
             row.remove(row.size() - 1);
         }
     }

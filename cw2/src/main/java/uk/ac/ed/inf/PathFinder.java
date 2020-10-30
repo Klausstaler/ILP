@@ -6,16 +6,16 @@ import java.util.*;
 public class PathFinder {
 
     private double[] dists;
-    private double[][] distMatrix;
+    private final Graph graph;
     private Set<Integer> settled = new HashSet<>();
     private PriorityQueue<Node> nodePriorityQueue;
     private HashMap<Integer, List<Integer>> paths = new HashMap<>();
 
-    public PathFinder(double[][] distMatrix) {
+    public PathFinder(Graph graph) {
 
-        this.nodePriorityQueue = new PriorityQueue<>(distMatrix.length, new Node());
-        this.distMatrix = distMatrix;
-        this.dists = new double[distMatrix.length];
+        this.nodePriorityQueue = new PriorityQueue<>(graph.getSize(), new Node());
+        this.graph = graph;
+        this.dists = new double[graph.getSize()];
         this.initialize();
     }
 
@@ -37,22 +37,23 @@ public class PathFinder {
 
     private void expandNeighbors(int currNode) {
 
-        for (int nodeIdx = 0; nodeIdx < this.distMatrix.length; nodeIdx++) {
-            double edgeDist = this.distMatrix[currNode][nodeIdx];
+        for (int nodeIdx = 0; nodeIdx < this.graph.getSize(); nodeIdx++) {
+            double edgeDist = this.graph.getDistance(currNode, nodeIdx);
             if (!settled.contains(nodeIdx)) {
                 double newDist = this.dists[currNode] + edgeDist;
                 if (newDist < this.dists[nodeIdx]) {
                     this.dists[nodeIdx] = newDist;
                     List<Integer> newPath = new ArrayList<>(this.paths.get(currNode));
                     this.paths.put(nodeIdx, newPath);
-                    nodePriorityQueue.add(new Node(nodeIdx, this.dists[nodeIdx]));
+                    double heuristicCost = this.graph.getHeuristic(currNode, nodeIdx);
+                    nodePriorityQueue.add(new Node(nodeIdx, this.dists[nodeIdx] + heuristicCost));
                 }
             }
         }
     }
 
     private void initialize() {
-        for (int i = 0; i < distMatrix.length; i++) {
+        for (int i = 0; i < this.graph.getSize(); i++) {
             dists[i] = Integer.MAX_VALUE;
             this.paths.put(i, new ArrayList<>());
         }
@@ -61,7 +62,7 @@ public class PathFinder {
     }
 
     public int getNumNodes() {
-        return this.distMatrix.length;
+        return this.graph.getSize();
     }
 }
 

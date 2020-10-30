@@ -3,6 +3,7 @@ package uk.ac.ed.inf;
 
 import org.locationtech.jts.geom.Coordinate;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -21,7 +22,7 @@ public class Drone {
     private HashSet<Coordinate> visited = new HashSet<>();
     private int numMoves = 0;
 
-    public Drone(Coordinate position, Map map, List<Sensor> sensors, DroneLogger... loggers) throws Exception {
+    public Drone(Coordinate position, Map map, List<Sensor> sensors, DroneLogger... loggers) {
         this.position = position;
         this.loggers = Arrays.asList(loggers);
         this.map = map;
@@ -32,6 +33,7 @@ public class Drone {
     }
 
     public void visitSensors() throws Exception {
+        System.out.println("Visiting all sensors...");
         List<Coordinate> route = this.routePlanner.getNextRoute(position);
         Coordinate currCoord = position;
         Coordinate referenceCoord = position; // visited waypoint in the range of the current
@@ -46,16 +48,17 @@ public class Drone {
             route = this.routePlanner.getNextRoute(referenceCoord);
             firstIteration = false;
         }
-        this.loggers.forEach((DroneLogger::close));
+        for (DroneLogger logger : this.loggers) logger.close();
+        System.out.println("Finished visiting all sensors!");
     }
 
     private Coordinate navigate(Coordinate from, Coordinate to) throws Exception {
         Coordinate currentCoordinate = from;
         boolean isFirstMove = true;
-        System.out.println("NAVIGATING FROM " + from + " TO " + to);
+        //System.out.println("NAVIGATING FROM " + from + " TO " + to);
         while (currentCoordinate.distance(to) >= SENSOR_RADIUS || isFirstMove) {
             if (numMoves == MAX_MOVES) {
-                this.loggers.forEach((DroneLogger::close));
+                for (DroneLogger logger : this.loggers) logger.close();
                 throw new Exception("too many moves :(");
             }
 
@@ -70,7 +73,7 @@ public class Drone {
                         angle);
                 newCoordinate = this.visited.contains(candidate) ? newCoordinate : candidate;
                 if (oscillationFac++ > 35) {
-                    this.loggers.forEach((DroneLogger::close));
+                    for (DroneLogger logger : this.loggers) logger.close();
                     throw new Exception("All angles tried, none worked! :(");
                 }
             }
@@ -83,7 +86,7 @@ public class Drone {
         return currentCoordinate;
     }
 
-    private void log(Coordinate coordinate, Coordinate targetCoordinate) {
+    private void log(Coordinate coordinate, Coordinate targetCoordinate) throws IOException {
         Sensor reading = null;
         if (coordinate.distance(targetCoordinate) < SENSOR_RADIUS && targetCoordinate instanceof Sensor) {
             reading = (Sensor) targetCoordinate;

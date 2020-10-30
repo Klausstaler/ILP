@@ -13,6 +13,7 @@ import com.graphhopper.jsprit.core.util.Solutions;
 import com.graphhopper.jsprit.core.util.VehicleRoutingTransportCostsMatrix;
 
 import java.util.Arrays;
+import java.util.logging.LogManager;
 
 public class GraphOptimizer {
 
@@ -44,19 +45,19 @@ public class GraphOptimizer {
     private VehicleRoutingAlgorithm constructRouter(VehicleRoutingTransportCostsMatrix costMatrix
             , VehicleImpl vehicle) {
 
-        var routingBuilder = VehicleRoutingProblem.Builder.newInstance().setRoutingCost(costMatrix)
+        var problembuilder = VehicleRoutingProblem.Builder.newInstance().setRoutingCost(costMatrix)
                 .addVehicle(vehicle);
 
         for (int i = 0; i < this.distanceMatrix.length; i++) {
             String id = String.valueOf(i);
             var job = Service.Builder.newInstance(id).setLocation(Location.newInstance(id)).build();
-            routingBuilder = routingBuilder.addJob(job);
+            problembuilder = problembuilder.addJob(job);
         }
 
-        var algoBuilder = Jsprit.Builder.newInstance(routingBuilder.build());
+        var routingBuilder = Jsprit.Builder.newInstance(problembuilder.build());
         var routing =
-                algoBuilder.setRandom(App.getRandom()).buildAlgorithm();
-        routing.setMaxIterations(1024);
+                routingBuilder.setRandom(App.getRandom()).buildAlgorithm();
+        routing.setMaxIterations(256);
         return routing;
     }
 
