@@ -16,11 +16,13 @@ public class PathFinder {
         this.nodePriorityQueue = new PriorityQueue<>(graph.getSize(), new Node());
         this.graph = graph;
         this.dists = new double[graph.getSize()];
-        this.initialize();
+        for (int i = 0; i < this.graph.getSize(); i++) {
+            dists[i] = Integer.MAX_VALUE;
+            this.paths.put(i, new ArrayList<>());
+        }
     }
 
     public Pair<int[], Double> shortestPath(int fromIdx, int toIdx) {
-        this.initialize();
         this.nodePriorityQueue.add(new Node(fromIdx, 0));
         this.dists[fromIdx] = 0;
 
@@ -50,15 +52,6 @@ public class PathFinder {
                 }
             }
         }
-    }
-
-    private void initialize() {
-        for (int i = 0; i < this.graph.getSize(); i++) {
-            dists[i] = Integer.MAX_VALUE;
-            this.paths.put(i, new ArrayList<>());
-        }
-        this.settled.clear();
-        this.nodePriorityQueue.clear();
     }
 
     public int getNumNodes() {

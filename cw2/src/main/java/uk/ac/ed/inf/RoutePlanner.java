@@ -23,13 +23,8 @@ public class RoutePlanner {
     public RoutePlanner(Map map, List<Coordinate> waypoints) {
         double[][] distanceMatrix = new double[waypoints.size()][waypoints.size()];
         this.map = map;
-        long startTime = System.currentTimeMillis();
 
         this.visibilityGraph = new VisibilityGraph(this.map);
-
-        long endTime = System.currentTimeMillis();
-
-        System.out.println("Visibility graph took " + (endTime - startTime) + " milliseconds");
 
         for (int i = 0; i < waypoints.size(); i++) {
             this.waypoints.put(waypoints.get(i), i);
@@ -37,9 +32,8 @@ public class RoutePlanner {
             for (int j = 0; j < waypoints.size(); j++) paths.add(new ArrayList<>());
             this.paths.add(paths);
         }
-
-        startTime = System.currentTimeMillis();
         System.out.println("Calculating distances and paths for waypoints...");
+
         for (int i = 0; i < waypoints.size(); i++) {
             for (int j = i + 1; j < waypoints.size(); j++) {
                 Coordinate from = waypoints.get(i);
@@ -52,20 +46,15 @@ public class RoutePlanner {
                 distanceMatrix[j][i] = distance;
             }
         }
-        endTime = System.currentTimeMillis();
-        System.out.println("Paths took " + (endTime - startTime) + " milliseconds");
         System.out.println("Finished calculating distances and paths for waypoints!");
 
         System.out.println("NOW OPTIMIZER");
-        startTime = System.currentTimeMillis();
         GraphOptimizer optimizer = new GraphOptimizer(distanceMatrix);
         int[] routeIdxs = optimizer.optimize();
         this.route = new int[routeIdxs.length - 1];
         for (int i = 0; i < route.length - 1; i++) {
             this.route[routeIdxs[i]] = routeIdxs[i + 1];
         }
-        endTime = System.currentTimeMillis();
-        System.out.println("Graph optimizer took " + (endTime - startTime) + " milliseconds");
     }
 
     private void updatePaths(Coordinate from, Coordinate to, List<Coordinate> path) {
@@ -90,6 +79,7 @@ public class RoutePlanner {
         if (!this.map.verifyMove(from, to)) {
             this.visibilityGraph.addCoordinate(from);
             this.visibilityGraph.addCoordinate(to);
+
             var pathFinder = new PathFinder(this.visibilityGraph);
             Pair<int[], Double> pair = pathFinder.shortestPath(pathFinder.getNumNodes() - 2,
                     pathFinder.getNumNodes() - 1);
@@ -103,6 +93,7 @@ public class RoutePlanner {
             this.visibilityGraph.removeLast();
             this.visibilityGraph.removeLast();
         } else path.add(to);
+
         return new Pair<>(path, dist);
     }
 
