@@ -18,6 +18,12 @@ public class Map extends Polygon {
         }
     }
 
+    public boolean verifyMove(Coordinate from, Coordinate to) {
+        Coordinate[] edgeCoords = new Coordinate[]{from, to};
+        LineString edge = new GeometryFactory().createLineString(edgeCoords);
+        return this.covers(edge);
+    }
+
     private static LinearRing createShell() {
         Coordinate[] boundaries = {new Coordinate(-3.192473, 55.946233), //NW
                 new Coordinate(-3.184319, 55.946233), // NE
@@ -44,7 +50,7 @@ public class Map extends Polygon {
         // adjust boundary
 
         List<LineString> orderedBounds = this.alignLines(newBounds);
-        int closestIdx = this.getClosestPoint(coordinates,
+        int closestIdx = this.getClosestCoordinate(coordinates,
                 orderedBounds.get(0).getCoordinateN(0));
         for (LineString bound : orderedBounds) {
             for (Coordinate coordinate : bound.getCoordinates()) {
@@ -55,7 +61,7 @@ public class Map extends Polygon {
         this.shell = geomFact.createLinearRing(coordinates.toArray(new Coordinate[0]));
     }
 
-    private int getClosestPoint(List<Coordinate> coordinates, Coordinate coordinate) {
+    private int getClosestCoordinate(List<Coordinate> coordinates, Coordinate coordinate) {
         int closestIdx = 0;
         double minDist = Double.MAX_VALUE;
         for (int i = 0; i < coordinates.size(); i++) {
@@ -88,11 +94,5 @@ public class Map extends Polygon {
             }
         }
         return orderedLines;
-    }
-
-    public boolean verifyMove(Coordinate from, Coordinate to) {
-        Coordinate[] edgeCoords = new Coordinate[]{from, to};
-        LineString edge = new GeometryFactory().createLineString(edgeCoords);
-        return this.covers(edge);
     }
 }

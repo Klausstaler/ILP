@@ -10,8 +10,6 @@ import java.util.List;
 
 public class ReadingLogger extends DroneLogger {
 
-    private static final double MIN_BATTERY = 10.0;
-
     private List<Coordinate> flightPath = new ArrayList<>();
     private HashMap<String, Feature> markers = new HashMap<>();
 
@@ -39,9 +37,9 @@ public class ReadingLogger extends DroneLogger {
     @Override
     public void close() throws IOException {
         List<Feature> allFeatures = new ArrayList<>(this.markers.values());
-        List<com.mapbox.geojson.Point> flightPathGeo = new ArrayList<>();
+        List<Point> flightPathGeo = new ArrayList<>();
         for (Coordinate coord : this.flightPath)
-            flightPathGeo.add(com.mapbox.geojson.Point.fromLngLat(coord.x, coord.y));
+            flightPathGeo.add(Point.fromLngLat(coord.x, coord.y));
 
         LineString flightPath = LineString.fromLngLats(flightPathGeo);
         allFeatures.add(Feature.fromGeometry(flightPath));
@@ -56,7 +54,7 @@ public class ReadingLogger extends DroneLogger {
 
     private void updateMarkerProps(Sensor read_sensor) {
         Feature marker = this.markers.get(read_sensor.getLocation());
-        MarkerProperties markerProps = (read_sensor.getBattery() < MIN_BATTERY) ?
+        MarkerProperties markerProps = (read_sensor.getReading() == null) ?
                 MarkerProperties.LOWBATTERY :
                 MarkerProperties.fromAirPollution(read_sensor.getReading());
 

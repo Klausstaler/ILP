@@ -57,6 +57,11 @@ public class RoutePlanner {
         }
     }
 
+    public List<Coordinate> getNextRoute(Coordinate waypoint) {
+        int waypointIdx = this.waypoints.get(waypoint);
+        return this.paths.get(waypointIdx).get(this.route[waypointIdx]);
+    }
+
     private void updatePaths(Coordinate from, Coordinate to, List<Coordinate> path) {
         int from_idx = this.waypoints.get(from);
         int to_idx = this.waypoints.get(to);
@@ -95,10 +100,5 @@ public class RoutePlanner {
         } else path.add(to);
 
         return new Pair<>(path, dist);
-    }
-
-    public List<Coordinate> getNextRoute(Coordinate waypoint) {
-        int waypointIdx = this.waypoints.get(waypoint);
-        return this.paths.get(waypointIdx).get(this.route[waypointIdx]);
     }
 }

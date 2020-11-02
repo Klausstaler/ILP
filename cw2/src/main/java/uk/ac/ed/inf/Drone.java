@@ -41,8 +41,7 @@ public class Drone {
         boolean firstIteration = true;
         while (referenceCoord != position || firstIteration) {
             for (Coordinate coord : route) {
-                Coordinate newCoord = this.navigate(currCoord, coord);
-                currCoord = newCoord;
+                currCoord = this.navigate(currCoord, coord);
                 referenceCoord = coord;
             }
             route = this.routePlanner.getNextRoute(referenceCoord);
@@ -55,7 +54,6 @@ public class Drone {
     private Coordinate navigate(Coordinate from, Coordinate to) throws Exception {
         Coordinate currentCoordinate = from;
         boolean isFirstMove = true;
-        //System.out.println("NAVIGATING FROM " + from + " TO " + to);
         while (currentCoordinate.distance(to) >= SENSOR_RADIUS || isFirstMove) {
             if (numMoves == MAX_MOVES) {
                 for (DroneLogger logger : this.loggers) logger.close();
@@ -66,7 +64,7 @@ public class Drone {
             Coordinate newCoordinate = Angles.calculateNewPos(currentCoordinate,
                     MOVE_LENGTH, angle);
             int oscillationFac = 0; // factor to alternate between expanding angles on left and
-            // right of the inital angle
+            // right of the initial angle
             while (!this.map.verifyMove(currentCoordinate, newCoordinate)) {
                 angle = Angles.adjustAngle(angle, oscillationFac * 10, oscillationFac % 2 == 1);
                 Coordinate candidate = Angles.calculateNewPos(currentCoordinate, MOVE_LENGTH,
@@ -86,13 +84,13 @@ public class Drone {
         return currentCoordinate;
     }
 
-    private void log(Coordinate coordinate, Coordinate targetCoordinate) throws IOException {
+    private void log(Coordinate position, Coordinate targetPos) throws IOException {
         Sensor reading = null;
-        if (coordinate.distance(targetCoordinate) < SENSOR_RADIUS && targetCoordinate instanceof Sensor) {
-            reading = (Sensor) targetCoordinate;
+        if (position.distance(targetPos) < SENSOR_RADIUS && targetPos instanceof Sensor) {
+            reading = (Sensor) targetPos;
         }
         for (DroneLogger logger : loggers) {
-            logger.log(coordinate, reading);
+            logger.log(position, reading);
         }
     }
 

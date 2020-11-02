@@ -92,7 +92,7 @@
         <version>3.8.1</version>
         <configuration>
           <release>11</release>
-          <showWarings>true</showWarings>
+          <showWarnings>true</showWarnings>
           <compilerArgs>
             <arg>-Xlint:all,-classfile</arg>
           </compilerArgs>

@@ -17,51 +17,6 @@ public class VisibilityGraph implements Graph {
         this.constructVisibilityGraph();
     }
 
-    private void constructVisibilityGraph() {
-
-        this.initMatrices();
-        this.connectEdges();
-
-        for (int i = 0; i < this.distances.size(); i++) {
-            for (int j = i; j < this.distances.size(); j++) {
-                Coordinate from = this.map.getCoordinates()[i];
-                Coordinate to = this.map.getCoordinates()[j];
-                double dist = from.distance(to);
-                if (this.map.verifyMove(from, to)) {
-                    this.distances.get(i).set(j, dist);
-                    this.distances.get(j).set(i, dist);
-                }
-                this.heuristics.get(i).set(j, dist);
-                this.heuristics.get(j).set(i, dist);
-            }
-        }
-    }
-
-    private void initMatrices() {
-        List<List<Double>> distances = new ArrayList<>();
-        List<List<Double>> heuristics = new ArrayList<>();
-        int num_vertices = this.map.getCoordinates().length;
-        for (int i = 0; i < num_vertices; i++) {
-            List<Double> row = new ArrayList<>();
-            for (int j = 0; j < num_vertices; j++) row.add(Double.MAX_VALUE);
-            distances.add(row);
-            heuristics.add(new ArrayList<>(row));
-        }
-        this.distances = distances;
-        this.heuristics = heuristics;
-    }
-
-    private void connectEdges() {
-        int offset = 0;
-        Coordinate[] coordinates = this.map.getCoordinates();
-        for (int idx = 0; idx < coordinates.length - 1; idx++) {
-            int pos = idx + offset;
-            double dist = coordinates[idx].distance(coordinates[idx + 1]);
-            this.distances.get(pos).set(pos + 1, dist);
-            this.distances.get(pos + 1).set(pos, dist);
-        }
-    }
-
     public double getDistance(int fromIdx, int toIdx) {
         return this.distances.get(fromIdx).get(toIdx);
     }
@@ -116,6 +71,51 @@ public class VisibilityGraph implements Graph {
         distMatrix.remove(distMatrix.size() - 1);
         for (List<Double> row : distMatrix) {
             row.remove(row.size() - 1);
+        }
+    }
+
+    private void constructVisibilityGraph() {
+
+        this.initMatrices();
+        this.connectEdges();
+
+        for (int i = 0; i < this.distances.size(); i++) {
+            for (int j = i; j < this.distances.size(); j++) {
+                Coordinate from = this.map.getCoordinates()[i];
+                Coordinate to = this.map.getCoordinates()[j];
+                double dist = from.distance(to);
+                if (this.map.verifyMove(from, to)) {
+                    this.distances.get(i).set(j, dist);
+                    this.distances.get(j).set(i, dist);
+                }
+                this.heuristics.get(i).set(j, dist);
+                this.heuristics.get(j).set(i, dist);
+            }
+        }
+    }
+
+    private void initMatrices() {
+        List<List<Double>> distances = new ArrayList<>();
+        List<List<Double>> heuristics = new ArrayList<>();
+        int num_vertices = this.map.getCoordinates().length;
+        for (int i = 0; i < num_vertices; i++) {
+            List<Double> row = new ArrayList<>();
+            for (int j = 0; j < num_vertices; j++) row.add(Double.MAX_VALUE);
+            distances.add(row);
+            heuristics.add(new ArrayList<>(row));
+        }
+        this.distances = distances;
+        this.heuristics = heuristics;
+    }
+
+    private void connectEdges() {
+        int offset = 0;
+        Coordinate[] coordinates = this.map.getCoordinates();
+        for (int idx = 0; idx < coordinates.length - 1; idx++) {
+            int pos = idx + offset;
+            double dist = coordinates[idx].distance(coordinates[idx + 1]);
+            this.distances.get(pos).set(pos + 1, dist);
+            this.distances.get(pos + 1).set(pos, dist);
         }
     }
 }

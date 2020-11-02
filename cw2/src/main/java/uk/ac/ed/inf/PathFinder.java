@@ -36,6 +36,10 @@ public class PathFinder {
         return new Pair<>(path, this.dists[toIdx]);
     }
 
+    public int getNumNodes() {
+        return this.graph.getSize();
+    }
+
 
     private void expandNeighbors(int currNode) {
 
@@ -52,10 +56,6 @@ public class PathFinder {
                 }
             }
         }
-    }
-
-    public int getNumNodes() {
-        return this.graph.getSize();
     }
 }
 

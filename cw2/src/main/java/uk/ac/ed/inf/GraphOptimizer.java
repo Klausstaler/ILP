@@ -13,7 +13,6 @@ import com.graphhopper.jsprit.core.util.Solutions;
 import com.graphhopper.jsprit.core.util.VehicleRoutingTransportCostsMatrix;
 
 import java.util.Arrays;
-import java.util.logging.LogManager;
 
 public class GraphOptimizer {
 
@@ -24,6 +23,31 @@ public class GraphOptimizer {
     public GraphOptimizer(double[][] distanceMatrix) {
         this.distanceMatrix = distanceMatrix;
         this.setupRouting();
+    }
+
+    public int[] optimize() {
+
+        System.out.println("Starting graph optimization....");
+
+        var solutions = this.routing.searchSolutions();
+
+        int[] sol = new int[this.distanceMatrix.length + 1];
+        int idx = Integer.parseInt(this.startLocation);
+        for (var route : Solutions.bestOf(solutions).getRoutes()) {
+            var id = route.getStart().getLocation().getId();
+            sol[idx++] = Integer.parseInt(id);
+            for (var activity : route.getActivities()) {
+                id = activity.getLocation().getId();
+                // just needed because the library isn't consistent with correct insertion of
+                // start location
+                if (!id.equals(this.startLocation)) sol[idx++] = Integer.parseInt(id);
+            }
+        }
+        sol[this.distanceMatrix.length] = Integer.parseInt(this.startLocation);
+        System.out.println("NOW SOLUTION");
+        System.out.println(Arrays.toString(sol));
+        System.out.println("Finished optimizing!");
+        return sol;
     }
 
     private void setupRouting() {
@@ -72,31 +96,6 @@ public class GraphOptimizer {
             }
         }
         return costMatrixBuilder.build();
-    }
-
-    public int[] optimize() {
-
-        System.out.println("Starting graph optimization....");
-
-        var solutions = this.routing.searchSolutions();
-
-        int[] sol = new int[this.distanceMatrix.length + 1];
-        int idx = Integer.parseInt(this.startLocation);
-        for (var route : Solutions.bestOf(solutions).getRoutes()) {
-            var id = route.getStart().getLocation().getId();
-            sol[idx++] = Integer.parseInt(id);
-            for (var activity : route.getActivities()) {
-                id = activity.getLocation().getId();
-                // just needed because the library isn't consistent with correct insertion of
-                // start location
-                if (!id.equals(this.startLocation)) sol[idx++] = Integer.parseInt(id);
-            }
-        }
-        sol[this.distanceMatrix.length] = Integer.parseInt(this.startLocation);
-        System.out.println("NOW SOLUTION");
-        System.out.println(Arrays.toString(sol));
-        System.out.println("Finished optimizing!");
-        return sol;
     }
 
 }

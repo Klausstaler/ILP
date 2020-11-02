@@ -19,6 +19,10 @@ public class ObstacleService extends BackendService {
         this.obstacles = this.addObstacles();
     }
 
+    public List<LinearRing> getObstacles() {
+        return this.obstacles;
+    }
+
     private List<LinearRing> addObstacles() throws IOException {
         List<LinearRing> obstacles = new ArrayList<>();
 
@@ -39,9 +43,5 @@ public class ObstacleService extends BackendService {
             coordinates.add(coordinate);
         }
         return new GeometryFactory().createLinearRing(coordinates.toArray(new Coordinate[0]));
-    }
-
-    public List<LinearRing> getObstacles() {
-        return this.obstacles;
     }
 }
