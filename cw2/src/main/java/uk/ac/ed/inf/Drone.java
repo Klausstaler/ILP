@@ -59,22 +59,7 @@ public class Drone {
                 for (DroneLogger logger : this.loggers) logger.close();
                 throw new Exception("too many moves :(");
             }
-
-            int angle = Angles.calculateAngle(currentCoordinate, to);
-            var newCoordinate = Angles.calculateNewCoordinate(currentCoordinate,
-                    MOVE_LENGTH, angle);
-            int oscillationFac = 0; // factor to alternate between expanding angles on left and
-            // right of the initial angle
-            while (!this.map.verifyMove(currentCoordinate, newCoordinate)) {
-                angle = Angles.adjustAngle(angle, oscillationFac * 10, oscillationFac % 2 == 1);
-                var candidate = Angles.calculateNewCoordinate(currentCoordinate, MOVE_LENGTH,
-                        angle);
-                newCoordinate = this.visited.contains(candidate) ? newCoordinate : candidate;
-                if (oscillationFac++ > 35) {
-                    for (var logger : this.loggers) logger.close();
-                    throw new Exception("All angles tried, none worked! :(");
-                }
-            }
+            var newCoordinate = this.getNextValidCoord(currentCoordinate, to);
             this.log(newCoordinate, to);
             this.visited.add(newCoordinate);
             currentCoordinate = newCoordinate;
@@ -82,6 +67,25 @@ public class Drone {
             this.numMoves++;
         }
         return currentCoordinate;
+    }
+
+    private Coordinate getNextValidCoord(Coordinate from, Coordinate to) throws Exception {
+        int angle = Angles.calculateAngle(from, to);
+        var newCoordinate = Angles.calculateNewCoordinate(from,
+                MOVE_LENGTH, angle);
+        int oscillationFac = 0; // factor to alternate between expanding angles on left and
+        // right of the initial angle
+        while (!this.map.verifyMove(from, newCoordinate)) {
+            angle = Angles.adjustAngle(angle, oscillationFac * 10, oscillationFac % 2 == 1);
+            var candidate = Angles.calculateNewCoordinate(from, MOVE_LENGTH,
+                    angle);
+            newCoordinate = this.visited.contains(candidate) ? newCoordinate : candidate;
+            if (oscillationFac++ > 35) {
+                for (var logger : this.loggers) logger.close();
+                throw new Exception("All angles tried, none worked! :(");
+            }
+        }
+        return newCoordinate;
     }
 
     private void log(Coordinate position, Coordinate targetPos) throws IOException {

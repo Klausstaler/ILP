@@ -21,31 +21,13 @@ public class RoutePlanner {
     // over the given list of coordinates
 
     public RoutePlanner(Map map, List<Coordinate> waypoints) {
-        double[][] distanceMatrix = new double[waypoints.size()][waypoints.size()];
         this.map = map;
 
         this.visibilityGraph = new VisibilityGraph(this.map);
 
-        for (int i = 0; i < waypoints.size(); i++) {
-            this.waypoints.put(waypoints.get(i), i);
-            List<List<Coordinate>> paths = new ArrayList<>();
-            for (int j = 0; j < waypoints.size(); j++) paths.add(new ArrayList<>());
-            this.paths.add(paths);
-        }
+        this.initPaths(waypoints);
         System.out.println("Calculating distances and paths for waypoints...");
-
-        for (int i = 0; i < waypoints.size(); i++) {
-            for (int j = i + 1; j < waypoints.size(); j++) {
-                Coordinate from = waypoints.get(i);
-                Coordinate to = waypoints.get(j);
-                Pair<List<Coordinate>, Double> pathInfo =
-                        this.calculateDistance(from, to);
-                this.updatePaths(from, to, pathInfo.first);
-                double distance = pathInfo.second;
-                distanceMatrix[i][j] = distance;
-                distanceMatrix[j][i] = distance;
-            }
-        }
+        var distanceMatrix = this.calculatePaths(waypoints);
         System.out.println("Finished calculating distances and paths for waypoints!");
 
         System.out.println("NOW OPTIMIZER");
@@ -60,6 +42,32 @@ public class RoutePlanner {
     public List<Coordinate> getNextRoute(Coordinate waypoint) {
         int waypointIdx = this.waypoints.get(waypoint);
         return this.paths.get(waypointIdx).get(this.route[waypointIdx]);
+    }
+
+    private void initPaths(List<Coordinate> waypoints) {
+        for (int i = 0; i < waypoints.size(); i++) {
+            this.waypoints.put(waypoints.get(i), i);
+            List<List<Coordinate>> paths = new ArrayList<>();
+            for (int j = 0; j < waypoints.size(); j++) paths.add(new ArrayList<>());
+            this.paths.add(paths);
+        }
+    }
+
+    private double[][] calculatePaths(List<Coordinate> waypoints) {
+        double[][] distanceMatrix = new double[waypoints.size()][waypoints.size()];
+        for (int i = 0; i < waypoints.size(); i++) {
+            for (int j = i + 1; j < waypoints.size(); j++) {
+                Coordinate from = waypoints.get(i);
+                Coordinate to = waypoints.get(j);
+                Pair<List<Coordinate>, Double> pathInfo =
+                        this.calculateDistance(from, to);
+                this.updatePaths(from, to, pathInfo.first);
+                double distance = pathInfo.second;
+                distanceMatrix[i][j] = distance;
+                distanceMatrix[j][i] = distance;
+            }
+        }
+        return distanceMatrix;
     }
 
     private void updatePaths(Coordinate from, Coordinate to, List<Coordinate> path) {
