@@ -22,10 +22,6 @@ public class Sensor extends Coordinate {
         return location;
     }
 
-    public double getBattery() {
-        return battery;
-    }
-
     public Double getReading() {
         return reading;
     }

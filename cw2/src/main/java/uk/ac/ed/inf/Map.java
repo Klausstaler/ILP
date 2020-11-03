@@ -20,7 +20,7 @@ public class Map extends Polygon {
 
     public boolean verifyMove(Coordinate from, Coordinate to) {
         Coordinate[] edgeCoords = new Coordinate[]{from, to};
-        LineString edge = new GeometryFactory().createLineString(edgeCoords);
+        var edge = new GeometryFactory().createLineString(edgeCoords);
         return this.covers(edge);
     }
 
@@ -34,7 +34,7 @@ public class Map extends Polygon {
     }
 
     private static LinearRing[] getHoles(List<LinearRing> obstacles) {
-        Polygon provisionalMap = geomFact.createPolygon(createShell());
+        var provisionalMap = geomFact.createPolygon(createShell());
         List<LinearRing> holes = new ArrayList<>();
         for (LinearRing obstacle : obstacles) {
             if (provisionalMap.covers(obstacle))
@@ -44,7 +44,7 @@ public class Map extends Polygon {
     }
 
     private void alignShell(LinearRing obstacle) {
-        MultiLineString newBounds = (MultiLineString) this.intersection(obstacle);
+        var newBounds = (MultiLineString) this.intersection(obstacle);
         List<Coordinate> coordinates = new ArrayList<>(Arrays.asList(this.shell.getCoordinates()));
         coordinates.remove(coordinates.size() - 1); // remove last coordinate temporarily to
         // adjust boundary
@@ -81,10 +81,10 @@ public class Map extends Polygon {
 
         for (int i = 0; i < lines.getNumGeometries(); i++) {
 
-            LineString currLine = (LineString) lines.getGeometryN(i);
+            var currLine = (LineString) lines.getGeometryN(i);
             Coordinate[] currCoords = currLine.getCoordinates();
 
-            LineString prevLine = (orderedLines.size() > 0) ?
+            var prevLine = (orderedLines.size() > 0) ?
                     orderedLines.get(orderedLines.size() - 1) : null;
             Coordinate[] prevCoords = prevLine != null ? prevLine.getCoordinates() : null;
             orderedLines.add(currLine);

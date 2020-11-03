@@ -41,7 +41,7 @@ public class ReadingLogger extends DroneLogger {
         for (Coordinate coord : this.flightPath)
             flightPathGeo.add(Point.fromLngLat(coord.x, coord.y));
 
-        LineString flightPath = LineString.fromLngLats(flightPathGeo);
+        var flightPath = LineString.fromLngLats(flightPathGeo);
         allFeatures.add(Feature.fromGeometry(flightPath));
 
         FeatureCollection features = FeatureCollection.fromFeatures(allFeatures);

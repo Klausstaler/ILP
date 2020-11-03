@@ -12,7 +12,7 @@ public class Angles {
         return (int) Math.round(angle / 10) * 10;
     }
 
-    public static Coordinate calculateNewPos(Coordinate from, double distance, int angle) {
+    public static Coordinate calculateNewCoordinate(Coordinate from, double distance, int angle) {
         double new_x = from.x + Math.cos(Math.toRadians(angle)) * distance;
         double new_y = from.y + Math.sin(Math.toRadians(angle)) * distance;
         return new Coordinate(new_x, new_y);

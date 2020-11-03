@@ -58,9 +58,9 @@ public class GraphOptimizer {
     }
 
     private VehicleImpl constructVehicle() {
-        VehicleType type =
+        var type =
                 VehicleTypeImpl.Builder.newInstance("type").build();
-        VehicleImpl vehicle = VehicleImpl.Builder.newInstance("vehicle")
+        var vehicle = VehicleImpl.Builder.newInstance("vehicle")
                 .setStartLocation(Location.newInstance(this.startLocation))
                 .setEndLocation(Location.newInstance(this.startLocation)).setType(type).build();
         return vehicle;

@@ -35,8 +35,8 @@ public class Drone {
     public void visitSensors() throws Exception {
         System.out.println("Visiting all sensors...");
         List<Coordinate> route = this.routePlanner.getNextRoute(position);
-        Coordinate currCoord = position;
-        Coordinate referenceCoord = position; // visited waypoint in the range of the current
+        var currCoord = position;
+        var referenceCoord = position; // visited waypoint in the range of the current
         // coordinate
         boolean firstIteration = true;
         while (referenceCoord != position || firstIteration) {
@@ -47,12 +47,12 @@ public class Drone {
             route = this.routePlanner.getNextRoute(referenceCoord);
             firstIteration = false;
         }
-        for (DroneLogger logger : this.loggers) logger.close();
+        for (var logger : this.loggers) logger.close();
         System.out.println("Finished visiting all sensors!");
     }
 
     private Coordinate navigate(Coordinate from, Coordinate to) throws Exception {
-        Coordinate currentCoordinate = from;
+        var currentCoordinate = from;
         boolean isFirstMove = true;
         while (currentCoordinate.distance(to) >= SENSOR_RADIUS || isFirstMove) {
             if (numMoves == MAX_MOVES) {
@@ -61,17 +61,17 @@ public class Drone {
             }
 
             int angle = Angles.calculateAngle(currentCoordinate, to);
-            Coordinate newCoordinate = Angles.calculateNewPos(currentCoordinate,
+            var newCoordinate = Angles.calculateNewCoordinate(currentCoordinate,
                     MOVE_LENGTH, angle);
             int oscillationFac = 0; // factor to alternate between expanding angles on left and
             // right of the initial angle
             while (!this.map.verifyMove(currentCoordinate, newCoordinate)) {
                 angle = Angles.adjustAngle(angle, oscillationFac * 10, oscillationFac % 2 == 1);
-                Coordinate candidate = Angles.calculateNewPos(currentCoordinate, MOVE_LENGTH,
+                var candidate = Angles.calculateNewCoordinate(currentCoordinate, MOVE_LENGTH,
                         angle);
                 newCoordinate = this.visited.contains(candidate) ? newCoordinate : candidate;
                 if (oscillationFac++ > 35) {
-                    for (DroneLogger logger : this.loggers) logger.close();
+                    for (var logger : this.loggers) logger.close();
                     throw new Exception("All angles tried, none worked! :(");
                 }
             }

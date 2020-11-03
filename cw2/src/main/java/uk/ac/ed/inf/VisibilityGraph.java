@@ -81,8 +81,8 @@ public class VisibilityGraph implements Graph {
 
         for (int i = 0; i < this.distances.size(); i++) {
             for (int j = i; j < this.distances.size(); j++) {
-                Coordinate from = this.map.getCoordinates()[i];
-                Coordinate to = this.map.getCoordinates()[j];
+                var from = this.map.getCoordinates()[i];
+                var to = this.map.getCoordinates()[j];
                 double dist = from.distance(to);
                 if (this.map.verifyMove(from, to)) {
                     this.distances.get(i).set(j, dist);
@@ -110,7 +110,7 @@ public class VisibilityGraph implements Graph {
 
     private void connectEdges() {
         int offset = 0;
-        Coordinate[] coordinates = this.map.getCoordinates();
+        var coordinates = this.map.getCoordinates();
         for (int idx = 0; idx < coordinates.length - 1; idx++) {
             int pos = idx + offset;
             double dist = coordinates[idx].distance(coordinates[idx + 1]);
