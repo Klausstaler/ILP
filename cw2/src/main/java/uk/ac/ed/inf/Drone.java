@@ -34,7 +34,7 @@ public class Drone {
 
     public void visitSensors() throws Exception {
         System.out.println("Visiting all sensors...");
-        List<Coordinate> route = this.routePlanner.getNextRoute(position);
+        List<Coordinate> route = this.routePlanner.getNextPath(position);
         var currCoord = position;
         var referenceCoord = position; // visited waypoint in the range of the current
         // coordinate
@@ -44,7 +44,7 @@ public class Drone {
                 currCoord = this.navigate(currCoord, coord);
                 referenceCoord = coord;
             }
-            route = this.routePlanner.getNextRoute(referenceCoord);
+            route = this.routePlanner.getNextPath(referenceCoord);
             firstIteration = false;
         }
         for (var logger : this.loggers) logger.close();

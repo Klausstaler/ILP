@@ -71,8 +71,8 @@ public class App {
 
                     String date = String.format("%s-%s-%s", day, month, year);
                     System.out.println("CHECKING " + date);
-                    //Coordinate initialPoint = new Coordinate(-3.188396, 55.944425);
-                    Coordinate initialPoint = new Coordinate(-3.186924308538437,55.9449287211836);
+                    Coordinate initialPoint = new Coordinate(-3.188396, 55.944425);
+                    //Coordinate initialPoint = new Coordinate(-3.186924308538437,55.9449287211836);
                     ObstacleService obstacleService = new ObstacleService(URL, port);
                     System.out.println("Obstacle service");
                     Map map = new Map(obstacleService.getObstacles());

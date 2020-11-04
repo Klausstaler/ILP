@@ -1,6 +1,7 @@
 package uk.ac.ed.inf;
 
 
+import javafx.util.Pair;
 import org.locationtech.jts.geom.Coordinate;
 
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ public class RoutePlanner {
 
         this.initPaths(waypoints);
         System.out.println("Calculating distances and paths for waypoints...");
-        var distanceMatrix = this.calculatePaths(waypoints);
+        var distanceMatrix = this.calculateDistances(waypoints);
         System.out.println("Finished calculating distances and paths for waypoints!");
 
         System.out.println("NOW OPTIMIZER");
@@ -39,7 +40,7 @@ public class RoutePlanner {
         }
     }
 
-    public List<Coordinate> getNextRoute(Coordinate waypoint) {
+    public List<Coordinate> getNextPath(Coordinate waypoint) {
         int waypointIdx = this.waypoints.get(waypoint);
         return this.paths.get(waypointIdx).get(this.route[waypointIdx]);
     }
@@ -53,16 +54,15 @@ public class RoutePlanner {
         }
     }
 
-    private double[][] calculatePaths(List<Coordinate> waypoints) {
+    private double[][] calculateDistances(List<Coordinate> waypoints) {
         double[][] distanceMatrix = new double[waypoints.size()][waypoints.size()];
         for (int i = 0; i < waypoints.size(); i++) {
             for (int j = i + 1; j < waypoints.size(); j++) {
                 Coordinate from = waypoints.get(i);
                 Coordinate to = waypoints.get(j);
-                Pair<List<Coordinate>, Double> pathInfo =
-                        this.calculateDistance(from, to);
-                this.updatePaths(from, to, pathInfo.first);
-                double distance = pathInfo.second;
+                var pathInfo = this.calculateDistance(from, to);
+                this.updatePaths(from, to, pathInfo.getKey());
+                double distance = pathInfo.getValue();
                 distanceMatrix[i][j] = distance;
                 distanceMatrix[j][i] = distance;
             }
@@ -96,8 +96,8 @@ public class RoutePlanner {
             var pathFinder = new PathFinder(this.visibilityGraph);
             Pair<int[], Double> pair = pathFinder.shortestPath(pathFinder.getNumNodes() - 2,
                     pathFinder.getNumNodes() - 1);
-            int[] routeIdxs = pair.first;
-            dist = pair.second;
+            int[] routeIdxs = pair.getKey();
+            dist = pair.getValue();
 
             var graphCoordinates = this.visibilityGraph.getAllCoordinates();
             for (int i = 1; i < routeIdxs.length; i++) {

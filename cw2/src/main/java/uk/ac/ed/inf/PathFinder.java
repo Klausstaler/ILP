@@ -1,6 +1,8 @@
 package uk.ac.ed.inf;
 
 
+import javafx.util.Pair;
+
 import java.util.*;
 
 public class PathFinder {

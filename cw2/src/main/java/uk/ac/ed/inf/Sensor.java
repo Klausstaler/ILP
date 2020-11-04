@@ -8,10 +8,10 @@ import java.util.Objects;
 public class Sensor extends Coordinate {
 
     private String location;
-    private double battery;
+    private float battery;
     private Double reading;
 
-    public Sensor(String location, double battery, Double reading, double x, double y) {
+    public Sensor(String location, float battery, Double reading, double x, double y) {
         super(x, y);
         this.location = location;
         this.reading = reading;

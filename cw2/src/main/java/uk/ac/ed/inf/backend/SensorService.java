@@ -52,7 +52,7 @@ public class SensorService extends BackendService {
         String location = sensorProperties.get("location").getAsString();
         Coordinate coordinate = this.getCoordinate(location);
         Double reading = null;
-        double battery = sensorProperties.get("battery").getAsDouble();
+        float battery = sensorProperties.get("battery").getAsFloat();
 
         if (battery > MIN_BATTERY) {
             String readingVal = sensorProperties.get("reading").getAsString();
