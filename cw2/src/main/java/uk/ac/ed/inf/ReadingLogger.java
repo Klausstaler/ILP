@@ -1,6 +1,9 @@
 package uk.ac.ed.inf;
 
-import com.mapbox.geojson.*;
+import com.mapbox.geojson.Feature;
+import com.mapbox.geojson.FeatureCollection;
+import com.mapbox.geojson.LineString;
+import com.mapbox.geojson.Point;
 import org.locationtech.jts.geom.Coordinate;
 
 import java.io.IOException;

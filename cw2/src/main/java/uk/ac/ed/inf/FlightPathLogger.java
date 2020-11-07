@@ -31,7 +31,7 @@ public class FlightPathLogger extends DroneLogger {
     @Override
     public void close() throws IOException {
         System.out.println("FlightPathLogger closing file..");
-        System.out.println("Written " + (this.lineNbr-1) + " lines!");
+        System.out.println("Written " + (this.lineNbr - 1) + " lines!");
         this.file.close();
     }
 

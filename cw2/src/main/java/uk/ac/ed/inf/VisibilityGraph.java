@@ -7,10 +7,12 @@ import java.util.Arrays;
 import java.util.List;
 
 public class VisibilityGraph implements Graph {
+
+    private static final double MAX_VALUE = Double.MAX_VALUE - 100; // slightly lower so we don't
+    // run into overflow issues when adding
     private Map map;
     private List<Coordinate> additionalCoordinates = new ArrayList<>();
     private List<List<Double>> distances;
-    private List<List<Double>> heuristics;
 
     public VisibilityGraph(Map map) {
         this.map = map;
@@ -21,8 +23,16 @@ public class VisibilityGraph implements Graph {
         return this.distances.get(fromIdx).get(toIdx);
     }
 
-    public double getHeuristic(int fromIdx, int toIdx) {
-        return this.heuristics.get(fromIdx).get(toIdx);
+    public void setDistance(int fromIdx, int toIdx, double distance) {
+        this.distances.get(fromIdx).set(toIdx, distance);
+    }
+
+    public Coordinate getCoordinate(int i) {
+        var numMapCoords = this.map.getCoordinates().length;
+        if (i >= numMapCoords) {
+            return this.additionalCoordinates.get(i - numMapCoords);
+        }
+        return this.map.getCoordinates()[i];
     }
 
     public int getSize() {
@@ -40,38 +50,19 @@ public class VisibilityGraph implements Graph {
         List<Coordinate> allCoordinates = this.getAllCoordinates();
 
         List<Double> distanceRow = new ArrayList<>();
-        List<Double> heuristicRow = new ArrayList<>();
 
         for (int i = 0; i < allCoordinates.size(); i++) {
             Coordinate from = allCoordinates.get(i);
             double dist = from.distance(newCoordinate);
 
-            heuristics.get(i).add(dist);
-            heuristicRow.add(dist);
-
-            dist = map.verifyMove(from, newCoordinate) ? dist : Double.MAX_VALUE;
+            dist = map.verifyMove(from, newCoordinate) ? dist : MAX_VALUE;
             distances.get(i).add(dist);
             distanceRow.add(dist);
         }
         distanceRow.add(0.0);
         distances.add(distanceRow);
 
-        heuristicRow.add(0.0);
-        heuristics.add(heuristicRow);
-
         additionalCoordinates.add(newCoordinate);
-    }
-
-    public void removeLast() {
-        additionalCoordinates.remove(additionalCoordinates.size() - 1);
-        this.removeLast(this.distances);
-        this.removeLast(this.heuristics);
-    }
-    private void removeLast(List<List<Double>> distMatrix) {
-        distMatrix.remove(distMatrix.size() - 1);
-        for (List<Double> row : distMatrix) {
-            row.remove(row.size() - 1);
-        }
     }
 
     private void constructVisibilityGraph() {
@@ -88,24 +79,19 @@ public class VisibilityGraph implements Graph {
                     this.distances.get(i).set(j, dist);
                     this.distances.get(j).set(i, dist);
                 }
-                this.heuristics.get(i).set(j, dist);
-                this.heuristics.get(j).set(i, dist);
             }
         }
     }
 
     private void initMatrices() {
         List<List<Double>> distances = new ArrayList<>();
-        List<List<Double>> heuristics = new ArrayList<>();
         int num_vertices = this.map.getCoordinates().length;
         for (int i = 0; i < num_vertices; i++) {
             List<Double> row = new ArrayList<>();
-            for (int j = 0; j < num_vertices; j++) row.add(Double.MAX_VALUE);
+            for (int j = 0; j < num_vertices; j++) row.add(MAX_VALUE);
             distances.add(row);
-            heuristics.add(new ArrayList<>(row));
         }
         this.distances = distances;
-        this.heuristics = heuristics;
     }
 
     private void connectEdges() {

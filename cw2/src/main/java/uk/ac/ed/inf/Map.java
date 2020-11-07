@@ -18,12 +18,6 @@ public class Map extends Polygon {
         }
     }
 
-    public boolean verifyMove(Coordinate from, Coordinate to) {
-        Coordinate[] edgeCoords = new Coordinate[]{from, to};
-        var edge = new GeometryFactory().createLineString(edgeCoords);
-        return this.covers(edge);
-    }
-
     private static LinearRing createShell() {
         Coordinate[] boundaries = {new Coordinate(-3.192473, 55.946233), //NW
                 new Coordinate(-3.184319, 55.946233), // NE
@@ -41,6 +35,12 @@ public class Map extends Polygon {
                 holes.add(obstacle);
         }
         return holes.toArray(new LinearRing[0]);
+    }
+
+    public boolean verifyMove(Coordinate from, Coordinate to) {
+        Coordinate[] edgeCoords = new Coordinate[]{from, to};
+        var edge = new GeometryFactory().createLineString(edgeCoords);
+        return this.covers(edge);
     }
 
     private void alignShell(LinearRing obstacle) {

@@ -5,6 +5,8 @@ import org.locationtech.jts.geom.Coordinate;
 import uk.ac.ed.inf.backend.ObstacleService;
 import uk.ac.ed.inf.backend.SensorService;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class App {
@@ -71,18 +73,28 @@ public class App {
 
                     String date = String.format("%s-%s-%s", day, month, year);
                     System.out.println("CHECKING " + date);
-                    Coordinate initialPoint = new Coordinate(-3.188396, 55.944425);
-                    //Coordinate initialPoint = new Coordinate(-3.186924308538437,55.9449287211836);
                     ObstacleService obstacleService = new ObstacleService(URL, port);
                     System.out.println("Obstacle service");
-                    Map map = new Map(obstacleService.getObstacles());
                     SensorService sensorService = new SensorService(URL, port, day, month, year);
 
-                    ReadingLogger logger1 = new ReadingLogger(initialPoint, date,
+                    Coordinate initialPos = new Coordinate(-3.188396, 55.944425);
+                    //Coordinate initialPos = new Coordinate(-3.186924308538437,55.9449287211836);
+                    ReadingLogger logger1 = new ReadingLogger(initialPos, date,
                             sensorService.getSensors());
-                    FlightPathLogger logger2 = new FlightPathLogger(initialPoint, date);
+                    FlightPathLogger logger2 = new FlightPathLogger(initialPos, date);
+
+
+                    Map map = new Map(obstacleService.getObstacles());
+                    var visibilityGraph = new VisibilityGraph(map);
+
                     new VisualHelper(map, sensorService);
-                    Drone drone = new Drone(initialPoint, map, sensorService.getSensors(), logger1
+
+                    List<Coordinate> waypoints = new ArrayList<>();
+                    waypoints.add(initialPos);
+                    waypoints.addAll(sensorService.getSensors());
+
+                    var routePlanner = new RoutePlanner(visibilityGraph, waypoints);
+                    Drone drone = new Drone(initialPos, map, routePlanner, logger1
                             , logger2);
                     drone.visitSensors();
                     //break;
@@ -91,7 +103,7 @@ public class App {
             }
             //break;
         }
-         //*/
+        //*/
 
         /*
         for (String day : dd_mm) {

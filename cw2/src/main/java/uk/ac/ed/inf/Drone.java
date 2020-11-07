@@ -4,7 +4,6 @@ package uk.ac.ed.inf;
 import org.locationtech.jts.geom.Coordinate;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -16,25 +15,22 @@ public class Drone {
     private static final double MOVE_LENGTH = 0.0003;
 
     private Coordinate position;
-    private RoutePlanner routePlanner;
+    private RoutePlanner planner;
     private Map map;
     private List<DroneLogger> loggers;
     private HashSet<Coordinate> visited = new HashSet<>();
     private int numMoves = 0;
 
-    public Drone(Coordinate position, Map map, List<Sensor> sensors, DroneLogger... loggers) {
+    public Drone(Coordinate position, Map map, RoutePlanner planner, DroneLogger... loggers) {
         this.position = position;
         this.loggers = Arrays.asList(loggers);
         this.map = map;
-        List<Coordinate> waypoints = new ArrayList<>();
-        waypoints.add(position);
-        waypoints.addAll(sensors);
-        this.routePlanner = new RoutePlanner(map, waypoints);
+        this.planner = planner;
     }
 
     public void visitSensors() throws Exception {
         System.out.println("Visiting all sensors...");
-        List<Coordinate> route = this.routePlanner.getNextPath(position);
+        List<Coordinate> route = this.planner.getNextPath(position);
         var currCoord = position;
         var referenceCoord = position; // visited waypoint in the range of the current
         // coordinate
@@ -44,7 +40,7 @@ public class Drone {
                 currCoord = this.navigate(currCoord, coord);
                 referenceCoord = coord;
             }
-            route = this.routePlanner.getNextPath(referenceCoord);
+            route = this.planner.getNextPath(referenceCoord);
             firstIteration = false;
         }
         for (var logger : this.loggers) logger.close();
