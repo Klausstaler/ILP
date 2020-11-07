@@ -36,7 +36,7 @@ public class VisibilityGraph implements Graph {
         return allCoordinates;
     }
 
-    public void addCoordinate(Coordinate to) {
+    public void addCoordinate(Coordinate newCoordinate) {
         List<Coordinate> allCoordinates = this.getAllCoordinates();
 
         List<Double> distanceRow = new ArrayList<>();
@@ -44,12 +44,12 @@ public class VisibilityGraph implements Graph {
 
         for (int i = 0; i < allCoordinates.size(); i++) {
             Coordinate from = allCoordinates.get(i);
-            double dist = from.distance(to);
+            double dist = from.distance(newCoordinate);
 
             heuristics.get(i).add(dist);
             heuristicRow.add(dist);
 
-            dist = map.verifyMove(from, to) ? dist : Double.MAX_VALUE;
+            dist = map.verifyMove(from, newCoordinate) ? dist : Double.MAX_VALUE;
             distances.get(i).add(dist);
             distanceRow.add(dist);
         }
@@ -59,7 +59,7 @@ public class VisibilityGraph implements Graph {
         heuristicRow.add(0.0);
         heuristics.add(heuristicRow);
 
-        additionalCoordinates.add(to);
+        additionalCoordinates.add(newCoordinate);
     }
 
     public void removeLast() {

@@ -46,7 +46,6 @@ public class ReadingLogger extends DroneLogger {
 
         FeatureCollection features = FeatureCollection.fromFeatures(allFeatures);
 
-
         System.out.println("ReadingLogger closing file..");
         this.file.write(features.toJson());
         this.file.close();
