@@ -6,11 +6,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Underyling visibility graph between vertices of the map. Can add additional coordinates to get
+ * distances between the coordinate and all other vertices in the graph.
+ */
 public class VisibilityGraph implements Graph {
 
-    private Map map;
-    private List<Coordinate> additionalCoordinates = new ArrayList<>();
-    private List<List<Double>> distances;
+    private Map map; // used to get the vertex coordinates as well as verifying valid edges.
+    private List<Coordinate> additionalCoordinates = new ArrayList<>(); // additional coordinates
+    // which are not vertices of the map
+    private List<List<Double>> distances; // distance array between all vertices in the graph
 
     public VisibilityGraph(Map map) {
         this.map = map;
@@ -27,7 +32,8 @@ public class VisibilityGraph implements Graph {
 
     public Coordinate getCoordinate(int i) {
         var numMapCoords = this.map.getCoordinates().length;
-        if (i >= numMapCoords) {
+        if (i >= numMapCoords) { // if i is bigger than the number of map coordinates, it can
+            // only be stored in the additional coordiantes
             return this.additionalCoordinates.get(i - numMapCoords);
         }
         return this.map.getCoordinates()[i];
@@ -37,6 +43,10 @@ public class VisibilityGraph implements Graph {
         return this.distances.size();
     }
 
+    /**
+     * Gets all the coordinates stored in the visibility graph
+     * @return A List of all coordinates stored in the map and the additional corodinates.
+     */
     public List<Coordinate> getAllCoordinates() {
         List<Coordinate> allCoordinates = new ArrayList<>();
         allCoordinates.addAll(Arrays.asList(this.map.getCoordinates()));
@@ -44,6 +54,10 @@ public class VisibilityGraph implements Graph {
         return allCoordinates;
     }
 
+    /**
+     * Adds a new coordinate to the visibility graph.
+     * @param newCoordinate
+     */
     public void addCoordinate(Coordinate newCoordinate) {
         List<Coordinate> allCoordinates = this.getAllCoordinates();
 
@@ -57,12 +71,16 @@ public class VisibilityGraph implements Graph {
             distances.get(i).add(dist);
             distanceRow.add(dist);
         }
-        distanceRow.add(0.0);
+        distanceRow.add(0.0); // distance to itself is zero
         distances.add(distanceRow);
 
         additionalCoordinates.add(newCoordinate);
     }
 
+    /**
+     * Constructs the visiblity graph by initializing the attributes and setting the initial
+     * distance matrix.
+     */
     private void constructVisibilityGraph() {
 
         this.initMatrices();
@@ -81,6 +99,9 @@ public class VisibilityGraph implements Graph {
         }
     }
 
+    /**
+     * Initializes the distance matrix.
+     */
     private void initMatrices() {
         List<List<Double>> distances = new ArrayList<>();
         int num_vertices = this.map.getCoordinates().length;
@@ -92,6 +113,9 @@ public class VisibilityGraph implements Graph {
         this.distances = distances;
     }
 
+    /**
+     * Computes the distances between the edges of each obstacle.
+     */
     private void connectEdges() {
         int offset = 0;
         var coordinates = this.map.getCoordinates();

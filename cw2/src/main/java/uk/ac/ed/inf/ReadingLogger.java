@@ -11,15 +11,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * Used to log the flight path and markers in geoJSON format.
+ */
 public class ReadingLogger extends DroneLogger {
 
-    private List<Coordinate> flightPath = new ArrayList<>();
-    private HashMap<String, Feature> markers = new HashMap<>();
+    private List<Coordinate> flightPath = new ArrayList<>(); // flight path of drone
+    private HashMap<String, Feature> markers = new HashMap<>(); // maps what3words address
+    // to a marker
 
     public ReadingLogger(Coordinate initialPos, String date, List<Sensor> sensors) throws IOException {
         super(initialPos, "readings-" + date + ".geojson");
         this.flightPath.add(initialPos);
-        for (Sensor sensor : sensors) {
+        for (Sensor sensor : sensors) { // initialize all markers as not visited
             Feature feature = Feature.fromGeometry(Point.fromLngLat(sensor.x, sensor.y));
             feature.addStringProperty("marker-color",
                     MarkerProperties.NOTVISITED.getRgbString());
@@ -28,6 +32,12 @@ public class ReadingLogger extends DroneLogger {
         System.out.println("Reading logger initialized...");
     }
 
+    /**
+     * Adds the new position to the flight path while updating the marker properties of the read
+     * sensor.
+     * @param newPos the new position we need to log
+     * @param read_sensor The sensor read during move
+     */
     @Override
     public void log(Coordinate newPos, Sensor read_sensor) {
         this.flightPath.add(newPos);
@@ -37,6 +47,10 @@ public class ReadingLogger extends DroneLogger {
         }
     }
 
+    /**
+     * Dumps the markers and flightpath into the output file in geoJSON format, then closes it.
+     * @throws IOException
+     */
     @Override
     public void close() throws IOException {
         List<Feature> allFeatures = new ArrayList<>(this.markers.values());
@@ -54,6 +68,10 @@ public class ReadingLogger extends DroneLogger {
         this.file.close();
     }
 
+    /**
+     * Updates the marker properties of the marker located at the sensor's what3words address.
+     * @param read_sensor the sensor read.
+     */
     private void updateMarkerProps(Sensor read_sensor) {
         Feature marker = this.markers.get(read_sensor.getLocation());
         MarkerProperties markerProps = (read_sensor.getReading() == null) ?

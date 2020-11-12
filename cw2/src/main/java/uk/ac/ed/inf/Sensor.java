@@ -5,11 +5,15 @@ import org.locationtech.jts.geom.Coordinate;
 
 import java.util.Objects;
 
+/**
+ * Represents a sensor.
+ */
 public class Sensor extends Coordinate {
 
-    private String location;
-    private float battery;
-    private Double reading;
+    private String location; // what3words address of the sensor
+    private float battery; // battery level
+    private Double reading; // sensor reading, null if the battery level is below acceptable
+    // threshold and reading is not reliable
 
     public Sensor(String location, float battery, Double reading, double x, double y) {
         super(x, y);
