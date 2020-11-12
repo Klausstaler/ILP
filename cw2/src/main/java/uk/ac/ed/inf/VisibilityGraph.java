@@ -117,13 +117,19 @@ public class VisibilityGraph implements Graph {
      * Computes the distances between the edges of each obstacle.
      */
     private void connectEdges() {
-        int offset = 0;
-        var coordinates = this.map.getCoordinates();
-        for (int idx = 0; idx < coordinates.length - 1; idx++) {
-            int pos = idx + offset;
-            double dist = coordinates[idx].distance(coordinates[idx + 1]);
-            this.distances.get(pos).set(pos + 1, dist);
-            this.distances.get(pos + 1).set(pos, dist);
+
+        int offset = 0; // offset to store how many coordinates we already processed
+        var boundary = this.map.getBoundary();
+        for (int obstacleIdx = 0; obstacleIdx < boundary.getNumGeometries(); obstacleIdx++) {
+            var obstacle = boundary.getGeometryN(obstacleIdx);
+            var coordinates = obstacle.getCoordinates();
+            for(int idx = 0; idx < coordinates.length-1; idx++) {
+                int pos = idx + offset;
+                double dist = coordinates[idx].distance(coordinates[idx+1]);
+                this.distances.get(pos).set(pos+1, dist);
+                this.distances.get(pos+1).set(pos, dist);
+            }
+            offset += coordinates.length;
         }
     }
 }
