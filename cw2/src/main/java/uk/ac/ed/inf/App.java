@@ -10,13 +10,14 @@ import java.util.List;
 import java.util.Random;
 
 public class App {
-    private static final String URL = "http://localhost";
-    private static Random random;
+    private static final String URL = "http://localhost"; // base url
+    private static Random random; // random seed used in program
 
     public static void main(String[] args) throws Exception {
         System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "Error"); //
         // disables logging for graphhopper API
 
+        // parse arguments
         String day = args[0];
         String month = args[1];
         String year = args[2];
@@ -30,12 +31,15 @@ public class App {
         SensorService sensorService = new SensorService(URL, port, day, month, year);
 
         Coordinate initialPos = new Coordinate(longitude, latitude);
+
+        // setup loggers
         var logger1 = new ReadingLogger(initialPos, date, sensorService.getSensors());
         var logger2 = new FlightPathLogger(initialPos, date);
 
         List<Coordinate> waypoints = new ArrayList<>();
         waypoints.add(initialPos);
         waypoints.addAll(sensorService.getSensors());
+
 
         ObstacleService obstacleService = new ObstacleService(URL, port);
         Map map = new Map(obstacleService.getObstacles());
@@ -44,6 +48,7 @@ public class App {
         var routePlanner = new RoutePlanner(visibilityGraph, waypoints);
         Drone drone = new Drone(initialPos, map, routePlanner, logger1
                 , logger2);
+
         drone.visitSensors();
     }
 

@@ -18,7 +18,7 @@ import java.util.Arrays;
  */
 public class RouteFinder {
 
-    private String startLocation = "0";
+    private final String startLocation = "0";
     private double[][] distanceMatrix; // entry in row i and column j represents the distance
     // to get from node i to node j
     private VehicleRoutingAlgorithm routing; // used to get optimal route

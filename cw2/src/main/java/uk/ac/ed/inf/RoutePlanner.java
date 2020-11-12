@@ -13,7 +13,8 @@ public class RoutePlanner {
 
     private HashMap<Coordinate, Integer> waypoints = new HashMap<>(); // mapping from a waypoint
     // to coordinate to its index
-    private int[] route; // element i gives us the next closest waypoint index from waypoint i
+    private int[] route; // element i gives us the next waypoint index from waypoint i when
+    // following the route
     private VisibilityGraph visibilityGraph; // the visibility graph, keeps track of distances
     private PathFinder pathFinder; // used to find shortest path between all pairs
 

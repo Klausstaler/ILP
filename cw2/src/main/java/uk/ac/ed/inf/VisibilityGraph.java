@@ -83,7 +83,7 @@ public class VisibilityGraph implements Graph {
      */
     private void constructVisibilityGraph() {
 
-        this.initMatrices();
+        this.initDistMatrix();
         this.connectEdges();
 
         for (int i = 0; i < this.distances.size(); i++) {
@@ -102,7 +102,7 @@ public class VisibilityGraph implements Graph {
     /**
      * Initializes the distance matrix.
      */
-    private void initMatrices() {
+    private void initDistMatrix() {
         List<List<Double>> distances = new ArrayList<>();
         int num_vertices = this.map.getCoordinates().length;
         for (int i = 0; i < num_vertices; i++) {

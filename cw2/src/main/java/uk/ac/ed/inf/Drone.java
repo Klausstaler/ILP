@@ -19,7 +19,7 @@ public class Drone {
     // reading
     private static final double MOVE_LENGTH = 0.0003; // distance travelled in one move
 
-    private Coordinate position; // the start position of the drone
+    private Coordinate startPosition; // the start position of the drone
     private RoutePlanner planner; // planner used for routing between all waypoints
     private Map map; // map to check if we do valid moves
     private List<DroneLogger> loggers; // loggers to create output files
@@ -27,8 +27,8 @@ public class Drone {
     // twice
     private int numMoves = 0; // number of moves made so far
 
-    public Drone(Coordinate position, Map map, RoutePlanner planner, DroneLogger... loggers) {
-        this.position = position;
+    public Drone(Coordinate startPosition, Map map, RoutePlanner planner, DroneLogger... loggers) {
+        this.startPosition = startPosition;
         this.loggers = Arrays.asList(loggers);
         this.map = map;
         this.planner = planner;
@@ -40,12 +40,12 @@ public class Drone {
      */
     public void visitSensors() throws Exception {
         System.out.println("Visiting all sensors...");
-        List<Coordinate> route = this.planner.getNextPath(position);
-        var currCoord = position;
-        var referenceCoord = position; // used to get the next path we need to follow from the
+        List<Coordinate> route = this.planner.getNextPath(startPosition);
+        var currCoord = startPosition;
+        var referenceCoord = startPosition; // used to get the next path we need to follow from the
         // routePlanner
         boolean firstIteration = true;
-        while (referenceCoord != position || firstIteration) {
+        while (referenceCoord != startPosition || firstIteration) {
             for (Coordinate coord : route) {
                 currCoord = this.navigate(currCoord, coord);
                 referenceCoord = coord;
@@ -96,13 +96,15 @@ public class Drone {
         int angle = Angles.calculateAngle(from, to);
         var newCoordinate = Angles.calculateNewCoordinate(from,
                 MOVE_LENGTH, angle);
+
+        final int angleStepSize = 10; // the step size for the angles
         int oscillationFac = 0; // factor to alternate between expanding angles on left and
         // right of the initial angle
 
         // oscillate between expanding angles greater or smaller than the exact angle until we
         // find a coordinate we can move to
         while (!this.map.verifyMove(from, newCoordinate)) {
-            angle = Angles.adjustAngle(angle, oscillationFac * 10, oscillationFac % 2 == 1);
+            angle = Angles.adjustAngle(angle, oscillationFac * angleStepSize, oscillationFac % 2 == 1);
             var candidate = Angles.calculateNewCoordinate(from, MOVE_LENGTH,
                     angle);
             newCoordinate = this.visited.contains(candidate) ? newCoordinate : candidate;
