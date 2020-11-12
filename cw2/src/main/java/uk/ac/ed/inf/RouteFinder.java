@@ -13,25 +13,36 @@ import com.graphhopper.jsprit.core.util.VehicleRoutingTransportCostsMatrix;
 
 import java.util.Arrays;
 
-public class GraphOptimizer {
+/**
+ * Used to get a short route visiting all nodes in a graph and returning to the start.
+ */
+public class RouteFinder {
 
     private String startLocation = "0";
-    private double[][] distanceMatrix;
-    private VehicleRoutingAlgorithm routing;
+    private double[][] distanceMatrix; // entry in row i and column j represents the distance
+    // to get from node i to node j
+    private VehicleRoutingAlgorithm routing; // used to get optimal route
 
-    public GraphOptimizer(double[][] distanceMatrix) {
+    public RouteFinder(double[][] distanceMatrix) {
         this.distanceMatrix = distanceMatrix;
         this.setupRouting();
     }
 
-    public int[] optimize() {
+    /**
+     * Finds the shortest route visiting all nodes.
+     * @return An array of indices representing the order in which to visit the nodes. A node index
+     * at index i means that the node with the given node index should be visited after visiting
+     * the node with the node index at index i-1.
+     */
+    public int[] findShortestRoute() {
 
-        System.out.println("Starting graph optimization....");
+        System.out.println("Finding shortest route....");
 
         var solutions = this.routing.searchSolutions();
 
-        int[] sol = new int[this.distanceMatrix.length + 1];
-        int idx = Integer.parseInt(this.startLocation);
+        int[] sol = new int[this.distanceMatrix.length + 1]; // last index used to store the
+        // start position
+        int idx = 0;
         for (var route : Solutions.bestOf(solutions).getRoutes()) {
             var id = route.getStart().getLocation().getId();
             sol[idx++] = Integer.parseInt(id);
@@ -45,10 +56,13 @@ public class GraphOptimizer {
         sol[this.distanceMatrix.length] = Integer.parseInt(this.startLocation);
         System.out.println("NOW SOLUTION");
         System.out.println(Arrays.toString(sol));
-        System.out.println("Finished optimizing!");
+        System.out.println("Finished finding route!");
         return sol;
     }
 
+    /**
+     * Calls all methods used to setup the RouteFinder object.
+     */
     private void setupRouting() {
 
         var vehicle = this.constructVehicle();
@@ -56,6 +70,11 @@ public class GraphOptimizer {
         this.routing = this.constructRouter(costMatrix, vehicle);
     }
 
+    /**
+     * Constructs a Vehicle object. Used in the Graphhopper library to represent an object
+     * visiting all nodes.
+     * @return A vehicle of type VehicleImpl.
+     */
     private VehicleImpl constructVehicle() {
         var type =
                 VehicleTypeImpl.Builder.newInstance("type").build();
@@ -65,6 +84,29 @@ public class GraphOptimizer {
         return vehicle;
     }
 
+    /**
+     * Constructs the cost matrix for the routing problem.
+     * @return A cost matrix.
+     */
+    private VehicleRoutingTransportCostsMatrix constructCostMatrix() {
+        var costMatrixBuilder = VehicleRoutingTransportCostsMatrix.Builder.newInstance(true);
+        for (int i = 0; i < this.distanceMatrix.length; i++) {
+            for (int j = 0; j < i; j++) {
+                double dist = this.distanceMatrix[i][j];
+                var from = String.valueOf(i);
+                var to = String.valueOf(j);
+                costMatrixBuilder.addTransportDistance(from, to, dist);
+            }
+        }
+        return costMatrixBuilder.build();
+    }
+
+    /**
+     * Constructs the routing algorithm used to visit all nodes.
+     * @param costMatrix The cost matrix used
+     * @param vehicle The vehicle instance used
+     * @return The routing algorithm used to visit all nodes
+     */
     private VehicleRoutingAlgorithm constructRouter(VehicleRoutingTransportCostsMatrix costMatrix
             , VehicleImpl vehicle) {
 
@@ -79,22 +121,9 @@ public class GraphOptimizer {
 
         var routingBuilder = Jsprit.Builder.newInstance(problembuilder.build());
         var routing =
-                routingBuilder.setRandom(App.getRandom()).buildAlgorithm();
+                routingBuilder.setRandom(App.getRandom()).buildAlgorithm(); // use random seed
         routing.setMaxIterations(256);
         return routing;
-    }
-
-    private VehicleRoutingTransportCostsMatrix constructCostMatrix() {
-        var costMatrixBuilder = VehicleRoutingTransportCostsMatrix.Builder.newInstance(true);
-        for (int i = 0; i < this.distanceMatrix.length; i++) {
-            for (int j = 0; j < i; j++) {
-                double dist = this.distanceMatrix[i][j];
-                var from = String.valueOf(i);
-                var to = String.valueOf(j);
-                costMatrixBuilder.addTransportDistance(from, to, dist);
-            }
-        }
-        return costMatrixBuilder.build();
     }
 
 }

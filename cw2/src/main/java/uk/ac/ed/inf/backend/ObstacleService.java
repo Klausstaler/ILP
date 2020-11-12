@@ -9,6 +9,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Service used to pull all obstacles from the webserver.
+ */
 public class ObstacleService extends BackendService {
 
     private List<LinearRing> obstacles;
@@ -23,6 +26,11 @@ public class ObstacleService extends BackendService {
         return this.obstacles;
     }
 
+    /**
+     * Retrieves the obstacles from the webserver.
+     * @return A list of LinearRings, representing the obstacles retrieved.
+     * @throws IOException
+     */
     private List<LinearRing> addObstacles() throws IOException {
         List<LinearRing> obstacles = new ArrayList<>();
 
@@ -34,6 +42,11 @@ public class ObstacleService extends BackendService {
         return obstacles;
     }
 
+    /**
+     * Turns a geoJSON feature into a JTS LinearRing.
+     * @param feature geoJSON Feature.
+     * @return A linearRing.
+     */
     private LinearRing toLinearRing(Feature feature) {
         List<Coordinate> coordinates = new ArrayList<>();
 

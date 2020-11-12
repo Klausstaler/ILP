@@ -8,8 +8,6 @@ import java.util.List;
 
 public class VisibilityGraph implements Graph {
 
-    private static final double MAX_VALUE = Double.MAX_VALUE - 100; // slightly lower so we don't
-    // run into overflow issues when adding
     private Map map;
     private List<Coordinate> additionalCoordinates = new ArrayList<>();
     private List<List<Double>> distances;
@@ -55,7 +53,7 @@ public class VisibilityGraph implements Graph {
             Coordinate from = allCoordinates.get(i);
             double dist = from.distance(newCoordinate);
 
-            dist = map.verifyMove(from, newCoordinate) ? dist : MAX_VALUE;
+            dist = map.verifyMove(from, newCoordinate) ? dist : Double.MAX_VALUE;
             distances.get(i).add(dist);
             distanceRow.add(dist);
         }
@@ -88,7 +86,7 @@ public class VisibilityGraph implements Graph {
         int num_vertices = this.map.getCoordinates().length;
         for (int i = 0; i < num_vertices; i++) {
             List<Double> row = new ArrayList<>();
-            for (int j = 0; j < num_vertices; j++) row.add(MAX_VALUE);
+            for (int j = 0; j < num_vertices; j++) row.add(Double.MAX_VALUE);
             distances.add(row);
         }
         this.distances = distances;

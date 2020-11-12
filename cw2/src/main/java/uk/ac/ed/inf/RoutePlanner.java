@@ -25,8 +25,8 @@ public class RoutePlanner {
         System.out.println("Finished calculating distances and paths for waypoints!");
 
         System.out.println("NOW OPTIMIZER");
-        GraphOptimizer optimizer = new GraphOptimizer(distanceMatrix);
-        int[] routeIdxs = optimizer.optimize();
+        RouteFinder optimizer = new RouteFinder(distanceMatrix);
+        int[] routeIdxs = optimizer.findShortestRoute();
         this.route = new int[routeIdxs.length - 1];
         for (int i = 0; i < route.length - 1; i++) {
             this.route[routeIdxs[i]] = routeIdxs[i + 1];

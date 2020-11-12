@@ -1,5 +1,8 @@
 package uk.ac.ed.inf;
 
+/**
+ * Used to store the marker properties of each marker.
+ */
 public enum MarkerProperties {
 
     SAFE1("#00ff00", "lighthouse"),
@@ -23,6 +26,11 @@ public enum MarkerProperties {
         this.markerSymbol = markerSymbol;
     }
 
+    /**
+     * Resolve the marker properties based on the pollution level
+     * @param pollution the pollution level
+     * @return The corresponding marker property.
+     */
     public static MarkerProperties fromAirPollution(double pollution) {
         if (pollution < 0 || pollution >= 256) {
             throw new IllegalArgumentException(ILLEGAL_AIR_POLLUTION);
