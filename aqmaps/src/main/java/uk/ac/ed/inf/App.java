@@ -33,21 +33,21 @@ public class App {
         Coordinate initialPos = new Coordinate(longitude, latitude);
 
         // setup loggers
-        var logger1 = new ReadingLogger(initialPos, date, sensorService.getSensors());
-        var logger2 = new FlightPathLogger(initialPos, date);
+        var readingLogger = new ReadingLogger(initialPos, date, sensorService.getSensors());
+        var flightPathLogger = new FlightPathLogger(initialPos, date);
 
         List<Coordinate> waypoints = new ArrayList<>();
         waypoints.add(initialPos);
         waypoints.addAll(sensorService.getSensors());
 
 
-        ObstacleService obstacleService = new ObstacleService(URL, port);
-        Map map = new Map(obstacleService.getObstacles());
+        var obstacleService = new ObstacleService(URL, port);
+        var map = new Map(obstacleService.getObstacles());
         var visibilityGraph = new VisibilityGraph(map);
 
         var routePlanner = new RoutePlanner(visibilityGraph, waypoints);
-        Drone drone = new Drone(initialPos, map, routePlanner, logger1
-                , logger2);
+        var drone = new Drone(initialPos, map, routePlanner, readingLogger
+                , flightPathLogger);
 
         drone.visitSensors();
     }

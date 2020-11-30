@@ -1,10 +1,10 @@
 package uk.ac.ed.inf.backend;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 
 
 /**
@@ -12,51 +12,30 @@ import java.net.URL;
  */
 public class BackendService {
 
-    protected final URL baseUrl;
-    protected URL url;
-    protected HttpURLConnection connection;
+    protected final String baseUrl;
+    private HttpClient client = HttpClient.newHttpClient();
 
-    public BackendService(String url, String port) throws IOException {
+    public BackendService(String url, String port) {
         System.out.println("BackendService initializing with " + url);
 
-        this.setupNewUrl(String.format("%s:%s/", url, port));
-        this.baseUrl = new URL(String.format("%s:%s/", url, port));
-
+        this.baseUrl = String.format("%s:%s/", url, port);
         System.out.println("Finished initialization of BackendService.");
-    }
-
-    /**
-     * Sets up a new connection to the webserver with the given url.
-     * @param url the url we want to navigate to
-     * @throws IOException
-     */
-    protected void setupNewUrl(String url) throws IOException {
-        this.url = new URL(url);
-        this.connection = (HttpURLConnection) this.url.openConnection();
-        this.connection.setRequestMethod("GET");
     }
 
     /**
      * Reads the response from the current connection.
      * @return A String representing whatever we got back from the current connection.
      * @throws IOException
+     * @param url
      */
-    protected String readResponse() throws IOException {
-        if ((this.connection.getResponseCode() == 400) || (this.connection.getResponseCode() == 500)) {
-            throw new IOException("Illegal response code!");
+    protected String getResponse(String url) throws IOException, InterruptedException {
+        var request = HttpRequest.newBuilder().uri(URI.create(url)).build();
+        var response = this.client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() >= 400) {
+            throw new IOException("Illegal response code " + response.statusCode() + ", exiting " +
+                    "application.");
         }
-
-        BufferedReader reader = new BufferedReader(
-                new InputStreamReader(this.connection.getInputStream()));
-
-        String inputLine = reader.readLine();
-        StringBuilder content = new StringBuilder();
-
-        while (inputLine != null) { // read all the content
-            content.append(inputLine);
-            inputLine = reader.readLine();
-        }
-        reader.close();
-        return content.toString();
+        return response.body();
     }
 }

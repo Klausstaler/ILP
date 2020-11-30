@@ -15,7 +15,7 @@ public class Map extends Polygon {
 
     public Map(List<LinearRing> obstacles) {
         super(createShell(), getHoles(obstacles), geomFact);
-        for (LinearRing obstacle : obstacles) {
+        for (var obstacle : obstacles) {
             if (!this.covers(obstacle))
                 this.alignShell(obstacle);
         }
@@ -43,7 +43,7 @@ public class Map extends Polygon {
     private static LinearRing[] getHoles(List<LinearRing> obstacles) {
         var provisionalMap = geomFact.createPolygon(createShell());
         List<LinearRing> holes = new ArrayList<>();
-        for (LinearRing obstacle : obstacles) {
+        for (var obstacle : obstacles) {
             if (provisionalMap.covers(obstacle))
                 holes.add(obstacle);
         }
@@ -73,13 +73,13 @@ public class Map extends Polygon {
         shellCoordinates.remove(shellCoordinates.size() - 1); // remove last coordinate temporarily to
         // adjust boundary
 
-        List<LineString> orderedBounds = this.orderLines(newBounds);
+        var orderedBounds = this.orderLines(newBounds);
         int closestIdx = this.getClosestCoordinate(shellCoordinates,
                 orderedBounds.get(0).getCoordinateN(0)); // get closest coordinate index in the
         // current outer shell to the first coordinate in our new boundary coordinates and use
         // that as insertion point
-        for (LineString bound : orderedBounds) {
-            for (Coordinate coordinate : bound.getCoordinates()) {
+        for (var bound : orderedBounds) {
+            for (var coordinate : bound.getCoordinates()) {
                 shellCoordinates.add(++closestIdx, coordinate);
             }
         }
@@ -123,7 +123,7 @@ public class Map extends Polygon {
         for (int i = 0; i < lines.getNumGeometries(); i++) {
 
             var currLine = (LineString) lines.getGeometryN(i);
-            Coordinate[] currCoords = currLine.getCoordinates();
+            var currCoords = currLine.getCoordinates();
 
             var prevLine = (orderedLines.size() > 0) ?
                     orderedLines.get(orderedLines.size() - 1) : null;

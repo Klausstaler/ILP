@@ -10,7 +10,7 @@ import java.util.List;
  * Underyling visibility graph between vertices of the map. Can add additional coordinates to get
  * distances between the coordinate and all other vertices in the graph.
  */
-public class VisibilityGraph implements Graph {
+public class VisibilityGraph {
 
     private Map map; // used to get the vertex coordinates as well as verifying valid edges.
     private List<Coordinate> additionalCoordinates = new ArrayList<>(); // additional coordinates

@@ -16,9 +16,8 @@ public class ObstacleService extends BackendService {
 
     private List<LinearRing> obstacles;
 
-    public ObstacleService(String url, String port) throws IOException {
+    public ObstacleService(String url, String port) throws IOException, InterruptedException {
         super(url, port);
-        this.setupNewUrl(this.url.toString() + "buildings/no-fly-zones.geojson");
         this.obstacles = this.addObstacles();
     }
 
@@ -31,12 +30,12 @@ public class ObstacleService extends BackendService {
      * @return A list of LinearRings, representing the obstacles retrieved.
      * @throws IOException
      */
-    private List<LinearRing> addObstacles() throws IOException {
+    private List<LinearRing> addObstacles() throws IOException, InterruptedException {
         List<LinearRing> obstacles = new ArrayList<>();
 
-        FeatureCollection features = FeatureCollection.fromJson(this.readResponse());
-        for (Feature feature : features.features()) {
-            LinearRing obstacle = this.toLinearRing(feature);
+        var features = FeatureCollection.fromJson(this.getResponse(this.baseUrl + "buildings/no-fly-zones.geojson"));
+        for (var feature : features.features()) {
+            var obstacle = this.toLinearRing(feature);
             obstacles.add(obstacle);
         }
         return obstacles;
@@ -51,8 +50,8 @@ public class ObstacleService extends BackendService {
         List<Coordinate> coordinates = new ArrayList<>();
 
         LineString points = ((Polygon) feature.geometry()).outer();
-        for (Point point : points.coordinates()) {
-            Coordinate coordinate = new Coordinate(point.longitude(), point.latitude());
+        for (var point : points.coordinates()) {
+            var coordinate = new Coordinate(point.longitude(), point.latitude());
             coordinates.add(coordinate);
         }
         return new GeometryFactory().createLinearRing(coordinates.toArray(new Coordinate[0]));

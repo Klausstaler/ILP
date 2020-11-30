@@ -40,7 +40,7 @@ public class Drone {
      */
     public void visitSensors() throws Exception {
         System.out.println("Visiting all sensors...");
-        List<Coordinate> route = this.planner.getNextPath(startPosition);
+        var route = this.planner.getNextPath(startPosition);
         var currCoord = startPosition;
         var referenceCoord = startPosition; // used to get the next path we need to follow from the
         // routePlanner

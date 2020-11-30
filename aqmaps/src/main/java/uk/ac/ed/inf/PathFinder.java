@@ -10,11 +10,11 @@ import java.util.List;
  */
 public class PathFinder {
 
-    private final Graph graph; // the graph used
+    private final VisibilityGraph graph; // the graph used
     private List<List<List<Coordinate>>> paths = new ArrayList<>(); // row index i and column
     // index j holds the path to get from node i to node j
 
-    public PathFinder(Graph graph) {
+    public PathFinder(VisibilityGraph graph) {
         this.graph = graph;
 
         // initalize paths lists

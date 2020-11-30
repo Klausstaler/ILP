@@ -23,7 +23,7 @@ public class ReadingLogger extends DroneLogger {
     public ReadingLogger(Coordinate initialPos, String date, List<Sensor> sensors) throws IOException {
         super(initialPos, "readings-" + date + ".geojson");
         this.flightPath.add(initialPos);
-        for (Sensor sensor : sensors) { // initialize all markers as not visited
+        for (var sensor : sensors) { // initialize all markers as not visited
             Feature feature = Feature.fromGeometry(Point.fromLngLat(sensor.x, sensor.y));
             feature.addStringProperty("marker-color",
                     MarkerProperties.NOTVISITED.getRgbString());
@@ -73,8 +73,8 @@ public class ReadingLogger extends DroneLogger {
      * @param read_sensor the sensor read.
      */
     private void updateMarkerProps(Sensor read_sensor) {
-        Feature marker = this.markers.get(read_sensor.getLocation());
-        MarkerProperties markerProps = (read_sensor.getReading() == null) ?
+        var marker = this.markers.get(read_sensor.getLocation());
+        var markerProps = (read_sensor.getReading() == null) ?
                 MarkerProperties.LOWBATTERY :
                 MarkerProperties.fromAirPollution(read_sensor.getReading());
 

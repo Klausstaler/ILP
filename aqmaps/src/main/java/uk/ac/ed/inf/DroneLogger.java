@@ -2,13 +2,14 @@ package uk.ac.ed.inf;
 
 import org.locationtech.jts.geom.Coordinate;
 
+import java.io.Closeable;
 import java.io.FileWriter;
 import java.io.IOException;
 
 /**
  * Abstract base class for the DroneLoggers.
  */
-public abstract class DroneLogger {
+public abstract class DroneLogger implements Closeable {
 
     protected Coordinate position; // current position of drone
     protected FileWriter file; // file to write output to
@@ -25,11 +26,4 @@ public abstract class DroneLogger {
      * @throws IOException
      */
     abstract public void log(Coordinate newPos, Sensor read_sensor) throws IOException;
-
-
-    /**
-     * Closes all required files and finishes up logging.
-     * @throws IOException
-     */
-    abstract public void close() throws IOException;
 }

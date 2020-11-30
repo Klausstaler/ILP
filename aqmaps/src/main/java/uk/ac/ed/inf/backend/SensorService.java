@@ -20,20 +20,18 @@ public class SensorService extends BackendService {
     private static final double MIN_BATTERY = 10.0; // minimum battery required for reading to be
     // valid
     private final Gson gson = new Gson();
-    private HashMap<String, Sensor> sensors = new HashMap<>(); // key is the what3words address
+    private HashMap<String, Sensor> sensors; // key is the what3words address
     // of the sensor value
 
-    public SensorService(String url, String port) throws IOException {
-        super(url, port);
-        this.setupNewUrl(this.url.toString() + "maps/");
-    }
 
-    public SensorService(String url, String port, String day, String month, String year) throws IOException {
-        this(url, port);
-        this.setupNewUrl(
-                String.format("%s/%s/%s/%s/air-quality-data.json", this.url.toString(),
+    public SensorService(String url, String port, String day, String month, String year) throws IOException, InterruptedException {
+        super(url, port);
+
+        var sensorUrl = (
+                String.format("%smaps/%s/%s/%s/air-quality-data.json",
+                        this.baseUrl,
                         year, month, day));
-        this.sensors = this.retrieveAllSensors();
+        this.sensors = this.retrieveAllSensors(sensorUrl);
     }
 
     public List<Sensor> getSensors() {
@@ -46,10 +44,11 @@ public class SensorService extends BackendService {
      * @return A HashMap, where the key is the what3words string of the sensor which is the value.
      * @throws IOException
      */
-    private HashMap<String, Sensor> retrieveAllSensors() throws IOException {
+    private HashMap<String, Sensor> retrieveAllSensors(String url) throws IOException,
+            InterruptedException {
         HashMap<String, Sensor> sensors = new HashMap<>();
         System.out.println("Retrieving all sensors...");
-        JsonArray response = this.gson.fromJson(this.readResponse(), JsonArray.class);
+        var response = this.gson.fromJson(this.getResponse(url), JsonArray.class);
         for (JsonElement rawSensor : response) {
             Sensor sensor = this.jsonToSensor(rawSensor);
             sensors.put(sensor.getLocation(), sensor);
@@ -65,10 +64,10 @@ public class SensorService extends BackendService {
      * @return A Sensor object.
      * @throws IOException
      */
-    private Sensor jsonToSensor(JsonElement rawSensor) throws IOException {
-        JsonObject sensorProperties = rawSensor.getAsJsonObject();
-        String sensorLocation = sensorProperties.get("location").getAsString();
-        Coordinate coordinate = this.getCoordinate(sensorLocation); // get location information
+    private Sensor jsonToSensor(JsonElement rawSensor) throws IOException, InterruptedException {
+        var sensorProperties = rawSensor.getAsJsonObject();
+        var sensorLocation = sensorProperties.get("location").getAsString();
+        var coordinate = this.getCoordinate(sensorLocation); // get location information
 
         Double reading = null;
         float battery = sensorProperties.get("battery").getAsFloat();
@@ -77,8 +76,7 @@ public class SensorService extends BackendService {
             reading = Double.valueOf(readingVal);
         }
 
-        Sensor sensor = new Sensor(sensorLocation, battery, reading, coordinate.x, coordinate.y);
-        return sensor;
+        return new Sensor(sensorLocation, battery, reading, coordinate.x, coordinate.y);
     }
 
     /**
@@ -87,21 +85,20 @@ public class SensorService extends BackendService {
      * @return A coordinate, where x is the longitude and y is the latitude of the location.
      * @throws IOException
      */
-    private Coordinate getCoordinate(String sensorLocation) throws IOException {
+    private Coordinate getCoordinate(String sensorLocation) throws IOException,
+            InterruptedException {
         String[] words = sensorLocation.split("\\.");
-        String prevUrl = this.url.toString();
 
-        this.setupNewUrl(String.format(
-                "%s/words/%s/%s/%s/details.json", this.baseUrl, words[0], words[1],
-                words[2]));
+        var locationUrl = String.format(
+                "%swords/%s/%s/%s/details.json", this.baseUrl, words[0], words[1],
+                words[2]);
 
-        JsonObject response = this.gson.fromJson(this.readResponse(), JsonObject.class);
-        JsonObject coords = response.get("coordinates").getAsJsonObject();
-        Coordinate coordinate = new Coordinate(
+        var response = this.gson.fromJson(this.getResponse(locationUrl), JsonObject.class);
+        var coords = response.get("coordinates").getAsJsonObject();
+        var coordinate = new Coordinate(
                 coords.get("lng").getAsDouble(),
                 coords.get("lat").getAsDouble());
 
-        this.setupNewUrl(prevUrl); // return to previous url to not cause any side effects
         return coordinate;
     }
 }
