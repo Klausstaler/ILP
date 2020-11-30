@@ -30,28 +30,22 @@ public class VisibilityGraph {
         this.distances.get(fromIdx).set(toIdx, distance);
     }
 
-    public Coordinate getCoordinate(int i) {
-        var numMapCoords = this.map.getCoordinates().length;
-        if (i >= numMapCoords) { // if i is bigger than the number of map coordinates, it can
-            // only be stored in the additional coordiantes
-            return this.additionalCoordinates.get(i - numMapCoords);
-        }
-        return this.map.getCoordinates()[i];
-    }
-
     public int getSize() {
         return this.distances.size();
     }
 
     /**
-     * Gets all the coordinates stored in the visibility graph
-     * @return A List of all coordinates stored in the map and the additional corodinates.
+     * Returns the i-th coordinate stored in the graph.
+     * @param i the index for the coordinate
+     * @return the Coordinate at the given index
      */
-    public List<Coordinate> getAllCoordinates() {
-        List<Coordinate> allCoordinates = new ArrayList<>();
-        allCoordinates.addAll(Arrays.asList(this.map.getCoordinates()));
-        allCoordinates.addAll(additionalCoordinates);
-        return allCoordinates;
+    public Coordinate getCoordinate(int i) {
+        var numMapCoords = this.map.getCoordinates().length;
+        if (i >= numMapCoords) { // if i is bigger than the number of map coordinates, it can
+            // only be stored in the additional coordinates
+            return this.additionalCoordinates.get(i - numMapCoords);
+        }
+        return this.map.getCoordinates()[i];
     }
 
     /**
@@ -75,6 +69,18 @@ public class VisibilityGraph {
         distances.add(distanceRow);
 
         additionalCoordinates.add(newCoordinate);
+    }
+
+
+    /**
+     * Gets all the coordinates stored in the visibility graph
+     * @return A List of all coordinates stored in the map and the additional corodinates.
+     */
+    private List<Coordinate> getAllCoordinates() {
+        List<Coordinate> allCoordinates = new ArrayList<>();
+        allCoordinates.addAll(Arrays.asList(this.map.getCoordinates()));
+        allCoordinates.addAll(additionalCoordinates);
+        return allCoordinates;
     }
 
     /**

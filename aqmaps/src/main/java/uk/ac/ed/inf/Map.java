@@ -58,7 +58,7 @@ public class Map extends Polygon {
      */
     public boolean verifyMove(Coordinate from, Coordinate to) {
         Coordinate[] edgeCoords = new Coordinate[]{from, to};
-        var edge = new GeometryFactory().createLineString(edgeCoords);
+        var edge = geomFact.createLineString(edgeCoords);
         return this.covers(edge);
     }
 

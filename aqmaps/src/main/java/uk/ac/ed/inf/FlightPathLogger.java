@@ -9,6 +9,8 @@ import java.io.IOException;
  */
 public class FlightPathLogger extends DroneLogger {
 
+    private static final int MAX_MOVES = 150; // maximum number of moves the drone is allowed to
+    // take
     private int lineNbr = 1; // current line number.
 
     public FlightPathLogger(Coordinate initialPos, String date) throws IOException {
@@ -30,6 +32,8 @@ public class FlightPathLogger extends DroneLogger {
             throw new IllegalArgumentException("The direction of the drone is not a multiple of " +
                     "10!");
         }
+        if (this.lineNbr > MAX_MOVES)
+            throw new AssertionError("More than 150 lines need to be written!");
         String sensorLocation = read_sensor == null ? "null" : read_sensor.getLocation();
         String line = this.format(newPos, direction, sensorLocation);
         this.file.write(line);

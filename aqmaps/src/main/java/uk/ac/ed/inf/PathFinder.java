@@ -17,7 +17,7 @@ public class PathFinder {
     public PathFinder(VisibilityGraph graph) {
         this.graph = graph;
 
-        // initalize paths lists
+        // initialize paths lists
         for (int i = 0; i < this.graph.getSize(); i++) {
             List<List<Coordinate>> paths = new ArrayList<>();
             for (int j = 0; j < this.graph.getSize(); j++) {

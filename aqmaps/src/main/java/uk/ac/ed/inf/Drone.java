@@ -13,8 +13,6 @@ import java.util.List;
  */
 public class Drone {
 
-    private static final int MAX_MOVES = 150; // maximum number of moves the drone is allowed to
-    // take
     private static final double SENSOR_RADIUS = 0.0002; // maximum distance to sensor to collect
     // reading
     private static final double MOVE_LENGTH = 0.0003; // distance travelled in one move
@@ -25,7 +23,6 @@ public class Drone {
     private List<DroneLogger> loggers; // loggers to create output files
     private HashSet<Coordinate> visited = new HashSet<>(); // used to not go to the same location
     // twice
-    private int numMoves = 0; // number of moves made so far
 
     public Drone(Coordinate startPosition, Map map, RoutePlanner planner, DroneLogger... loggers) {
         this.startPosition = startPosition;
@@ -70,16 +67,11 @@ public class Drone {
         var currentCoordinate = from;
         boolean isFirstMove = true;
         while (currentCoordinate.distance(to) >= SENSOR_RADIUS || isFirstMove) {
-            if (numMoves == MAX_MOVES) {
-                for (DroneLogger logger : this.loggers) logger.close();
-                throw new Exception("too many moves :(");
-            }
             var newCoordinate = this.getNextValidCoord(currentCoordinate, to);
             this.log(newCoordinate, to);
             this.visited.add(newCoordinate);
             currentCoordinate = newCoordinate;
             isFirstMove = false;
-            this.numMoves++;
         }
         return currentCoordinate;
     }

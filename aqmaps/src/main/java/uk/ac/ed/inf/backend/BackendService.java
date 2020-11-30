@@ -32,7 +32,7 @@ public class BackendService {
         var request = HttpRequest.newBuilder().uri(URI.create(url)).build();
         var response = this.client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        if (response.statusCode() >= 400) {
+        if (response.statusCode() != 200) {
             throw new IOException("Illegal response code " + response.statusCode() + ", exiting " +
                     "application.");
         }
