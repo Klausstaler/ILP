@@ -43,6 +43,7 @@ public class RoutePlanner {
 
     /**
      * Returns the next path we have to follow in order to follow the optimal route.
+     *
      * @param waypoint The current coordinate from which we want to go on.
      * @return A list of Coordinates, the path to reach the next closest waypoint.
      */
@@ -56,6 +57,7 @@ public class RoutePlanner {
 
     /**
      * Calculates the shortest distances between all pairs of waypoints.
+     *
      * @param waypoints The list of waypoints.
      * @return A 2D array of doubles, representing the distance matrix. Row index i and column
      * index j is the distance to go from waypoint i to waypoint j.

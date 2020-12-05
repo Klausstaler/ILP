@@ -33,6 +33,7 @@ public class Drone {
 
     /**
      * Follows the route returned by the routePlanner while visiting all sensors in the route.
+     *
      * @throws Exception
      */
     public void visitSensors() throws Exception {
@@ -57,8 +58,9 @@ public class Drone {
     /**
      * Used to move from one coordinate to another. Guarantees that after successful execution we
      * are less than SENSOR_RADIUS away from the to coordinate.
+     *
      * @param from The coordinate from which we start.
-     * @param to The coordinate we want to get close to.
+     * @param to   The coordinate we want to get close to.
      * @return The final coordinate which is a distance of less than SENSOR_RADIUS away from the
      * to coordinate.
      * @throws Exception
@@ -79,8 +81,9 @@ public class Drone {
     /**
      * Gets the next coordinate inside the navigation area and which was not visited before that
      * should get us closer to the to coordinate.
+     *
      * @param from The coordinate from which we start.
-     * @param to The coordinate we want to get closer to.
+     * @param to   The coordinate we want to get closer to.
      * @return A new Coordinate, which should be closer to the to coordinate.
      * @throws Exception
      */
@@ -96,7 +99,8 @@ public class Drone {
         // oscillate between expanding angles greater or smaller than the exact angle until we
         // find a coordinate we can move to
         while (!this.map.verifyMove(from, newCoordinate)) {
-            angle = Angles.adjustAngle(angle, oscillationFac * angleStepSize, oscillationFac % 2 == 1);
+            angle = Angles.adjustAngle(angle, oscillationFac * angleStepSize,
+                    oscillationFac % 2 == 1);
             var candidate = Angles.calculateNewCoordinate(from, MOVE_LENGTH,
                     angle);
             newCoordinate = this.visited.contains(candidate) ? newCoordinate : candidate;
@@ -110,7 +114,8 @@ public class Drone {
 
     /**
      * Logs the required data using the loggers.
-     * @param position The position we want to log.
+     *
+     * @param position  The position we want to log.
      * @param targetPos the target position where we want to get to. Used to identify whether we
      *                  can read a sensor.
      * @throws IOException
@@ -124,8 +129,15 @@ public class Drone {
         if (position.distance(targetPos) < SENSOR_RADIUS && targetPos instanceof Sensor) {
             reading = (Sensor) targetPos;
         }
-        for (DroneLogger logger : loggers) {
-            logger.log(position, reading);
+        try {
+            for (DroneLogger logger : this.loggers) {
+                logger.log(position, reading);
+            }
+        }
+        catch (AssertionError e) {
+            for (var logger : this.loggers) logger.close();
+            System.out.println("Too many moves!");
+            System.exit(1);
         }
     }
 

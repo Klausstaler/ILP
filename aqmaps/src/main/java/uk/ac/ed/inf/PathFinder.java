@@ -34,8 +34,9 @@ public class PathFinder {
 
     /**
      * Gets the shortest path between two vertices
+     *
      * @param fromIdx the vertex index from which to start.
-     * @param toIdx the index of the vertex where we want to go.
+     * @param toIdx   the index of the vertex where we want to go.
      * @return A List of Coordinates, the path, to get from one vertex to the other.
      */
     public List<Coordinate> getShortestPath(int fromIdx, int toIdx) {

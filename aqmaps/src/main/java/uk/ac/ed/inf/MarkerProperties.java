@@ -28,6 +28,7 @@ public enum MarkerProperties {
 
     /**
      * Resolve the marker properties based on the pollution level
+     *
      * @param pollution the pollution level
      * @return The corresponding marker property.
      */

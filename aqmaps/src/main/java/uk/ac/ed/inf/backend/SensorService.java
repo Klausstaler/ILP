@@ -41,6 +41,7 @@ public class SensorService extends BackendService {
 
     /**
      * Retrieves all sensors from the webserver for the current url.
+     *
      * @return A HashMap, where the key is the what3words string of the sensor which is the value.
      * @throws IOException
      */
@@ -59,6 +60,7 @@ public class SensorService extends BackendService {
 
     /**
      * Turns a JsonElement into a Sensor object.
+     *
      * @param rawSensor Is the JsonElement which contains the necessary properties needed to
      *                  initialize a Sensor. (location, battery, reading)
      * @return A Sensor object.
@@ -81,6 +83,7 @@ public class SensorService extends BackendService {
 
     /**
      * Gets the location information of a what3words address.
+     *
      * @param sensorLocation The what3words address to get the location information for.
      * @return A coordinate, where x is the longitude and y is the latitude of the location.
      * @throws IOException

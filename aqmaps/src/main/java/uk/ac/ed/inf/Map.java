@@ -23,6 +23,7 @@ public class Map extends Polygon {
 
     /**
      * Creates the outer shell of the map
+     *
      * @return A LinearRing representing the outer shell of the map.
      */
     private static LinearRing createShell() {
@@ -36,6 +37,7 @@ public class Map extends Polygon {
 
     /**
      * Returns all obstacles fully the outer shell.
+     *
      * @param obstacles a List of obstacles represented as a LinearRing.
      * @return An Array of LinearRings, where each of them is fully contained inside the outer
      * shell of the navigation area.
@@ -52,8 +54,9 @@ public class Map extends Polygon {
 
     /**
      * Verifies a move from a coordinate to another.
+     *
      * @param from Coordinate from which we move.
-     * @param to Coordinate to which we move.
+     * @param to   Coordinate to which we move.
      * @return Boolean representing whether it is a valid move.
      */
     public boolean verifyMove(Coordinate from, Coordinate to) {
@@ -65,12 +68,15 @@ public class Map extends Polygon {
     /**
      * Given an obstacle that is not fully covered by the outer shell of the navigation area,
      * we align it in such a way that we include the obstacle inside the outer shell.
+     *
      * @param obstacle An obstacle that intersects with the outer shell
      */
     private void alignShell(LinearRing obstacle) {
         var newBounds = (MultiLineString) this.intersection(obstacle);
-        List<Coordinate> shellCoordinates = new ArrayList<>(Arrays.asList(this.shell.getCoordinates()));
-        shellCoordinates.remove(shellCoordinates.size() - 1); // remove last coordinate temporarily to
+        List<Coordinate> shellCoordinates =
+                new ArrayList<>(Arrays.asList(this.shell.getCoordinates()));
+        shellCoordinates.remove(shellCoordinates.size() - 1); // remove last coordinate
+        // temporarily to
         // adjust boundary
 
         var orderedBounds = this.orderLines(newBounds);
@@ -90,9 +96,10 @@ public class Map extends Polygon {
 
     /**
      * Gets the index of the closest coordinate in a List of coordinates to another coordinate.
+     *
      * @param coordinates List of coordinates in which to find the closest coordinate index
-     * @param coordinate The coordinate to which to find the index of the closest coordinate in
-     *                   coordinates
+     * @param coordinate  The coordinate to which to find the index of the closest coordinate in
+     *                    coordinates
      * @return The index of the closest coordinate
      */
     private int getClosestCoordinate(List<Coordinate> coordinates, Coordinate coordinate) {
@@ -112,6 +119,7 @@ public class Map extends Polygon {
 
     /**
      * Reverses lines such that the endpoint of one is the start point of the next line
+     *
      * @param lines A MultiLineString of lines
      * @return A List of LineStrings, where the endpoint of the current LineString is the
      * start point of the next.

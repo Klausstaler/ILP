@@ -21,7 +21,8 @@ public abstract class DroneLogger implements Closeable {
 
     /**
      * Does the required logging.
-     * @param newPos the new position we need to log
+     *
+     * @param newPos      the new position we need to log
      * @param read_sensor The sensor read during move
      * @throws IOException
      */

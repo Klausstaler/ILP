@@ -36,6 +36,7 @@ public class VisibilityGraph {
 
     /**
      * Returns the i-th coordinate stored in the graph.
+     *
      * @param i the index for the coordinate
      * @return the Coordinate at the given index
      */
@@ -50,6 +51,7 @@ public class VisibilityGraph {
 
     /**
      * Adds a new coordinate to the visibility graph.
+     *
      * @param newCoordinate
      */
     public void addCoordinate(Coordinate newCoordinate) {
@@ -74,6 +76,7 @@ public class VisibilityGraph {
 
     /**
      * Gets all the coordinates stored in the visibility graph
+     *
      * @return A List of all coordinates stored in the map and the additional corodinates.
      */
     private List<Coordinate> getAllCoordinates() {
@@ -129,11 +132,11 @@ public class VisibilityGraph {
         for (int obstacleIdx = 0; obstacleIdx < boundary.getNumGeometries(); obstacleIdx++) {
             var obstacle = boundary.getGeometryN(obstacleIdx);
             var coordinates = obstacle.getCoordinates();
-            for(int idx = 0; idx < coordinates.length-1; idx++) {
+            for (int idx = 0; idx < coordinates.length - 1; idx++) {
                 int pos = idx + offset;
-                double dist = coordinates[idx].distance(coordinates[idx+1]);
-                this.distances.get(pos).set(pos+1, dist);
-                this.distances.get(pos+1).set(pos, dist);
+                double dist = coordinates[idx].distance(coordinates[idx + 1]);
+                this.distances.get(pos).set(pos + 1, dist);
+                this.distances.get(pos + 1).set(pos, dist);
             }
             offset += coordinates.length;
         }

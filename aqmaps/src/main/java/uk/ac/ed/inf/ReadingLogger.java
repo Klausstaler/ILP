@@ -25,8 +25,8 @@ public class ReadingLogger extends DroneLogger {
         this.flightPath.add(initialPos);
         for (var sensor : sensors) { // initialize all markers as not visited
             Feature feature = Feature.fromGeometry(Point.fromLngLat(sensor.x, sensor.y));
-            feature.addStringProperty("marker-color",
-                    MarkerProperties.NOTVISITED.getRgbString());
+            feature.addStringProperty("marker-color",  MarkerProperties.NOTVISITED.getRgbString());
+            feature.addStringProperty("rgb-string", MarkerProperties.NOTVISITED.getRgbString());
             markers.put(sensor.getLocation(), feature);
         }
         System.out.println("Reading logger initialized...");
@@ -35,7 +35,8 @@ public class ReadingLogger extends DroneLogger {
     /**
      * Adds the new position to the flight path while updating the marker properties of the read
      * sensor.
-     * @param newPos the new position we need to log
+     *
+     * @param newPos      the new position we need to log
      * @param read_sensor The sensor read during move
      */
     @Override
@@ -49,6 +50,7 @@ public class ReadingLogger extends DroneLogger {
 
     /**
      * Dumps the markers and flightpath into the output file in geoJSON format, then closes it.
+     *
      * @throws IOException
      */
     @Override
@@ -70,6 +72,7 @@ public class ReadingLogger extends DroneLogger {
 
     /**
      * Updates the marker properties of the marker located at the sensor's what3words address.
+     *
      * @param read_sensor the sensor read.
      */
     private void updateMarkerProps(Sensor read_sensor) {
@@ -80,6 +83,7 @@ public class ReadingLogger extends DroneLogger {
 
         marker.removeProperty("marker-color");
         marker.addStringProperty("marker-color", markerProps.getRgbString());
+        marker.addStringProperty("rgb-string", markerProps.getRgbString());
         marker.addStringProperty("marker-symbol", markerProps.getMarkerSymbol());
     }
 }

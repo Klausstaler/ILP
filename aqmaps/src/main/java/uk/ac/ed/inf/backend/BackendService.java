@@ -24,9 +24,10 @@ public class BackendService {
 
     /**
      * Reads the response from the current connection.
+     *
+     * @param url
      * @return A String representing whatever we got back from the current connection.
      * @throws IOException
-     * @param url
      */
     protected String getResponse(String url) throws IOException, InterruptedException {
         var request = HttpRequest.newBuilder().uri(URI.create(url)).build();

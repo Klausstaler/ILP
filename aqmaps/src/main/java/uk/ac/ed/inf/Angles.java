@@ -8,9 +8,8 @@ import org.locationtech.jts.geom.Coordinate;
 public class Angles {
 
     /**
-     *
      * @param from The coordinate from which we want to start.
-     * @param to THe coordinate where we want to go.
+     * @param to   THe coordinate where we want to go.
      * @return Angle between from and to, rounded to the nearest multiple of 10.
      */
     public static int calculateAngle(Coordinate from, Coordinate to) {
@@ -25,8 +24,9 @@ public class Angles {
     /**
      * Calculates a new coordinate we get if we move from a coordinate in a specified angle and
      * distance .
+     *
      * @param distance The distance between the new coordinate and the returned coordinate.
-     * @param angle The angle between the new coordinate and the returned coordinate.
+     * @param angle    The angle between the new coordinate and the returned coordinate.
      * @return A new coordinate
      */
     public static Coordinate calculateNewCoordinate(Coordinate from, double distance, int angle) {

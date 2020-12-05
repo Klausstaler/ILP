@@ -9,8 +9,7 @@ import java.io.IOException;
  */
 public class FlightPathLogger extends DroneLogger {
 
-    private static final int MAX_MOVES = 150; // maximum number of moves the drone is allowed to
-    // take
+    private static final int MAX_LINES = 150; // maximum number of lines we are allowed to have
     private int lineNbr = 1; // current line number.
 
     public FlightPathLogger(Coordinate initialPos, String date) throws IOException {
@@ -21,7 +20,8 @@ public class FlightPathLogger extends DroneLogger {
     /**
      * Logs the current previous position, current position, as well as the angle between and the
      * location of the sensor if one was read.
-     * @param newPos the new position we need to log
+     *
+     * @param newPos      the new position we need to log
      * @param read_sensor The sensor read during move
      * @throws IOException
      */
@@ -32,7 +32,7 @@ public class FlightPathLogger extends DroneLogger {
             throw new IllegalArgumentException("The direction of the drone is not a multiple of " +
                     "10!");
         }
-        if (this.lineNbr > MAX_MOVES)
+        if (this.lineNbr > MAX_LINES)
             throw new AssertionError("More than 150 lines need to be written!");
         String sensorLocation = read_sensor == null ? "null" : read_sensor.getLocation();
         String line = this.format(newPos, direction, sensorLocation);
@@ -44,6 +44,7 @@ public class FlightPathLogger extends DroneLogger {
 
     /**
      * Closes the file, ends logging.
+     *
      * @throws IOException
      */
     @Override
@@ -55,8 +56,9 @@ public class FlightPathLogger extends DroneLogger {
 
     /**
      * Formats the logging output correctly.
-     * @param newPos the new position we need to log
-     * @param direction The direction in which we headed
+     *
+     * @param newPos         the new position we need to log
+     * @param direction      The direction in which we headed
      * @param sensorLocation The what3words address of the sensor read
      * @return A String representing one line of logging output
      */

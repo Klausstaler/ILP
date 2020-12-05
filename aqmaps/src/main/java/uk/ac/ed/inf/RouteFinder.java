@@ -30,6 +30,7 @@ public class RouteFinder {
 
     /**
      * Finds the shortest route visiting all nodes.
+     *
      * @return An array of indices representing the order in which to visit the nodes. A node index
      * at index i means that the node with the given node index should be visited after visiting
      * the node with the node index at index i-1.
@@ -73,6 +74,7 @@ public class RouteFinder {
     /**
      * Constructs a Vehicle object. Used in the Graphhopper library to represent an object
      * visiting all nodes.
+     *
      * @return A vehicle of type VehicleImpl.
      */
     private VehicleImpl constructVehicle() {
@@ -86,6 +88,7 @@ public class RouteFinder {
 
     /**
      * Constructs the cost matrix for the routing problem.
+     *
      * @return A cost matrix.
      */
     private VehicleRoutingTransportCostsMatrix constructCostMatrix() {
@@ -103,8 +106,9 @@ public class RouteFinder {
 
     /**
      * Constructs the routing algorithm used to visit all nodes.
+     *
      * @param costMatrix The cost matrix used
-     * @param vehicle The vehicle instance used
+     * @param vehicle    The vehicle instance used
      * @return The routing algorithm used to visit all nodes
      */
     private VehicleRoutingAlgorithm constructRouter(VehicleRoutingTransportCostsMatrix costMatrix

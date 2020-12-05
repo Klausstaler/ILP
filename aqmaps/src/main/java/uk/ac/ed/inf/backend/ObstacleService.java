@@ -1,6 +1,9 @@
 package uk.ac.ed.inf.backend;
 
-import com.mapbox.geojson.*;
+import com.mapbox.geojson.Feature;
+import com.mapbox.geojson.FeatureCollection;
+import com.mapbox.geojson.LineString;
+import com.mapbox.geojson.Polygon;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LinearRing;
@@ -27,13 +30,15 @@ public class ObstacleService extends BackendService {
 
     /**
      * Retrieves the obstacles from the webserver.
+     *
      * @return A list of LinearRings, representing the obstacles retrieved.
      * @throws IOException
      */
     private List<LinearRing> addObstacles() throws IOException, InterruptedException {
         List<LinearRing> obstacles = new ArrayList<>();
 
-        var features = FeatureCollection.fromJson(this.getResponse(this.baseUrl + "buildings/no-fly-zones.geojson"));
+        var features = FeatureCollection.fromJson(this.getResponse(this.baseUrl + "buildings/no" +
+                "-fly-zones.geojson"));
         for (var feature : features.features()) {
             var obstacle = this.toLinearRing(feature);
             obstacles.add(obstacle);
@@ -43,6 +48,7 @@ public class ObstacleService extends BackendService {
 
     /**
      * Turns a geoJSON feature into a JTS LinearRing.
+     *
      * @param feature geoJSON Feature.
      * @return A linearRing.
      */

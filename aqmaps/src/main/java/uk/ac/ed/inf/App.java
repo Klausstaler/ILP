@@ -46,8 +46,7 @@ public class App {
         var visibilityGraph = new VisibilityGraph(map);
 
         var routePlanner = new RoutePlanner(visibilityGraph, waypoints);
-        var drone = new Drone(initialPos, map, routePlanner, readingLogger
-                , flightPathLogger);
+        var drone = new Drone(initialPos, map, routePlanner, flightPathLogger, readingLogger);
 
         drone.visitSensors();
     }
